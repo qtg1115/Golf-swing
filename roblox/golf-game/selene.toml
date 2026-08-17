@@ -1,0 +1,6 @@
+std = "roblox"
+
+[lints]
+# Server scripts intentionally build the world at runtime, so global mutation
+# and shadowing warnings that don't apply to Luau are relaxed here.
+mixed_table = "allow"
