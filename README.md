@@ -11,8 +11,10 @@
 ### 1) 한 번만 준비
 
 1. [로블록스 스튜디오](https://create.roblox.com/docs/studio/setup)를 설치합니다.
-2. 스튜디오에서 **Toolbox → Plugins**로 이동해 **Rojo** 플러그인을 설치합니다.  
-   또는 [Rojo 릴리즈](https://github.com/rojo-rbx/rojo/releases)에서 `Rojo.rbxm`을 받아 `Plugins` 폴더에 넣습니다.
+2. Rojo 플러그인을 설치합니다. 가장 쉬운 방법은 이 링크입니다.  
+   https://create.roblox.com/store/asset/13916111004/Rojo  
+   **Get Plugin / Install** 을 누른 뒤 스튜디오 **PLUGINS** 탭에 Rojo가 보이는지 확인하세요.  
+   그림이 있는 자세한 순서는 `STUDIO.md` 에 있습니다.
 3. 컴퓨터에 Rojo CLI를 설치합니다.
 
 ```bash
