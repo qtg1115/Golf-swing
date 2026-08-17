@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+
+*.rbxl.lock
+*.rbxlx.lock
+sourcemap.json
+
+# Local tool caches
+.aftman/
+.rokit/

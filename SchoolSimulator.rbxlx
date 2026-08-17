@@ -1,0 +1,2065 @@
+<roblox version="4">
+  <Item class="Lighting" referent="0">
+    <Properties>
+      <string name="Name">Lighting</string>
+      <Color3 name="Ambient">
+        <R>0.42</R>
+        <G>0.45</G>
+        <B>0.5</B>
+      </Color3>
+      <float name="Brightness">2.4</float>
+      <float name="ClockTime">13.5</float>
+      <float name="EnvironmentDiffuseScale">0.6</float>
+      <float name="EnvironmentSpecularScale">0.4</float>
+      <float name="GeographicLatitude">35</float>
+      <bool name="GlobalShadows">true</bool>
+      <Color3 name="OutdoorAmbient">
+        <R>0.5</R>
+        <G>0.52</G>
+        <B>0.55</B>
+      </Color3>
+    </Properties>
+  </Item>
+  <Item class="ReplicatedStorage" referent="1">
+    <Properties>
+      <string name="Name">ReplicatedStorage</string>
+    </Properties>
+    <Item class="Folder" referent="2">
+      <Properties>
+        <string name="Name">Shared</string>
+      </Properties>
+      <Item class="ModuleScript" referent="3">
+        <Properties>
+          <string name="Name">Config</string>
+          <string name="Source"><![CDATA[local Config = {}
+
+Config.GameName = "스쿨 시뮬레이터"
+Config.SchoolName = "우리학교"
+
+Config.PeriodSeconds = 45
+
+Config.Starting = {
+	coins = 80,
+	energy = 100,
+	maxEnergy = 100,
+	popularity = 15,
+	xp = 0,
+	level = 1,
+}
+
+Config.GradeKeys = { "korean", "math", "english", "science", "pe", "art" }
+
+Config.SubjectNames = {
+	korean = "국어",
+	math = "수학",
+	english = "영어",
+	science = "과학",
+	pe = "체육",
+	art = "미술",
+}
+
+Config.StartingGrades = {
+	korean = 62,
+	math = 58,
+	english = 60,
+	science = 61,
+	pe = 70,
+	art = 64,
+}
+
+Config.Periods = {
+	{ id = "homeroom", name = "조회", kind = "social", hint = "친구들과 인사하고 하루를 시작하세요" },
+	{ id = "p1", name = "1교시 국어", kind = "class", subject = "korean", room = "Korean", hint = "국어 교실에 앉아 수업을 들으세요" },
+	{ id = "p2", name = "2교시 수학", kind = "class", subject = "math", room = "Math", hint = "수학 교실로 이동하세요" },
+	{ id = "p3", name = "3교시 영어", kind = "class", subject = "english", room = "English", hint = "영어 교실에서 수업에 참여하세요" },
+	{ id = "lunch", name = "점심시간", kind = "lunch", room = "Cafeteria", hint = "급식실에서 밥을 먹고 에너지를 회복하세요" },
+	{ id = "p4", name = "4교시 과학", kind = "class", subject = "science", room = "Science", hint = "과학실로 가세요" },
+	{ id = "p5", name = "5교시 체육", kind = "class", subject = "pe", room = "Playground", hint = "운동장에서 체육 활동에 참여하세요" },
+	{ id = "p6", name = "6교시 미술", kind = "class", subject = "art", room = "Art", hint = "미술실에서 창작 활동을 하세요" },
+	{ id = "after", name = "방과후", kind = "social", hint = "상점을 이용하거나 퀘스트를 완료하세요" },
+}
+
+Config.Class = {
+	energyCost = 8,
+	xpReward = 18,
+	gradeGain = 2.4,
+	coinReward = 6,
+	popularityGain = 1,
+	skipGradePenalty = 1.2,
+	skipPopularityPenalty = 1,
+}
+
+Config.Lunch = {
+	energyRestore = 40,
+	coinCost = 0,
+	popularityGain = 2,
+	oncePerPeriod = true,
+}
+
+Config.Play = {
+	energyCost = 6,
+	popularityGain = 4,
+	xpReward = 8,
+}
+
+Config.Talk = {
+	popularityGain = 3,
+	xpReward = 5,
+	cooldown = 20,
+}
+
+Config.LevelXp = 100
+
+Config.ShopItems = {
+	{
+		id = "snack",
+		name = "초콜릿",
+		desc = "에너지를 바로 채워 줍니다",
+		price = 12,
+		energy = 22,
+	},
+	{
+		id = "drink",
+		name = "인기 음료",
+		desc = "마시는 순간 인기가 조금 오릅니다",
+		price = 18,
+		energy = 10,
+		popularity = 6,
+	},
+	{
+		id = "workbook",
+		name = "참고서",
+		desc = "모든 과목 성적이 조금 오릅니다",
+		price = 35,
+		allGrades = 2,
+	},
+	{
+		id = "uniform",
+		name = "새 교복",
+		desc = "깔끔한 교복으로 인기가 크게 오릅니다",
+		price = 70,
+		popularity = 14,
+		title = "모범생",
+	},
+}
+
+Config.Quests = {
+	{
+		id = "attend3",
+		name = "성실한 학생",
+		desc = "오늘 수업을 3번 들으세요",
+		goal = 3,
+		stat = "classesAttended",
+		rewardCoins = 25,
+		rewardXp = 30,
+	},
+	{
+		id = "lunch1",
+		name = "급식 타임",
+		desc = "급식실에서 한 끼를 드세요",
+		goal = 1,
+		stat = "lunchesEaten",
+		rewardCoins = 10,
+		rewardXp = 12,
+	},
+	{
+		id = "talk2",
+		name = "인사하기",
+		desc = "NPC와 2번 대화하세요",
+		goal = 2,
+		stat = "talks",
+		rewardCoins = 12,
+		rewardXp = 15,
+		rewardPopularity = 4,
+	},
+	{
+		id = "play1",
+		name = "운동장 한 바퀴",
+		desc = "운동장에서 한 번 놀아 보세요",
+		goal = 1,
+		stat = "plays",
+		rewardCoins = 10,
+		rewardXp = 12,
+	},
+}
+
+return Config
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="4">
+        <Properties>
+          <string name="Name">Remotes</string>
+          <string name="Source"><![CDATA[local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Remotes = {}
+
+local FOLDER_NAME = "SchoolRemotes"
+local REMOTE_NAMES = {
+	"GetProfile",
+	"ProfileUpdated",
+	"PeriodChanged",
+	"Notify",
+	"BuyItem",
+	"ClaimQuest",
+}
+
+local function getFolder(): Folder
+	local folder = ReplicatedStorage:FindFirstChild(FOLDER_NAME)
+	if folder and folder:IsA("Folder") then
+		return folder
+	end
+
+	folder = Instance.new("Folder")
+	folder.Name = FOLDER_NAME
+	folder.Parent = ReplicatedStorage
+	return folder
+end
+
+function Remotes.ensure(): Folder
+	local folder = getFolder()
+	for _, name in REMOTE_NAMES do
+		if not folder:FindFirstChild(name) then
+			local remote = Instance.new("RemoteEvent")
+			remote.Name = name
+			remote.Parent = folder
+		end
+	end
+	return folder
+end
+
+function Remotes.get(name: string): RemoteEvent
+	local folder = Remotes.ensure()
+	local remote = folder:WaitForChild(name, 10)
+	assert(remote and remote:IsA("RemoteEvent"), "Missing remote: " .. name)
+	return remote
+end
+
+return Remotes
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="5">
+        <Properties>
+          <string name="Name">Util</string>
+          <string name="Source"><![CDATA[local Util = {}
+
+function Util.clamp(value: number, minValue: number, maxValue: number): number
+	return math.clamp(value, minValue, maxValue)
+end
+
+function Util.round(value: number, digits: number): number
+	local factor = 10 ^ digits
+	return math.floor(value * factor + 0.5) / factor
+end
+
+function Util.average(values: { [string]: number }): number
+	local total = 0
+	local count = 0
+	for _, value in values do
+		total += value
+		count += 1
+	end
+	if count == 0 then
+		return 0
+	end
+	return total / count
+end
+
+function Util.deepCopy(value)
+	if typeof(value) ~= "table" then
+		return value
+	end
+
+	local copy = {}
+	for key, child in value do
+		copy[key] = Util.deepCopy(child)
+	end
+	return copy
+end
+
+function Util.xpForLevel(level: number): number
+	return 80 + (level - 1) * 35
+end
+
+function Util.formatTime(seconds: number): string
+	seconds = math.max(0, math.floor(seconds))
+	local minutes = math.floor(seconds / 60)
+	local remain = seconds % 60
+	return string.format("%d:%02d", minutes, remain)
+end
+
+return Util
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="ServerScriptService" referent="6">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Folder" referent="7">
+      <Properties>
+        <string name="Name">Server</string>
+      </Properties>
+      <Item class="ModuleScript" referent="8">
+        <Properties>
+          <string name="Name">DataService</string>
+          <string name="Source"><![CDATA[local Players = game:GetService("Players")
+local DataStoreService = game:GetService("DataStoreService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
+local Util = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"))
+
+local DataService = {}
+
+local STORE_NAME = "SchoolSim_v1"
+local profiles: { [number]: any } = {}
+local store
+
+local function getStore()
+	if store then
+		return store
+	end
+
+	local ok, result = pcall(function()
+		return DataStoreService:GetDataStore(STORE_NAME)
+	end)
+	if ok then
+		store = result
+	end
+	return store
+end
+
+local function blankProfile()
+	return {
+		coins = Config.Starting.coins,
+		energy = Config.Starting.energy,
+		maxEnergy = Config.Starting.maxEnergy,
+		popularity = Config.Starting.popularity,
+		xp = Config.Starting.xp,
+		level = Config.Starting.level,
+		title = "신입생",
+		grades = Util.deepCopy(Config.StartingGrades),
+		stats = {
+			classesAttended = 0,
+			lunchesEaten = 0,
+			talks = 0,
+			plays = 0,
+			skipped = 0,
+		},
+		quests = {},
+		owned = {},
+		lastLunchPeriod = "",
+		lastTalkAt = 0,
+	}
+end
+
+local function ensureQuestState(profile)
+	for _, quest in Config.Quests do
+		if not profile.quests[quest.id] then
+			profile.quests[quest.id] = {
+				progress = 0,
+				claimed = false,
+			}
+		end
+	end
+end
+
+function DataService.createLeaderstats(player: Player, profile)
+	local folder = player:FindFirstChild("leaderstats")
+	if not folder then
+		folder = Instance.new("Folder")
+		folder.Name = "leaderstats"
+		folder.Parent = player
+	end
+
+	local function stat(name: string, value: number)
+		local int = folder:FindFirstChild(name)
+		if not int then
+			int = Instance.new("IntValue")
+			int.Name = name
+			int.Parent = folder
+		end
+		int.Value = math.floor(value + 0.5)
+	end
+
+	stat("성적", Util.average(profile.grades))
+	stat("인기", profile.popularity)
+	stat("코인", profile.coins)
+end
+
+function DataService.publicProfile(profile)
+	return {
+		coins = profile.coins,
+		energy = profile.energy,
+		maxEnergy = profile.maxEnergy,
+		popularity = profile.popularity,
+		xp = profile.xp,
+		level = profile.level,
+		title = profile.title,
+		grades = Util.deepCopy(profile.grades),
+		gpa = Util.round(Util.average(profile.grades), 1),
+		stats = Util.deepCopy(profile.stats),
+		quests = Util.deepCopy(profile.quests),
+		owned = Util.deepCopy(profile.owned),
+	}
+end
+
+function DataService.load(player: Player)
+	local profile = blankProfile()
+	local dataStore = getStore()
+	if dataStore then
+		local ok, saved = pcall(function()
+			return dataStore:GetAsync("p_" .. player.UserId)
+		end)
+		if ok and typeof(saved) == "table" then
+			for key, value in saved do
+				profile[key] = value
+			end
+			if typeof(saved.grades) == "table" then
+				for key, value in Config.StartingGrades do
+					if typeof(saved.grades[key]) ~= "number" then
+						profile.grades[key] = value
+					end
+				end
+			end
+		end
+	end
+
+	ensureQuestState(profile)
+	profiles[player.UserId] = profile
+	DataService.createLeaderstats(player, profile)
+	return profile
+end
+
+function DataService.get(player: Player)
+	return profiles[player.UserId]
+end
+
+function DataService.save(player: Player)
+	local profile = profiles[player.UserId]
+	local dataStore = getStore()
+	if not profile or not dataStore then
+		return
+	end
+
+	pcall(function()
+		dataStore:SetAsync("p_" .. player.UserId, profile)
+	end)
+end
+
+function DataService.release(player: Player)
+	DataService.save(player)
+	profiles[player.UserId] = nil
+end
+
+function DataService.bind()
+	Players.PlayerRemoving:Connect(function(player)
+		DataService.release(player)
+	end)
+
+	game:BindToClose(function()
+		for _, player in Players:GetPlayers() do
+			DataService.save(player)
+		end
+	end)
+end
+
+return DataService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="9">
+        <Properties>
+          <string name="Name">GameService</string>
+          <string name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
+local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
+local Util = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"))
+
+local DataService = require(script.Parent.DataService)
+local ScheduleService = require(script.Parent.ScheduleService)
+
+local GameService = {}
+
+local function notify(player: Player, text: string, tone: string?)
+	Remotes.get("Notify"):FireClient(player, {
+		text = text,
+		tone = tone or "info",
+	})
+end
+
+local function push(player: Player)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+	DataService.createLeaderstats(player, profile)
+	Remotes.get("ProfileUpdated"):FireClient(player, DataService.publicProfile(profile))
+end
+
+local function addXp(player: Player, profile, amount: number)
+	profile.xp += amount
+	local needed = Util.xpForLevel(profile.level)
+	while profile.xp >= needed do
+		profile.xp -= needed
+		profile.level += 1
+		profile.coins += 20
+		profile.maxEnergy += 4
+		profile.energy = profile.maxEnergy
+		notify(player, string.format("레벨 %d 달성! 용돈과 체력이 올랐어요", profile.level), "good")
+		needed = Util.xpForLevel(profile.level)
+	end
+end
+
+local function bumpQuest(profile, statName: string)
+	profile.stats[statName] = (profile.stats[statName] or 0) + 1
+	for _, quest in Config.Quests do
+		if quest.stat == statName then
+			local state = profile.quests[quest.id]
+			if state and not state.claimed then
+				state.progress = math.min(quest.goal, profile.stats[statName])
+			end
+		end
+	end
+end
+
+local function changeGrade(profile, subject: string, delta: number)
+	if not profile.grades[subject] then
+		return
+	end
+	profile.grades[subject] = Util.clamp(profile.grades[subject] + delta, 0, 100)
+end
+
+function GameService.attendClass(player: Player, subject: string, roomId: string)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+
+	local period = ScheduleService.snapshot()
+	if period.kind ~= "class" then
+		notify(player, "지금은 수업 시간이 아니에요. 시간표를 확인하세요!", "warn")
+		return
+	end
+	if period.room ~= roomId and period.subject ~= subject then
+		notify(player, string.format("지금은 %s 시간이에요. 해당 장소로 이동하세요.", period.name), "warn")
+		return
+	end
+	if ScheduleService.didAttend(player.UserId) then
+		notify(player, "이번 교시 수업은 이미 들었어요.", "info")
+		return
+	end
+	if profile.energy < Config.Class.energyCost then
+		notify(player, "에너지가 부족해요. 급식을 먹거나 매점에서 간식을 사세요.", "warn")
+		return
+	end
+
+	profile.energy -= Config.Class.energyCost
+	profile.coins += Config.Class.coinReward
+	profile.popularity += Config.Class.popularityGain
+	changeGrade(profile, subject, Config.Class.gradeGain)
+	addXp(player, profile, Config.Class.xpReward)
+	ScheduleService.markAttended(player.UserId)
+	bumpQuest(profile, "classesAttended")
+	notify(
+		player,
+		string.format("%s 수업을 들었어요! 성적 +%.1f", Config.SubjectNames[subject] or subject, Config.Class.gradeGain),
+		"good"
+	)
+	push(player)
+end
+
+function GameService.eatLunch(player: Player)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+
+	local period = ScheduleService.snapshot()
+	if period.kind ~= "lunch" then
+		notify(player, "급식은 점심시간에만 먹을 수 있어요.", "warn")
+		return
+	end
+	if profile.lastLunchPeriod == period.id .. period.day then
+		notify(player, "이번 점심은 이미 먹었어요.", "info")
+		return
+	end
+
+	profile.lastLunchPeriod = period.id .. period.day
+	profile.energy = Util.clamp(profile.energy + Config.Lunch.energyRestore, 0, profile.maxEnergy)
+	profile.popularity += Config.Lunch.popularityGain
+	addXp(player, profile, 8)
+	bumpQuest(profile, "lunchesEaten")
+	notify(player, "맛있는 급식을 먹었어요! 에너지가 회복됐습니다.", "good")
+	push(player)
+end
+
+function GameService.play(player: Player)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+
+	local period = ScheduleService.snapshot()
+	if period.kind == "class" and period.subject == "pe" then
+		GameService.attendClass(player, "pe", "Playground")
+		return
+	end
+
+	if profile.energy < Config.Play.energyCost then
+		notify(player, "놀기엔 에너지가 부족해요.", "warn")
+		return
+	end
+
+	profile.energy -= Config.Play.energyCost
+	profile.popularity += Config.Play.popularityGain
+	addXp(player, profile, Config.Play.xpReward)
+	bumpQuest(profile, "plays")
+	notify(player, "운동장에서 뛰어 놀았어요! 인기가 올랐습니다.", "good")
+	push(player)
+end
+
+function GameService.talk(player: Player, npcName: string)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+
+	local now = os.clock()
+	if now - (profile.lastTalkAt or 0) < Config.Talk.cooldown then
+		notify(player, "조금 뒤에 다시 인사해 보세요.", "info")
+		return
+	end
+
+	profile.lastTalkAt = now
+	profile.popularity += Config.Talk.popularityGain
+	addXp(player, profile, Config.Talk.xpReward)
+	bumpQuest(profile, "talks")
+
+	local lines = {
+		교장선생님 = "오늘도 성실하게 생활하렴. 성적과 인기 둘 다 중요하다.",
+		김선생 = "수업 종이 울리면 제시간에 교실로 오너라.",
+		이수진 = "점심에 급식실에서 같이 먹자!",
+		박도윤 = "방과후에 매점에서 간식 먹을래?",
+		최하늘 = "체육 시간엔 운동장으로 가야 해!",
+	}
+	notify(player, string.format("%s: %s", npcName, lines[npcName] or "안녕! 오늘 학교 생활 재밌다."), "info")
+	push(player)
+end
+
+function GameService.study(player: Player)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+	if profile.energy < 10 then
+		notify(player, "자습하기엔 너무 피곤해요.", "warn")
+		return
+	end
+
+	profile.energy -= 10
+	for _, key in Config.GradeKeys do
+		changeGrade(profile, key, 0.6)
+	end
+	addXp(player, profile, 10)
+	notify(player, "도서관에서 자습했어요. 전체 성적이 조금 올랐습니다.", "good")
+	push(player)
+end
+
+function GameService.locker(player: Player)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+	local now = os.clock()
+	if now - (profile.lastLockerAt or 0) < 15 then
+		notify(player, "사물함은 잠시 뒤에 다시 열 수 있어요.", "info")
+		return
+	end
+	profile.lastLockerAt = now
+	profile.energy = Util.clamp(profile.energy + 6, 0, profile.maxEnergy)
+	notify(player, "사물함에서 물과 준비물을 챙겼어요. 에너지 +6", "good")
+	push(player)
+end
+
+function GameService.buy(player: Player, itemId: string)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+
+	local item
+	for _, entry in Config.ShopItems do
+		if entry.id == itemId then
+			item = entry
+			break
+		end
+	end
+	if not item then
+		notify(player, "없는 상품이에요.", "warn")
+		return
+	end
+	if profile.owned[item.id] and item.id == "uniform" then
+		notify(player, "이미 새 교복을 가지고 있어요.", "info")
+		return
+	end
+	if profile.coins < item.price then
+		notify(player, "코인이 부족해요.", "warn")
+		return
+	end
+
+	profile.coins -= item.price
+	if item.energy then
+		profile.energy = Util.clamp(profile.energy + item.energy, 0, profile.maxEnergy)
+	end
+	if item.popularity then
+		profile.popularity += item.popularity
+	end
+	if item.allGrades then
+		for _, key in Config.GradeKeys do
+			changeGrade(profile, key, item.allGrades)
+		end
+	end
+	if item.title then
+		profile.title = item.title
+	end
+	profile.owned[item.id] = true
+	notify(player, string.format("%s을(를) 구매했어요!", item.name), "good")
+	push(player)
+end
+
+function GameService.claimQuest(player: Player, questId: string)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+
+	local quest
+	for _, entry in Config.Quests do
+		if entry.id == questId then
+			quest = entry
+			break
+		end
+	end
+	local state = profile.quests[questId]
+	if not quest or not state then
+		return
+	end
+	if state.claimed then
+		notify(player, "이미 보상을 받았어요.", "info")
+		return
+	end
+	if (state.progress or 0) < quest.goal then
+		notify(player, "아직 퀘스트를 끝내지 못했어요.", "warn")
+		return
+	end
+
+	state.claimed = true
+	profile.coins += quest.rewardCoins
+	addXp(player, profile, quest.rewardXp)
+	if quest.rewardPopularity then
+		profile.popularity += quest.rewardPopularity
+	end
+	notify(player, string.format("퀘스트 완료: %s", quest.name), "good")
+	push(player)
+end
+
+function GameService.handleSkip(period, attendedMap)
+	if period.kind ~= "class" then
+		return
+	end
+
+	for _, player in Players:GetPlayers() do
+		local profile = DataService.get(player)
+		if profile and not attendedMap[player.UserId] then
+			profile.stats.skipped += 1
+			profile.popularity = math.max(0, profile.popularity - Config.Class.skipPopularityPenalty)
+			if period.subject then
+				changeGrade(profile, period.subject, -Config.Class.skipGradePenalty)
+			end
+			notify(player, string.format("%s를 빠졌어요. 성적과 인기가 조금 내려갔습니다.", period.name), "warn")
+			push(player)
+		end
+	end
+end
+
+function GameService.bind()
+	ScheduleService.onPeriodEnded(GameService.handleSkip)
+
+	local function bindPrompt(instance: Instance)
+		local prompt = instance:FindFirstChildOfClass("ProximityPrompt")
+		if not prompt then
+			return
+		end
+		prompt.Triggered:Connect(function(player)
+			local interact = instance:GetAttribute("Interact")
+			if interact == "AttendClass" then
+				GameService.attendClass(player, instance:GetAttribute("Subject"), instance:GetAttribute("RoomId"))
+			elseif interact == "EatLunch" then
+				GameService.eatLunch(player)
+			elseif interact == "Play" then
+				GameService.play(player)
+			elseif interact == "Talk" then
+				GameService.talk(player, instance:GetAttribute("NpcName") or "친구")
+			elseif interact == "Study" then
+				GameService.study(player)
+			elseif interact == "Locker" then
+				GameService.locker(player)
+			elseif interact == "OpenShop" then
+				Remotes.get("Notify"):FireClient(player, { text = "SHOP_OPEN", tone = "shop" })
+			end
+		end)
+	end
+
+	for _, instance in CollectionService:GetTagged("SchoolInteract") do
+		bindPrompt(instance)
+	end
+	CollectionService:GetInstanceAddedSignal("SchoolInteract"):Connect(bindPrompt)
+
+	Remotes.get("GetProfile").OnServerEvent:Connect(function(player)
+		local profile = DataService.get(player)
+		if profile then
+			Remotes.get("ProfileUpdated"):FireClient(player, DataService.publicProfile(profile))
+			Remotes.get("PeriodChanged"):FireClient(player, ScheduleService.snapshot())
+		end
+	end)
+
+	Remotes.get("BuyItem").OnServerEvent:Connect(function(player, itemId)
+		if typeof(itemId) == "string" then
+			GameService.buy(player, itemId)
+		end
+	end)
+
+	Remotes.get("ClaimQuest").OnServerEvent:Connect(function(player, questId)
+		if typeof(questId) == "string" then
+			GameService.claimQuest(player, questId)
+		end
+	end)
+end
+
+return GameService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="10">
+        <Properties>
+          <string name="Name">Main</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
+local SchoolBuilder = require(script.Parent.SchoolBuilder)
+local DataService = require(script.Parent.DataService)
+local ScheduleService = require(script.Parent.ScheduleService)
+local GameService = require(script.Parent.GameService)
+local NPCService = require(script.Parent.NPCService)
+
+Remotes.ensure()
+SchoolBuilder.build()
+DataService.bind()
+GameService.bind()
+ScheduleService.start()
+NPCService.start()
+
+local function setupPlayer(player: Player)
+	DataService.load(player)
+	Remotes.get("ProfileUpdated"):FireClient(player, DataService.publicProfile(DataService.get(player)))
+	Remotes.get("PeriodChanged"):FireClient(player, ScheduleService.snapshot())
+end
+
+Players.PlayerAdded:Connect(setupPlayer)
+for _, player in Players:GetPlayers() do
+	task.spawn(setupPlayer, player)
+end
+
+print("[스쿨 시뮬레이터] 서버가 시작되었습니다.")
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="11">
+        <Properties>
+          <string name="Name">NPCService</string>
+          <string name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
+local PathfindingService = game:GetService("PathfindingService")
+
+local NPCService = {}
+
+local NPCS = {
+	{ name = "김선생", title = "담임선생님", color = Color3.fromRGB(72, 96, 168), start = Vector3.new(0, 4, -8) },
+	{ name = "이수진", title = "학생회장", color = Color3.fromRGB(220, 118, 148), start = Vector3.new(-20, 4, 50) },
+	{ name = "박도윤", title = "2학년", color = Color3.fromRGB(88, 168, 214), start = Vector3.new(24, 4, 48) },
+	{ name = "최하늘", title = "축구부", color = Color3.fromRGB(92, 176, 110), start = Vector3.new(0, 4, -70) },
+	{ name = "교장선생님", title = "교장", color = Color3.fromRGB(96, 84, 72), start = Vector3.new(100, 4, -28) },
+}
+
+local function limb(parent: Instance, name: string, size: Vector3, cframe: CFrame, color: Color3)
+	local piece = Instance.new("Part")
+	piece.Name = name
+	piece.Size = size
+	piece.CFrame = cframe
+	piece.Color = color
+	piece.Material = Enum.Material.SmoothPlastic
+	piece.Anchored = false
+	piece.CanCollide = name == "HumanoidRootPart" or name == "Torso"
+	piece.Parent = parent
+	return piece
+end
+
+local function weld(root: BasePart, other: BasePart)
+	local w = Instance.new("WeldConstraint")
+	w.Part0 = root
+	w.Part1 = other
+	w.Parent = root
+end
+
+local function createNpc(info): Model
+	local model = Instance.new("Model")
+	model.Name = info.name
+
+	local root = limb(model, "HumanoidRootPart", Vector3.new(2, 2, 1), CFrame.new(info.start), info.color)
+	root.Transparency = 1
+
+	local torso = limb(model, "Torso", Vector3.new(2, 2, 1), CFrame.new(info.start), info.color)
+	local head = limb(model, "Head", Vector3.new(1.4, 1.4, 1.4), CFrame.new(info.start + Vector3.new(0, 1.7, 0)), Color3.fromRGB(232, 198, 164))
+	local leftArm = limb(model, "Left Arm", Vector3.new(1, 2, 1), CFrame.new(info.start + Vector3.new(-1.5, 0, 0)), info.color)
+	local rightArm = limb(model, "Right Arm", Vector3.new(1, 2, 1), CFrame.new(info.start + Vector3.new(1.5, 0, 0)), info.color)
+	local leftLeg = limb(model, "Left Leg", Vector3.new(1, 2, 1), CFrame.new(info.start + Vector3.new(-0.5, -2, 0)), Color3.fromRGB(52, 64, 92))
+	local rightLeg = limb(model, "Right Leg", Vector3.new(1, 2, 1), CFrame.new(info.start + Vector3.new(0.5, -2, 0)), Color3.fromRGB(52, 64, 92))
+
+	weld(root, torso)
+	weld(root, head)
+	weld(root, leftArm)
+	weld(root, rightArm)
+	weld(root, leftLeg)
+	weld(root, rightLeg)
+
+	local humanoid = Instance.new("Humanoid")
+	humanoid.DisplayName = info.name
+	humanoid.MaxHealth = 100
+	humanoid.Health = 100
+	humanoid.WalkSpeed = 10
+	humanoid.Parent = model
+	model.PrimaryPart = root
+
+	local gui = Instance.new("BillboardGui")
+	gui.Size = UDim2.fromOffset(160, 40)
+	gui.StudsOffset = Vector3.new(0, 3.2, 0)
+	gui.AlwaysOnTop = true
+	gui.Parent = head
+
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Size = UDim2.fromScale(1, 1)
+	label.Font = Enum.Font.GothamBold
+	label.Text = info.name .. "\n" .. info.title
+	label.TextColor3 = Color3.new(1, 1, 1)
+	label.TextStrokeTransparency = 0.3
+	label.TextScaled = true
+	label.Parent = gui
+
+	CollectionService:AddTag(root, "SchoolInteract")
+	root:SetAttribute("Interact", "Talk")
+	root:SetAttribute("NpcName", info.name)
+
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.ActionText = "인사하기"
+	prompt.ObjectText = info.name
+	prompt.HoldDuration = 0.2
+	prompt.MaxActivationDistance = 10
+	prompt.RequiresLineOfSight = false
+	prompt.Parent = root
+
+	model.Parent = workspace:FindFirstChild("SchoolCampus") or workspace
+	return model
+end
+
+local function waypoints(): { Vector3 }
+	local folder = workspace:FindFirstChild("SchoolCampus") and workspace.SchoolCampus:FindFirstChild("NpcWaypoints")
+	local points = {}
+	if folder then
+		for _, child in folder:GetChildren() do
+			if child:IsA("BasePart") then
+				table.insert(points, child.Position)
+			end
+		end
+	end
+	if #points == 0 then
+		points = {
+			Vector3.new(0, 4, 20),
+			Vector3.new(-40, 4, -8),
+			Vector3.new(40, 4, -8),
+			Vector3.new(0, 4, -70),
+		}
+	end
+	return points
+end
+
+local function walkLoop(model: Model, points: { Vector3 })
+	task.spawn(function()
+		local humanoid = model:FindFirstChildOfClass("Humanoid")
+		local root = model.PrimaryPart
+		if not humanoid or not root then
+			return
+		end
+
+		while model.Parent and humanoid.Health > 0 do
+			local target = points[math.random(1, #points)]
+			local path = PathfindingService:CreatePath({
+				AgentRadius = 2,
+				AgentHeight = 5,
+				AgentCanJump = true,
+			})
+			local ok = pcall(function()
+				path:ComputeAsync(root.Position, target)
+			end)
+			if ok and path.Status == Enum.PathStatus.Success then
+				for _, waypoint in path:GetWaypoints() do
+					if not model.Parent then
+						return
+					end
+					humanoid:MoveTo(waypoint.Position)
+					humanoid.MoveToFinished:Wait()
+				end
+			else
+				humanoid:MoveTo(target)
+				humanoid.MoveToFinished:Wait()
+			end
+			task.wait(math.random(2, 5))
+		end
+	end)
+end
+
+function NPCService.start()
+	local points = waypoints()
+	for _, info in NPCS do
+		local npc = createNpc(info)
+		walkLoop(npc, points)
+	end
+end
+
+return NPCService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="12">
+        <Properties>
+          <string name="Name">ScheduleService</string>
+          <string name="Source"><![CDATA[local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Config"))
+local Remotes = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Remotes"))
+
+local ScheduleService = {}
+
+local currentIndex = 1
+local periodEndsAt = 0
+local dayNumber = 1
+local attendedThisPeriod: { [number]: boolean } = {}
+local onPeriodEnd: ((any, { [number]: boolean }) -> ())? = nil
+
+local function now(): number
+	return workspace:GetServerTimeNow()
+end
+
+local function currentPeriod()
+	return Config.Periods[currentIndex]
+end
+
+function ScheduleService.snapshot()
+	local period = currentPeriod()
+	return {
+		day = dayNumber,
+		index = currentIndex,
+		id = period.id,
+		name = period.name,
+		kind = period.kind,
+		subject = period.subject,
+		room = period.room,
+		hint = period.hint,
+		endsAt = periodEndsAt,
+		remaining = math.max(0, periodEndsAt - now()),
+		periodSeconds = Config.PeriodSeconds,
+	}
+end
+
+function ScheduleService.markAttended(userId: number)
+	attendedThisPeriod[userId] = true
+end
+
+function ScheduleService.didAttend(userId: number): boolean
+	return attendedThisPeriod[userId] == true
+end
+
+function ScheduleService.onPeriodEnded(callback)
+	onPeriodEnd = callback
+end
+
+function ScheduleService.start()
+	periodEndsAt = now() + Config.PeriodSeconds
+	Remotes.get("PeriodChanged"):FireAllClients(ScheduleService.snapshot())
+
+	task.spawn(function()
+		while true do
+			task.wait(0.5)
+			if now() < periodEndsAt then
+				continue
+			end
+
+			local ending = currentPeriod()
+			if onPeriodEnd then
+				onPeriodEnd(ending, attendedThisPeriod)
+			end
+
+			attendedThisPeriod = {}
+			currentIndex += 1
+			if currentIndex > #Config.Periods then
+				currentIndex = 1
+				dayNumber += 1
+			end
+			periodEndsAt = now() + Config.PeriodSeconds
+			Remotes.get("PeriodChanged"):FireAllClients(ScheduleService.snapshot())
+		end
+	end)
+end
+
+return ScheduleService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="13">
+        <Properties>
+          <string name="Name">SchoolBuilder</string>
+          <string name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
+
+local SchoolBuilder = {}
+
+local WALL_HEIGHT = 16
+local WALL_THICKNESS = 1.2
+local FLOOR_Y = 2
+
+local COLORS = {
+	grass = Color3.fromRGB(92, 168, 96),
+	path = Color3.fromRGB(214, 196, 158),
+	dirt = Color3.fromRGB(145, 118, 82),
+	brick = Color3.fromRGB(188, 86, 78),
+	trim = Color3.fromRGB(236, 228, 210),
+	floor = Color3.fromRGB(214, 196, 168),
+	hallway = Color3.fromRGB(232, 220, 198),
+	roof = Color3.fromRGB(72, 84, 102),
+	desk = Color3.fromRGB(158, 108, 68),
+	chair = Color3.fromRGB(92, 122, 168),
+	board = Color3.fromRGB(46, 78, 58),
+	glass = Color3.fromRGB(164, 206, 230),
+	locker = Color3.fromRGB(72, 118, 168),
+	field = Color3.fromRGB(70, 148, 78),
+	line = Color3.fromRGB(245, 245, 245),
+	sign = Color3.fromRGB(48, 72, 128),
+	wood = Color3.fromRGB(140, 96, 62),
+	food = Color3.fromRGB(240, 196, 92),
+	shop = Color3.fromRGB(214, 92, 98),
+}
+
+local function part(props): BasePart
+	local instance = Instance.new("Part")
+	instance.Anchored = true
+	instance.CastShadow = true
+	instance.TopSurface = Enum.SurfaceType.Smooth
+	instance.BottomSurface = Enum.SurfaceType.Smooth
+	instance.Material = props.material or Enum.Material.SmoothPlastic
+	instance.Color = props.color or Color3.new(1, 1, 1)
+	instance.Size = props.size
+	instance.CFrame = props.cframe
+	instance.Name = props.name or "Part"
+	instance.CanCollide = if props.canCollide == nil then true else props.canCollide
+	instance.Transparency = props.transparency or 0
+	if props.parent then
+		instance.Parent = props.parent
+	end
+	return instance
+end
+
+local function surfaceText(parent: BasePart, text: string, face: Enum.NormalId, textSize: number, color: Color3?)
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = face
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 18
+	gui.LightInfluence = 0.15
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Size = UDim2.fromScale(1, 1)
+	label.Font = Enum.Font.GothamBold
+	label.Text = text
+	label.TextScaled = false
+	label.TextSize = textSize
+	label.TextColor3 = color or Color3.new(1, 1, 1)
+	label.TextWrapped = true
+	label.Parent = gui
+end
+
+local function billboard(parent: BasePart, text: string, color: Color3?)
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "Label"
+	gui.Size = UDim2.fromOffset(220, 42)
+	gui.StudsOffset = Vector3.new(0, 4.2, 0)
+	gui.AlwaysOnTop = true
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.BackgroundColor3 = Color3.fromRGB(28, 36, 52)
+	label.BackgroundTransparency = 0.15
+	label.Size = UDim2.fromScale(1, 1)
+	label.Font = Enum.Font.GothamBold
+	label.Text = text
+	label.TextColor3 = color or Color3.fromRGB(255, 236, 180)
+	label.TextScaled = true
+	label.Parent = gui
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 8)
+	corner.Parent = label
+end
+
+local function tagInteract(instance: Instance, data: { [string]: any })
+	CollectionService:AddTag(instance, "SchoolInteract")
+	for key, value in data do
+		instance:SetAttribute(key, value)
+	end
+end
+
+local function addPrompt(parent: Instance, text: string, hold: number?)
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.ActionText = text
+	prompt.ObjectText = "우리학교"
+	prompt.HoldDuration = hold or 0.35
+	prompt.MaxActivationDistance = 10
+	prompt.RequiresLineOfSight = false
+	prompt.Parent = parent
+	return prompt
+end
+
+local DOOR_WIDTH = 9
+local DOOR_HEIGHT = 11
+
+local function addSolidWall(folder: Instance, size: Vector3, worldPos: Vector3, color: Color3, name: string)
+	part({
+		name = name,
+		parent = folder,
+		size = size,
+		cframe = CFrame.new(worldPos + Vector3.new(0, WALL_HEIGHT / 2 + 0.5, 0)),
+		color = color,
+		material = Enum.Material.Brick,
+	})
+end
+
+local function addDoorWall(folder: Instance, center: Vector3, size: Vector3, color: Color3, axis: string, sign: number)
+	local half = if axis == "z" then size.X / 2 else size.Z / 2
+	local side = (half * 2 - DOOR_WIDTH) / 2
+	local offset = (side / 2) + (DOOR_WIDTH / 2)
+
+	if axis == "z" then
+		local z = center.Z + sign * (size.Z / 2)
+		addSolidWall(folder, Vector3.new(side, WALL_HEIGHT, WALL_THICKNESS), Vector3.new(center.X - offset, 0, z), color, "DoorWallL")
+		addSolidWall(folder, Vector3.new(side, WALL_HEIGHT, WALL_THICKNESS), Vector3.new(center.X + offset, 0, z), color, "DoorWallR")
+		part({
+			name = "DoorLintel",
+			parent = folder,
+			size = Vector3.new(DOOR_WIDTH, WALL_HEIGHT - DOOR_HEIGHT, WALL_THICKNESS),
+			cframe = CFrame.new(center.X, FLOOR_Y + DOOR_HEIGHT + (WALL_HEIGHT - DOOR_HEIGHT) / 2 + 0.5, z),
+			color = color,
+			material = Enum.Material.Brick,
+		})
+	else
+		local x = center.X + sign * (size.X / 2)
+		addSolidWall(folder, Vector3.new(WALL_THICKNESS, WALL_HEIGHT, side), Vector3.new(x, 0, center.Z - offset), color, "DoorWallL")
+		addSolidWall(folder, Vector3.new(WALL_THICKNESS, WALL_HEIGHT, side), Vector3.new(x, 0, center.Z + offset), color, "DoorWallR")
+		part({
+			name = "DoorLintel",
+			parent = folder,
+			size = Vector3.new(WALL_THICKNESS, WALL_HEIGHT - DOOR_HEIGHT, DOOR_WIDTH),
+			cframe = CFrame.new(x, FLOOR_Y + DOOR_HEIGHT + (WALL_HEIGHT - DOOR_HEIGHT) / 2 + 0.5, center.Z),
+			color = color,
+			material = Enum.Material.Brick,
+		})
+	end
+end
+
+local function roomBox(parent: Instance, center: Vector3, size: Vector3, wallColor: Color3, floorColor: Color3, name: string, doorSide: string)
+	local folder = Instance.new("Folder")
+	folder.Name = name
+	folder.Parent = parent
+
+	part({
+		name = "Floor",
+		parent = folder,
+		size = Vector3.new(size.X, 1, size.Z),
+		cframe = CFrame.new(center.X, FLOOR_Y + 0.5, center.Z),
+		color = floorColor,
+		material = Enum.Material.WoodPlanks,
+	})
+
+	local faces = {
+		posZ = { "z", 1, Vector3.new(size.X, WALL_HEIGHT, WALL_THICKNESS), Vector3.new(0, 0, size.Z / 2) },
+		negZ = { "z", -1, Vector3.new(size.X, WALL_HEIGHT, WALL_THICKNESS), Vector3.new(0, 0, -size.Z / 2) },
+		posX = { "x", 1, Vector3.new(WALL_THICKNESS, WALL_HEIGHT, size.Z), Vector3.new(size.X / 2, 0, 0) },
+		negX = { "x", -1, Vector3.new(WALL_THICKNESS, WALL_HEIGHT, size.Z), Vector3.new(-size.X / 2, 0, 0) },
+	}
+
+	for side, info in faces do
+		if side == doorSide then
+			addDoorWall(folder, center, size, wallColor, info[1], info[2])
+		else
+			addSolidWall(folder, info[3], center + info[4], wallColor, "Wall_" .. side)
+		end
+	end
+
+	part({
+		name = "Roof",
+		parent = folder,
+		size = Vector3.new(size.X + 4, 2, size.Z + 4),
+		cframe = CFrame.new(center.X, FLOOR_Y + WALL_HEIGHT + 2, center.Z),
+		color = COLORS.roof,
+		material = Enum.Material.Slate,
+	})
+
+	return folder
+end
+
+local function makeDesk(parent: Instance, position: Vector3, subject: string, roomId: string)
+	local desk = part({
+		name = "Desk",
+		parent = parent,
+		size = Vector3.new(4.2, 1.4, 2.4),
+		cframe = CFrame.new(position),
+		color = COLORS.desk,
+		material = Enum.Material.Wood,
+	})
+
+	local seat = Instance.new("Seat")
+	seat.Name = "ClassSeat"
+	seat.Anchored = true
+	seat.Size = Vector3.new(2, 0.5, 2)
+	seat.Color = COLORS.chair
+	seat.Material = Enum.Material.SmoothPlastic
+	seat.CFrame = CFrame.new(position + Vector3.new(0, 0.2, 2.1))
+	seat.Parent = parent
+	tagInteract(seat, {
+		Interact = "AttendClass",
+		Subject = subject,
+		RoomId = roomId,
+	})
+	addPrompt(seat, "수업 듣기")
+	return desk
+end
+
+local function makeClassroom(campus: Instance, roomId: string, subject: string, title: string, center: Vector3, doorSide: string)
+	local folder = roomBox(campus, center, Vector3.new(42, WALL_HEIGHT, 32), COLORS.brick, COLORS.floor, roomId, doorSide)
+
+	local board = part({
+		name = "Blackboard",
+		parent = folder,
+		size = Vector3.new(18, 7, 0.4),
+		cframe = CFrame.new(center + Vector3.new(0, 8, -15.2)),
+		color = COLORS.board,
+		material = Enum.Material.SmoothPlastic,
+	})
+	surfaceText(board, title, Enum.NormalId.Back, 42, Color3.fromRGB(240, 255, 230))
+
+	local teacherDesk = part({
+		name = "TeacherDesk",
+		parent = folder,
+		size = Vector3.new(8, 2, 3),
+		cframe = CFrame.new(center + Vector3.new(0, 2, -10)),
+		color = COLORS.wood,
+		material = Enum.Material.Wood,
+	})
+	tagInteract(teacherDesk, {
+		Interact = "AttendClass",
+		Subject = subject,
+		RoomId = roomId,
+	})
+	addPrompt(teacherDesk, "수업 듣기")
+
+	local doorZ = if doorSide == "negZ" then -16.7 else 16.7
+	local sign = part({
+		name = "DoorSign",
+		parent = folder,
+		size = Vector3.new(10, 3, 0.4),
+		cframe = CFrame.new(center + Vector3.new(0, 12, doorZ)),
+		color = COLORS.sign,
+	})
+	surfaceText(sign, title, if doorSide == "negZ" then Enum.NormalId.Back else Enum.NormalId.Front, 28)
+
+	local startX = center.X - 12
+	local startZ = center.Z + 2
+	for row = 0, 2 do
+		for col = 0, 3 do
+			makeDesk(
+				folder,
+				Vector3.new(startX + col * 8, FLOOR_Y + 1.4, startZ + row * 6),
+				subject,
+				roomId
+			)
+		end
+	end
+
+	billboard(folder:FindFirstChild("Floor") :: BasePart, title)
+	return folder
+end
+
+local function makeCafeteria(campus: Instance, center: Vector3)
+	local folder = roomBox(campus, center, Vector3.new(48, WALL_HEIGHT, 36), COLORS.brick, Color3.fromRGB(232, 214, 186), "Cafeteria", "posX")
+
+	local counter = part({
+		name = "LunchCounter",
+		parent = folder,
+		size = Vector3.new(22, 3, 4),
+		cframe = CFrame.new(center + Vector3.new(0, 2.5, -12)),
+		color = COLORS.food,
+		material = Enum.Material.SmoothPlastic,
+	})
+	tagInteract(counter, { Interact = "EatLunch", RoomId = "Cafeteria" })
+	addPrompt(counter, "급식 먹기")
+	billboard(counter, "급식실")
+
+	for i = -1, 1 do
+		local tablePart = part({
+			name = "Table",
+			parent = folder,
+			size = Vector3.new(10, 1.2, 4),
+			cframe = CFrame.new(center + Vector3.new(i * 14, 1.8, 4)),
+			color = COLORS.wood,
+			material = Enum.Material.Wood,
+		})
+		tagInteract(tablePart, { Interact = "EatLunch", RoomId = "Cafeteria" })
+		addPrompt(tablePart, "급식 먹기")
+	end
+
+	local sign = part({
+		name = "Sign",
+		parent = folder,
+		size = Vector3.new(12, 3, 0.4),
+		cframe = CFrame.new(center + Vector3.new(0, 12, 18.7)),
+		color = COLORS.sign,
+	})
+	surfaceText(sign, "급식실", Enum.NormalId.Front, 30)
+	return folder
+end
+
+local function makeOffice(campus: Instance, center: Vector3)
+	local folder = roomBox(campus, center, Vector3.new(28, WALL_HEIGHT, 24), COLORS.brick, COLORS.hallway, "Office", "negX")
+
+	local desk = part({
+		name = "PrincipalDesk",
+		parent = folder,
+		size = Vector3.new(8, 2, 4),
+		cframe = CFrame.new(center + Vector3.new(0, 2, -4)),
+		color = COLORS.wood,
+		material = Enum.Material.Wood,
+	})
+	tagInteract(desk, { Interact = "Talk", NpcName = "교장선생님", RoomId = "Office" })
+	addPrompt(desk, "대화하기")
+	billboard(desk, "교무실")
+	return folder
+end
+
+local function makeLibrary(campus: Instance, center: Vector3)
+	local folder = roomBox(campus, center, Vector3.new(32, WALL_HEIGHT, 28), COLORS.brick, Color3.fromRGB(210, 186, 150), "Library", "negX")
+
+	for i = -1, 1 do
+		local shelf = part({
+			name = "Shelf",
+			parent = folder,
+			size = Vector3.new(8, 10, 2),
+			cframe = CFrame.new(center + Vector3.new(i * 10, 6, -10)),
+			color = COLORS.wood,
+			material = Enum.Material.Wood,
+		})
+		tagInteract(shelf, { Interact = "Study", RoomId = "Library" })
+		addPrompt(shelf, "자습하기")
+	end
+
+	billboard(folder:FindFirstChild("Floor") :: BasePart, "도서관")
+	return folder
+end
+
+local function makeShop(campus: Instance, center: Vector3)
+	local stall = part({
+		name = "ShopStall",
+		parent = campus,
+		size = Vector3.new(14, 8, 8),
+		cframe = CFrame.new(center + Vector3.new(0, 5, 0)),
+		color = COLORS.shop,
+		material = Enum.Material.SmoothPlastic,
+	})
+	tagInteract(stall, { Interact = "OpenShop", RoomId = "Shop" })
+	addPrompt(stall, "상점 열기", 0.2)
+	billboard(stall, "매점")
+
+	part({
+		name = "ShopRoof",
+		parent = campus,
+		size = Vector3.new(18, 1.2, 12),
+		cframe = CFrame.new(center + Vector3.new(0, 9.6, 0)),
+		color = Color3.fromRGB(250, 214, 92),
+	})
+	return stall
+end
+
+local function makePlayground(campus: Instance, center: Vector3)
+	local field = part({
+		name = "Playground",
+		parent = campus,
+		size = Vector3.new(90, 1, 56),
+		cframe = CFrame.new(center + Vector3.new(0, 0.6, 0)),
+		color = COLORS.field,
+		material = Enum.Material.Grass,
+	})
+	tagInteract(field, { Interact = "Play", RoomId = "Playground", Subject = "pe" })
+	addPrompt(field, "운동하기")
+	billboard(field, "운동장")
+
+	part({
+		name = "CenterLine",
+		parent = campus,
+		size = Vector3.new(1, 0.2, 56),
+		cframe = CFrame.new(center + Vector3.new(0, 1.15, 0)),
+		color = COLORS.line,
+		canCollide = false,
+	})
+
+	for _, side in { -44, 44 } do
+		part({
+			name = "Goal",
+			parent = campus,
+			size = Vector3.new(2, 8, 16),
+			cframe = CFrame.new(center + Vector3.new(side, 5, 0)),
+			color = COLORS.line,
+			material = Enum.Material.Metal,
+			canCollide = false,
+			transparency = 0.15,
+		})
+	end
+
+	local bench = part({
+		name = "Bench",
+		parent = campus,
+		size = Vector3.new(10, 1.4, 2.4),
+		cframe = CFrame.new(center + Vector3.new(0, 1.8, 26)),
+		color = COLORS.wood,
+		material = Enum.Material.Wood,
+	})
+	tagInteract(bench, { Interact = "Play", RoomId = "Playground", Subject = "pe" })
+	addPrompt(bench, "운동하기")
+	return field
+end
+
+local function makeLockers(campus: Instance, origin: Vector3)
+	for i = 0, 7 do
+		local locker = part({
+			name = "Locker",
+			parent = campus,
+			size = Vector3.new(2.2, 8, 1.6),
+			cframe = CFrame.new(origin + Vector3.new(i * 2.6, 5, 0)),
+			color = if i % 2 == 0 then COLORS.locker else Color3.fromRGB(210, 92, 92),
+			material = Enum.Material.Metal,
+		})
+		tagInteract(locker, { Interact = "Locker" })
+		addPrompt(locker, "사물함 열기")
+	end
+end
+
+local function makeNpcWaypoints(campus: Instance)
+	local points = {
+		Vector3.new(0, 4, 20),
+		Vector3.new(-40, 4, -8),
+		Vector3.new(40, 4, -8),
+		Vector3.new(0, 4, -70),
+		Vector3.new(90, 4, 10),
+		Vector3.new(-90, 4, -20),
+	}
+
+	local folder = Instance.new("Folder")
+	folder.Name = "NpcWaypoints"
+	folder.Parent = campus
+
+	for index, position in points do
+		local marker = part({
+			name = "Waypoint" .. index,
+			parent = folder,
+			size = Vector3.new(1, 1, 1),
+			cframe = CFrame.new(position),
+			transparency = 1,
+			canCollide = false,
+		})
+		marker.CanQuery = false
+	end
+end
+
+function SchoolBuilder.build()
+	local existing = workspace:FindFirstChild("SchoolCampus")
+	if existing then
+		existing:Destroy()
+	end
+
+	local campus = Instance.new("Folder")
+	campus.Name = "SchoolCampus"
+	campus.Parent = workspace
+
+	part({
+		name = "Grass",
+		parent = campus,
+		size = Vector3.new(420, 4, 360),
+		cframe = CFrame.new(0, 0, -10),
+		color = COLORS.grass,
+		material = Enum.Material.Grass,
+	})
+
+	part({
+		name = "Path",
+		parent = campus,
+		size = Vector3.new(28, 0.6, 90),
+		cframe = CFrame.new(0, 2.2, 28),
+		color = COLORS.path,
+		material = Enum.Material.Concrete,
+	})
+
+	part({
+		name = "Plaza",
+		parent = campus,
+		size = Vector3.new(70, 0.6, 40),
+		cframe = CFrame.new(0, 2.2, 58),
+		color = COLORS.path,
+		material = Enum.Material.Concrete,
+	})
+
+	local schoolSign = part({
+		name = "SchoolSign",
+		parent = campus,
+		size = Vector3.new(28, 8, 1.2),
+		cframe = CFrame.new(0, 8, 72),
+		color = COLORS.sign,
+	})
+	surfaceText(schoolSign, "우리학교", Enum.NormalId.Front, 48)
+	surfaceText(schoolSign, "우리학교", Enum.NormalId.Back, 48)
+
+	local flagPole = part({
+		name = "FlagPole",
+		parent = campus,
+		size = Vector3.new(0.6, 24, 0.6),
+		cframe = CFrame.new(18, 14, 68),
+		color = Color3.fromRGB(200, 200, 210),
+		material = Enum.Material.Metal,
+	})
+	part({
+		name = "Flag",
+		parent = campus,
+		size = Vector3.new(8, 4, 0.3),
+		cframe = CFrame.new(22.4, 23, 68),
+		color = Color3.fromRGB(232, 72, 78),
+	})
+
+	-- Hallway connecting classrooms
+	part({
+		name = "HallwayFloor",
+		parent = campus,
+		size = Vector3.new(150, 1, 18),
+		cframe = CFrame.new(0, FLOOR_Y + 0.5, -8),
+		color = COLORS.hallway,
+		material = Enum.Material.Concrete,
+	})
+
+	makeClassroom(campus, "Korean", "korean", "국어 교실", Vector3.new(-52, 0, -36), "posZ")
+	makeClassroom(campus, "Math", "math", "수학 교실", Vector3.new(0, 0, -36), "posZ")
+	makeClassroom(campus, "English", "english", "영어 교실", Vector3.new(52, 0, -36), "posZ")
+	makeClassroom(campus, "Science", "science", "과학실", Vector3.new(-52, 0, 20), "negZ")
+	makeClassroom(campus, "Art", "art", "미술실", Vector3.new(52, 0, 20), "negZ")
+
+	makeCafeteria(campus, Vector3.new(-110, 0, -8))
+	makeOffice(campus, Vector3.new(110, 0, -28))
+	makeLibrary(campus, Vector3.new(110, 0, 12))
+	makeShop(campus, Vector3.new(28, 0, 58))
+	makePlayground(campus, Vector3.new(0, 0, -92))
+	makeLockers(campus, Vector3.new(-10, 0, -1))
+	makeNpcWaypoints(campus)
+
+	local spawn = Instance.new("SpawnLocation")
+	spawn.Name = "SchoolSpawn"
+	spawn.Anchored = true
+	spawn.Duration = 0
+	spawn.Size = Vector3.new(12, 1, 12)
+	spawn.CFrame = CFrame.new(0, 3, 58)
+	spawn.Color = Color3.fromRGB(92, 168, 220)
+	spawn.Material = Enum.Material.SmoothPlastic
+	spawn.Neutral = true
+	spawn.Parent = campus
+	billboard(spawn, "등교")
+
+	-- Soft invisible walls so players stay on campus
+	for _, wall in {
+		{ Vector3.new(420, 40, 4), Vector3.new(0, 20, 168) },
+		{ Vector3.new(420, 40, 4), Vector3.new(0, 20, -188) },
+		{ Vector3.new(4, 40, 360), Vector3.new(210, 20, -10) },
+		{ Vector3.new(4, 40, 360), Vector3.new(-210, 20, -10) },
+	} do
+		part({
+			name = "Boundary",
+			parent = campus,
+			size = wall[1],
+			cframe = CFrame.new(wall[2]),
+			transparency = 1,
+		})
+	end
+
+	return campus
+end
+
+return SchoolBuilder
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="SoundService" referent="14">
+    <Properties>
+      <string name="Name">SoundService</string>
+      <bool name="RespectFilteringEnabled">true</bool>
+    </Properties>
+  </Item>
+  <Item class="StarterPlayer" referent="15">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+      <float name="CameraMaxZoomDistance">40</float>
+      <bool name="EnableMouseLockOption">true</bool>
+    </Properties>
+    <Item class="StarterPlayerScripts" referent="16">
+      <Properties>
+        <string name="Name">StarterPlayerScripts</string>
+      </Properties>
+      <Item class="Folder" referent="17">
+        <Properties>
+          <string name="Name">Client</string>
+        </Properties>
+        <Item class="ModuleScript" referent="18">
+          <Properties>
+            <string name="Name">Hud</string>
+            <string name="Source"><![CDATA[local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
+local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
+local Util = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"))
+
+local Hud = {}
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local profile
+local period
+local shopOpen = false
+
+local function corner(parent: Instance, radius: number)
+	local ui = Instance.new("UICorner")
+	ui.CornerRadius = UDim.new(0, radius)
+	ui.Parent = parent
+	return ui
+end
+
+local function pad(parent: Instance, pixels: number)
+	local ui = Instance.new("UIPadding")
+	ui.PaddingTop = UDim.new(0, pixels)
+	ui.PaddingBottom = UDim.new(0, pixels)
+	ui.PaddingLeft = UDim.new(0, pixels)
+	ui.PaddingRight = UDim.new(0, pixels)
+	ui.Parent = parent
+end
+
+local function label(parent: Instance, text: string, size: number, color: Color3, bold: boolean?): TextLabel
+	local item = Instance.new("TextLabel")
+	item.BackgroundTransparency = 1
+	item.Size = UDim2.fromScale(1, 0)
+	item.AutomaticSize = Enum.AutomaticSize.Y
+	item.Font = if bold then Enum.Font.GothamBold else Enum.Font.Gotham
+	item.TextSize = size
+	item.TextColor3 = color
+	item.TextXAlignment = Enum.TextXAlignment.Left
+	item.TextWrapped = true
+	item.Text = text
+	item.Parent = parent
+	return item
+end
+
+function Hud.mount()
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "SchoolHud"
+	gui.ResetOnSpawn = false
+	gui.IgnoreGuiInset = true
+	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	gui.Parent = playerGui
+
+	local top = Instance.new("Frame")
+	top.Name = "PeriodBar"
+	top.AnchorPoint = Vector2.new(0.5, 0)
+	top.Position = UDim2.new(0.5, 0, 0, 18)
+	top.Size = UDim2.fromOffset(420, 72)
+	top.BackgroundColor3 = Color3.fromRGB(28, 40, 62)
+	top.BackgroundTransparency = 0.08
+	top.Parent = gui
+	corner(top, 16)
+
+	local periodTitle = label(top, "조회", 22, Color3.fromRGB(255, 224, 140), true)
+	periodTitle.Position = UDim2.fromOffset(18, 10)
+	periodTitle.Size = UDim2.new(1, -36, 0, 28)
+
+	local periodHint = label(top, "학교에 오신 것을 환영합니다", 14, Color3.fromRGB(220, 228, 240))
+	periodHint.Position = UDim2.fromOffset(18, 40)
+	periodHint.Size = UDim2.new(1, -36, 0, 22)
+
+	local stats = Instance.new("Frame")
+	stats.Name = "Stats"
+	stats.Position = UDim2.fromOffset(18, 18)
+	stats.Size = UDim2.fromOffset(230, 168)
+	stats.BackgroundColor3 = Color3.fromRGB(24, 32, 48)
+	stats.BackgroundTransparency = 0.12
+	stats.Parent = gui
+	corner(stats, 14)
+	pad(stats, 14)
+
+	local layout = Instance.new("UIListLayout")
+	layout.FillDirection = Enum.FillDirection.Vertical
+	layout.Padding = UDim.new(0, 6)
+	layout.Parent = stats
+
+	local statsTitle = label(stats, "학생증", 18, Color3.fromRGB(255, 224, 140), true)
+	local levelLabel = label(stats, "1레벨 신입생", 15, Color3.new(1, 1, 1), true)
+	local coinLabel = label(stats, "코인 80", 14, Color3.fromRGB(255, 214, 120))
+	local energyLabel = label(stats, "에너지 100/100", 14, Color3.fromRGB(140, 220, 170))
+	local popLabel = label(stats, "인기 15", 14, Color3.fromRGB(255, 170, 190))
+	local gpaLabel = label(stats, "평균 성적 62", 14, Color3.fromRGB(170, 200, 255))
+
+	local quest = Instance.new("Frame")
+	quest.Name = "Quests"
+	quest.Position = UDim2.fromOffset(18, 198)
+	quest.Size = UDim2.fromOffset(230, 220)
+	quest.BackgroundColor3 = Color3.fromRGB(24, 32, 48)
+	quest.BackgroundTransparency = 0.12
+	quest.Parent = gui
+	corner(quest, 14)
+	pad(quest, 14)
+
+	local questLayout = Instance.new("UIListLayout")
+	questLayout.Padding = UDim.new(0, 6)
+	questLayout.Parent = quest
+	label(quest, "오늘 할 일", 18, Color3.fromRGB(255, 224, 140), true)
+
+	local questLabels = {}
+	for _, info in Config.Quests do
+		local row = Instance.new("TextButton")
+		row.Name = info.id
+		row.BackgroundColor3 = Color3.fromRGB(42, 58, 86)
+		row.AutoButtonColor = true
+		row.Size = UDim2.new(1, 0, 0, 36)
+		row.Font = Enum.Font.Gotham
+		row.TextSize = 13
+		row.TextColor3 = Color3.new(1, 1, 1)
+		row.TextXAlignment = Enum.TextXAlignment.Left
+		row.Text = info.name
+		row.Parent = quest
+		corner(row, 8)
+		pad(row, 8)
+		questLabels[info.id] = row
+		row.MouseButton1Click:Connect(function()
+			Remotes.get("ClaimQuest"):FireServer(info.id)
+		end)
+	end
+
+	local toast = Instance.new("TextLabel")
+	toast.Name = "Toast"
+	toast.AnchorPoint = Vector2.new(0.5, 1)
+	toast.Position = UDim2.new(0.5, 0, 1, -28)
+	toast.Size = UDim2.fromOffset(520, 48)
+	toast.BackgroundColor3 = Color3.fromRGB(28, 40, 62)
+	toast.Font = Enum.Font.GothamBold
+	toast.TextSize = 16
+	toast.TextColor3 = Color3.new(1, 1, 1)
+	toast.TextWrapped = true
+	toast.Visible = false
+	toast.Parent = gui
+	corner(toast, 12)
+
+	local shop = Instance.new("Frame")
+	shop.Name = "Shop"
+	shop.AnchorPoint = Vector2.new(0.5, 0.5)
+	shop.Position = UDim2.fromScale(0.5, 0.5)
+	shop.Size = UDim2.fromOffset(420, 430)
+	shop.BackgroundColor3 = Color3.fromRGB(28, 34, 52)
+	shop.Visible = false
+	shop.Parent = gui
+	corner(shop, 18)
+	pad(shop, 18)
+
+	local shopLayout = Instance.new("UIListLayout")
+	shopLayout.Padding = UDim.new(0, 8)
+	shopLayout.Parent = shop
+
+	label(shop, "매점", 24, Color3.fromRGB(255, 224, 140), true)
+	label(shop, "코인으로 간식과 아이템을 사세요", 14, Color3.fromRGB(210, 218, 230))
+
+	for _, item in Config.ShopItems do
+		local button = Instance.new("TextButton")
+		button.Size = UDim2.new(1, 0, 0, 58)
+		button.BackgroundColor3 = Color3.fromRGB(48, 64, 96)
+		button.Font = Enum.Font.Gotham
+		button.TextSize = 15
+		button.TextColor3 = Color3.new(1, 1, 1)
+		button.Text = string.format("%s  ·  %d코인\n%s", item.name, item.price, item.desc)
+		button.Parent = shop
+		corner(button, 10)
+		button.MouseButton1Click:Connect(function()
+			Remotes.get("BuyItem"):FireServer(item.id)
+		end)
+	end
+
+	local closeShop = Instance.new("TextButton")
+	closeShop.Size = UDim2.new(1, 0, 0, 40)
+	closeShop.BackgroundColor3 = Color3.fromRGB(180, 72, 80)
+	closeShop.Font = Enum.Font.GothamBold
+	closeShop.TextSize = 16
+	closeShop.TextColor3 = Color3.new(1, 1, 1)
+	closeShop.Text = "닫기"
+	closeShop.Parent = shop
+	corner(closeShop, 10)
+	closeShop.MouseButton1Click:Connect(function()
+		shop.Visible = false
+		shopOpen = false
+	end)
+
+	local help = Instance.new("TextLabel")
+	help.AnchorPoint = Vector2.new(1, 1)
+	help.Position = UDim2.new(1, -18, 1, -18)
+	help.Size = UDim2.fromOffset(280, 88)
+	help.BackgroundColor3 = Color3.fromRGB(24, 32, 48)
+	help.BackgroundTransparency = 0.12
+	help.Font = Enum.Font.Gotham
+	help.TextSize = 13
+	help.TextColor3 = Color3.fromRGB(230, 234, 244)
+	help.TextXAlignment = Enum.TextXAlignment.Left
+	help.TextYAlignment = Enum.TextYAlignment.Top
+	help.TextWrapped = true
+	help.Text = "E 키 또는 근접 버튼으로 상호작용\n수업 시간엔 해당 교실로\n점심엔 급식실, 체육은 운동장"
+	help.Parent = gui
+	corner(help, 12)
+	pad(help, 12)
+
+	local function showToast(text: string, tone: string)
+		if tone == "shop" then
+			shopOpen = not shopOpen
+			shop.Visible = shopOpen
+			return
+		end
+		toast.Text = text
+		toast.BackgroundColor3 = if tone == "good"
+			then Color3.fromRGB(36, 110, 78)
+			elseif tone == "warn" then Color3.fromRGB(150, 78, 48)
+			else Color3.fromRGB(28, 40, 62)
+		toast.Visible = true
+		toast.BackgroundTransparency = 0.05
+		task.delay(3.2, function()
+			if toast.Text == text then
+				TweenService:Create(toast, TweenInfo.new(0.25), { BackgroundTransparency = 1 }):Play()
+				task.wait(0.25)
+				if toast.Text == text then
+					toast.Visible = false
+					toast.BackgroundTransparency = 0.05
+				end
+			end
+		end)
+	end
+
+	local function refreshProfile()
+		if not profile then
+			return
+		end
+		levelLabel.Text = string.format("%d레벨 %s", profile.level, profile.title)
+		coinLabel.Text = string.format("코인 %d", profile.coins)
+		energyLabel.Text = string.format("에너지 %d/%d", profile.energy, profile.maxEnergy)
+		popLabel.Text = string.format("인기 %d", profile.popularity)
+		gpaLabel.Text = string.format("평균 성적 %.1f", profile.gpa)
+		for _, info in Config.Quests do
+			local state = profile.quests[info.id]
+			local row = questLabels[info.id]
+			if state and row then
+				if state.claimed then
+					row.Text = string.format("%s  완료", info.name)
+					row.BackgroundColor3 = Color3.fromRGB(46, 96, 70)
+				else
+					row.Text = string.format("%s  %d/%d  (클릭 보상)", info.name, state.progress or 0, info.goal)
+				end
+			end
+		end
+	end
+
+	local function refreshPeriod()
+		if not period then
+			return
+		end
+		periodTitle.Text = string.format("%s  ·  %s", period.name, Util.formatTime(period.remaining or 0))
+		periodHint.Text = period.hint or ""
+	end
+
+	Remotes.get("ProfileUpdated").OnClientEvent:Connect(function(data)
+		profile = data
+		refreshProfile()
+	end)
+
+	Remotes.get("PeriodChanged").OnClientEvent:Connect(function(data)
+		period = data
+		refreshPeriod()
+		showToast(string.format("%s 시작! %s", data.name, data.hint or ""), "info")
+	end)
+
+	Remotes.get("Notify").OnClientEvent:Connect(function(payload)
+		if typeof(payload) == "table" then
+			showToast(payload.text, payload.tone)
+		end
+	end)
+
+	task.spawn(function()
+		while gui.Parent do
+			if period then
+				period.remaining = math.max(0, (period.endsAt or 0) - workspace:GetServerTimeNow())
+				refreshPeriod()
+			end
+			task.wait(0.25)
+		end
+	end)
+
+	Remotes.get("GetProfile"):FireServer()
+end
+
+return Hud
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="LocalScript" referent="19">
+          <Properties>
+            <string name="Name">Main</string>
+            <string name="Source"><![CDATA[local Hud = require(script.Parent.Hud)
+
+Hud.mount()
+]]></string>
+          </Properties>
+        </Item>
+      </Item>
+    </Item>
+  </Item>
+</roblox>
