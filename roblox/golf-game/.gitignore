@@ -1,0 +1,4 @@
+# Rojo / Rokit build outputs and tool installs
+*.rbxl
+*.rbxlx
+/.rokit/
