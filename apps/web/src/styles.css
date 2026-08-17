@@ -1,0 +1,259 @@
+:root {
+  --bg: #0b1f16;
+  --bg-2: #0f2a1e;
+  --card: #12352550;
+  --card-solid: #133a28;
+  --line: #1e4a34;
+  --text: #eaf5ee;
+  --muted: #9dc4ad;
+  --accent: #4ade80;
+  --accent-2: #22c55e;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background: radial-gradient(1200px 600px at 80% -10%, #1b4d34 0%, transparent 60%),
+    radial-gradient(1000px 500px at 0% 110%, #10402b 0%, transparent 55%),
+    linear-gradient(160deg, var(--bg) 0%, var(--bg-2) 100%);
+  min-height: 100vh;
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  max-width: 52ch;
+  line-height: 1.5;
+}
+
+.grid {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--card-solid);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 20px 40px -30px rgba(0, 0, 0, 0.8);
+}
+
+.capture {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.field select {
+  appearance: none;
+  background: #0e2c1e;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 1rem;
+}
+
+.tap {
+  border: none;
+  border-radius: 16px;
+  padding: 28px 20px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #052012;
+  cursor: pointer;
+  transition: transform 0.05s ease, filter 0.15s ease, background 0.2s ease;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
+}
+
+.tap:hover {
+  filter: brightness(1.05);
+}
+
+.tap:active {
+  transform: scale(0.98);
+}
+
+.tap:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.tap--backswing {
+  background: linear-gradient(180deg, #fcd34d 0%, var(--warn) 100%);
+}
+
+.tap--downswing {
+  background: linear-gradient(180deg, #fca5a5 0%, var(--bad) 100%);
+  color: #2a0606;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+kbd {
+  background: #0e2c1e;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 0.8rem;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #0e2c1e;
+  border: 1px solid var(--line);
+}
+
+.result__ratio {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.result__ratio span {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-left: 2px;
+}
+
+.result__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pill {
+  display: inline-block;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pill--ideal {
+  background: rgba(74, 222, 128, 0.18);
+  color: var(--accent);
+}
+
+.pill--warn {
+  background: rgba(251, 191, 36, 0.18);
+  color: var(--warn);
+}
+
+.pill--bad {
+  background: rgba(248, 113, 113, 0.18);
+  color: var(--bad);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.error {
+  color: var(--bad);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.card__head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.stats {
+  display: flex;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.stats strong {
+  color: var(--text);
+}
+
+.history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history__row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 1.2fr 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #0e2c1e;
+  border: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+
+.history__ratio {
+  font-weight: 700;
+}
+
+.history__time {
+  text-align: right;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
