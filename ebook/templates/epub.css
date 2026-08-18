@@ -35,6 +35,11 @@ section.part-title {
   page-break-before: always;
 }
 
+/* Millimetres mean little to a reading system; size the plate to the column. */
+.part-plate img { max-width: 88%; }
+
+.part-plate.mark img { max-width: 64px; }
+
 .title-page {
   text-align: center;
 }

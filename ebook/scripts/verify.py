@@ -19,7 +19,15 @@ import re
 import sys
 import zipfile
 
-from paths import DIST_DIR, MANUSCRIPT_DIR, QR_DIR, REPO_ROOT, load_book, load_videos
+from paths import (
+    DIST_DIR,
+    EBOOK_DIR,
+    MANUSCRIPT_DIR,
+    PHOTOS_DIR,
+    QR_DIR,
+    load_book,
+    load_videos,
+)
 
 SUBSTACK = re.compile(r"(https?://[\w.-]*substack(?:cdn)?\.com[^\s\"'<>)\]]*)", re.I)
 ALLOWED_SUBSTACK = re.compile(
@@ -178,6 +186,68 @@ def check_videos(report: Report) -> None:
     )
 
 
+# The cover carries the title, the subtitle and the three names, and nothing
+# else. These are the things the author ruled off it.
+COVER_FORBIDDEN = (
+    "Logic Performance",
+    "Logic Fitness",
+    "로직 퍼포먼스",
+    "로직 피트니스",
+    "youtube",
+    "YouTube",
+    "@",
+)
+
+
+def check_art(book: dict, epub: zipfile.ZipFile, report: Report) -> None:
+    """Cover art and part plates: present, packaged, and free of stray marks."""
+    art = book.get("cover_art")
+    report.check(bool(art) and (EBOOK_DIR / art).exists(), "cover art drawn", str(art))
+
+    expected = [(f'part {p["number"]}', p) for p in book["parts"]]
+    expected += [(item["id"], item) for item in book.get("back_matter", []) if item.get("plate")]
+    for label, item in expected:
+        plate = item.get("plate")
+        report.check(
+            bool(plate) and (EBOOK_DIR / plate).exists(),
+            f"{label} plate drawn",
+            str(plate),
+        )
+        report.check(bool(item.get("plate_alt")), f"{label} plate has alt text")
+
+    # A plate with lettering in it would have to be cropped or masked; the plates
+    # are drawn without any, so the part title in the markup is the only text.
+    plates_in_epub = 0
+    for name in epub.namelist():
+        if name.endswith(".xhtml") and b'class="part-plate' in epub.read(name):
+            plates_in_epub += 1
+    report.check(
+        plates_in_epub == len(expected),
+        "every part plate reaches the EPUB",
+        f"{plates_in_epub} of {len(expected)}",
+    )
+
+    cover_text = " ".join(
+        [book["title"], book["subtitle"]]
+        + [f'{a["name_ko"]} {a["name_en"]}' for a in book["authors"]]
+    )
+    banned = [word for word in COVER_FORBIDDEN if word in cover_text]
+    report.check(not banned, "no company mark or handle in cover copy", ", ".join(banned))
+    channel = book.get("video_channel") or ""
+    report.check(
+        not channel or channel not in cover_text,
+        "channel name stays off the cover",
+        channel,
+    )
+    report.check(
+        not re.search(r"\b(19|20)\d{2}\b", cover_text),
+        "no year printed on the cover",
+    )
+
+    kept = sorted(p.name for p in PHOTOS_DIR.glob("*") if p.is_file())
+    report.note(f"{len(kept)} author photo/diagram file(s) kept in images/photos")
+
+
 def main() -> int:
     book = load_book()
     report = Report()
@@ -190,6 +260,9 @@ def main() -> int:
 
     print("epub package")
     check_epub(epub, book, report)
+
+    print("cover and plates")
+    check_art(book, epub, report)
 
     print("reader-facing links")
     check_no_substack(epub, pdf_bytes, report)

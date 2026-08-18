@@ -8,6 +8,10 @@
 @page {
   size: 148mm 210mm;          /* A5 */
   margin: 17mm 15mm 20mm 15mm;
+  /* The book prints on cream stock. Declared on the page rather than on the
+     root element so it covers the margins too, which is what lets the drawn
+     plates sit on the page without showing a panel edge. */
+  background: #f6f3ea;
 }
 
 /* Mirrored inner margin for binding. */
@@ -90,77 +94,73 @@ p, li { orphans: 2; widows: 2; }
 
 /* ---------- cover page ---------- */
 
+/* Full-bleed drawn stock; no frame, no seal, no year, no company mark. The art
+   is lettering-free and all type below is set from book.yaml. */
 .pdf-cover {
   page: cover;
   height: 210mm;
   width: 148mm;
   box-sizing: border-box;
-  padding: 34mm 18mm 22mm;
-  background: #f7f6f1;
+  padding: 26mm 16mm 20mm;
+  background-color: #f6f3ea;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 148mm 210mm;
   text-align: center;
   page-break-after: always;
   break-after: page;
   border: 0;
-}
-
-.pdf-cover .cover-frame {
-  border: 0.6mm solid #d6d3c8;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 16mm 8mm;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
+.pdf-cover .cover-head { margin: 0; }
+
 .pdf-cover .cover-title {
   font-family: "NanumMyeongjo", serif;
   font-weight: 700;
-  font-size: 26pt;
-  line-height: 1.4;
+  font-size: 33pt;
+  line-height: 1.32;
+  letter-spacing: 0.01em;
   margin: 0;
-  color: #171e1a;
+  color: #262c28;
 }
 
 .pdf-cover .cover-rule {
   border: 0;
-  border-top: 0.5mm solid #3d6a4a;
-  width: 18mm;
-  margin: 5mm auto;
+  border-top: 0.4mm solid #2f5c3e;
+  width: 14mm;
+  margin: 7mm auto;
 }
 
 .pdf-cover .cover-subtitle {
   font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
-  font-size: 9.5pt;
-  color: #6c736c;
+  font-size: 10pt;
+  color: #55605a;
   line-height: 1.6;
+  letter-spacing: 0.02em;
   margin: 0;
 }
 
 .pdf-cover .cover-authors { margin: 0; }
 
-.pdf-cover .cover-byline-label {
-  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
-  font-size: 8pt;
-  letter-spacing: 0.2em;
-  color: #6c736c;
-  margin-bottom: 4mm;
-}
-
-.pdf-cover .cover-author-name {
+/* Three names, one line, one size: equal billing. */
+.pdf-cover .cover-author-ko {
   font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
   font-weight: 700;
-  font-size: 11pt;
-  display: block;
-  color: #171e1a;
+  font-size: 11.5pt;
+  letter-spacing: 0.04em;
+  color: #262c28;
+  margin: 0 0 2mm;
 }
 
-.pdf-cover .cover-author-credential {
+.pdf-cover .cover-author-en {
   font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
-  font-size: 7.5pt;
+  font-size: 8.5pt;
+  letter-spacing: 0.06em;
   color: #6c736c;
-  display: block;
-  margin-bottom: 3.5mm;
+  margin: 0;
 }
 
 /* ---------- front matter ---------- */
@@ -176,8 +176,17 @@ p, li { orphans: 2; widows: 2; }
 
 section.part-title {
   page: plain;
-  padding-top: 24mm;
+  padding-top: 20mm;
 }
+
+/* Keep the whole opener — title, plate, intro — on the one page. */
+section.part-title > h1 { font-size: 1.55em; }
+
+.part-plate img { max-width: 88mm; max-height: 62mm; }
+
+.part-plate.mark img { max-width: 16mm; max-height: 16mm; }
+
+section.part-title > p { text-align: left; }
 
 /* Re-assert the running-text page: chapters sit inside a part opener that is
    set to `plain`, and `page` inherits. */

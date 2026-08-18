@@ -10,9 +10,9 @@
 PY := python3
 S  := scripts
 
-.PHONY: book all fetch convert media videos cover verify clean
+.PHONY: book all fetch convert media videos plates cover verify clean
 
-book: cover media videos
+book: plates cover media videos
 	$(PY) $(S)/build.py
 	$(PY) $(S)/verify.py
 
@@ -31,7 +31,12 @@ media:
 videos:
 	$(PY) $(S)/make_qr.py
 
-cover:
+# Cover art and part-opener plates. Drawn, not generated: no lettering is baked
+# into them, so every word on those pages comes from book.yaml.
+plates:
+	$(PY) $(S)/make_plates.py
+
+cover: plates
 	$(PY) $(S)/make_cover.py
 
 verify:

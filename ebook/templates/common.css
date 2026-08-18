@@ -6,7 +6,9 @@
   --muted: #6c736c;
   --accent: #3d6a4a;
   --rule: #d6d3c8;
-  --tint: #f4f6f3;
+  /* Warm tint: the panels have to sit on cream stock, not on cool white. */
+  --tint: #f1eee2;
+  --paper: #f6f3ea;
 }
 
 body {
@@ -236,14 +238,47 @@ figure.video-slot {
 .notice p:last-child { margin-bottom: 0; }
 
 /* ---------- part opener ----------
-   pandoc --section-divs writes the heading class onto the <section>. */
+   pandoc --section-divs writes the heading class onto the <section>.
+
+   The opener reads title, rule, plate, intro. The plate is a drawn mark with no
+   lettering in it, so the part title above it is the only text. */
 
 section.part-title > h1 {
   font-size: 1.7em;
-  margin-bottom: 1.3em;
+  margin-bottom: 0.7em;
+  text-align: center;
 }
 
-/* The part intro is plain markdown right under the part heading. */
+section.part-title > h1::after {
+  content: "";
+  display: block;
+  width: 14mm;
+  margin: 0.85em auto 0;
+  border-top: 1px solid var(--accent);
+}
+
+.part-plate {
+  margin: 1.6em 0 1.9em;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* pandoc wraps the plate image in a paragraph; it should not carry body spacing. */
+.part-plate p { margin: 0; text-align: center; }
+
+.part-plate img {
+  width: 100%;
+  max-width: 92mm;
+  height: auto;
+}
+
+/* The appendix takes a small index mark rather than a full plate. */
+.part-plate.mark img { max-width: 18mm; }
+
+.part-plate.mark { margin: 0.2em 0 1.8em; }
+
+/* The part intro is plain markdown right under the plate. */
 section.part-title > p {
   color: #3f4742;
 }

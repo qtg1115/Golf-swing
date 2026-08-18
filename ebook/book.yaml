@@ -26,6 +26,11 @@ cover_title_lines:
   - 골프 느낌의
   - 실제 원리
 
+# Cover art and part-opener plates are drawn by scripts/make_plates.py. They
+# carry no lettering at all: every word on the cover and on a part page is set
+# from this file at build time.
+cover_art: images/plates/cover-art.jpg
+
 rights: © 2026 이충원 · 방승호 · 박세인. All rights reserved.
 
 # The cover and title page carry no company branding by author instruction:
@@ -54,6 +59,8 @@ parts:
     number: 1
     title: 느낌은 있는데 스윙이 안 되는 이유
     intro: front-matter/part-1-intro.md
+    plate: images/plates/part-1-footprints.jpg
+    plate_alt: 길 위에 남은 두 발자국과 끊어진 길
     chapters:
       - id: p1-c1
         slug: womakers
@@ -66,6 +73,8 @@ parts:
     number: 2
     title: 내 스윙의 문제를 찾는 법
     intro: front-matter/part-2-intro.md
+    plate: images/plates/part-2-grid.jpg
+    plate_alt: 빈 진단 칸과 한 칸에 찍힌 동그라미
     chapters:
       - id: p2-c1
         slug: "434"
@@ -75,6 +84,8 @@ parts:
     number: 3
     title: 스윙 시계 — 느낌이 지나가는 자리
     intro: front-matter/part-3-intro.md
+    plate: images/plates/part-3-clock.jpg
+    plate_alt: 스윙 시계 문자판과 아래로 지나가는 화살표
     chapters:
       - id: p3-c1
         slug: 1-6
@@ -116,6 +127,8 @@ parts:
     number: 4
     title: 샷에 실리는 느낌
     intro: front-matter/part-4-intro.md
+    plate: images/plates/part-4-arcs.jpg
+    plate_alt: 한 지점에서 떠나는 세 개의 탄도
     chapters:
       - id: p4-c1
         slug: "1"
@@ -138,5 +151,9 @@ back_matter:
     kind: chapter
     slug: golf-a
     title: 부록 · 프로와 같은 말로 말하기
+    # Typography only, apart from a small index mark: no clipart in the appendix.
+    plate: images/plates/appendix-mark.jpg
+    plate_alt: 색인 표시
+    plate_size: mark
   - id: colophon
     kind: colophon

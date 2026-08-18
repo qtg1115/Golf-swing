@@ -1,97 +1,85 @@
 #!/usr/bin/env python3
-"""Render the cover PNG from book.yaml.
+"""Compose the EPUB cover raster from the drawn plate and book.yaml.
 
-Deliberately plain: title, subtitle, and the three authors with equal billing.
-No company branding appears on the cover by author instruction — no Logic
-Performance, no Logic Fitness.
+An EPUB cover has to be a single image, so the type cannot be left to the
+reader's stylesheet the way the PDF cover does it. It is still real type: the
+same Nanum faces the book is set in, drawn here at cover size over the plate
+from scripts/make_plates.py. Nothing is added beyond the title, the subtitle and
+the three names — no company branding, no channel name, no year, no seal.
+
+Run scripts/make_plates.py first; this reads its output.
 """
 from __future__ import annotations
 
 from PIL import Image, ImageDraw, ImageFont
 
-from paths import IMAGES_DIR, REPO_ROOT, load_book
+from paths import EBOOK_DIR, IMAGES_DIR, REPO_ROOT, load_book
 
-WIDTH, HEIGHT = 1600, 2560
-MARGIN = 150
+WIDTH, HEIGHT = 1748, 2480  # A5 at 300dpi, matching the PDF cover
 
-INK = (23, 30, 26)
-PAPER = (247, 246, 241)
-ACCENT = (61, 106, 74)
+INK = (38, 44, 40)
+PAPER = (246, 243, 234)
+PINE = (47, 92, 62)
 MUTED = (108, 115, 108)
+SUBTITLE = (85, 96, 90)
 
-SERIF = "/usr/share/fonts/truetype/nanum/NanumMyeongjo.ttf"
-SERIF_BOLD = "/usr/share/fonts/truetype/nanum/NanumMyeongjoBold.ttf"
-SANS = "/usr/share/fonts/truetype/nanum/NanumBarunGothic.ttf"
-SANS_BOLD = "/usr/share/fonts/truetype/nanum/NanumBarunGothicBold.ttf"
-
-
-def font(path: str, size: int) -> ImageFont.FreeTypeFont:
-    return ImageFont.truetype(path, size)
+NANUM = "/usr/share/fonts/truetype/nanum"
+SERIF_BOLD = f"{NANUM}/NanumMyeongjoBold.ttf"
+SANS = f"{NANUM}/NanumBarunGothic.ttf"
+SANS_BOLD = f"{NANUM}/NanumBarunGothicBold.ttf"
 
 
-def wrap(draw: ImageDraw.ImageDraw, text: str, fnt, max_width: int) -> list[str]:
-    lines: list[str] = []
-    current = ""
-    for word in text.split():
-        candidate = f"{current} {word}".strip()
-        if draw.textlength(candidate, font=fnt) <= max_width or not current:
-            current = candidate
-        else:
-            lines.append(current)
-            current = word
-    if current:
-        lines.append(current)
-    return lines
-
-
-def centred(draw: ImageDraw.ImageDraw, y: int, text: str, fnt, fill) -> int:
-    width = draw.textlength(text, font=fnt)
-    draw.text(((WIDTH - width) / 2, y), text, font=fnt, fill=fill)
-    ascent, descent = fnt.getmetrics()
+def centred(draw: ImageDraw.ImageDraw, y: int, text: str, font, fill, tracking: int = 0) -> int:
+    """Draw one centred line, optionally letterspaced, and return the next y."""
+    if tracking:
+        width = sum(draw.textlength(ch, font=font) + tracking for ch in text) - tracking
+        x = (WIDTH - width) / 2
+        for ch in text:
+            draw.text((x, y), ch, font=font, fill=fill)
+            x += draw.textlength(ch, font=font) + tracking
+    else:
+        draw.text(((WIDTH - draw.textlength(text, font=font)) / 2, y), text, font=font, fill=fill)
+    ascent, descent = font.getmetrics()
     return y + ascent + descent
 
 
 def main() -> int:
     book = load_book()
-    image = Image.new("RGB", (WIDTH, HEIGHT), PAPER)
+
+    art = book.get("cover_art")
+    art_path = EBOOK_DIR / art if art else None
+    if art_path and art_path.exists():
+        image = Image.open(art_path).convert("RGB").resize((WIDTH, HEIGHT), Image.LANCZOS)
+    else:
+        print("! cover art missing; falling back to plain stock")
+        image = Image.new("RGB", (WIDTH, HEIGHT), PAPER)
     draw = ImageDraw.Draw(image)
 
-    # A single hairline frame keeps the cover calm without any logo.
-    draw.rectangle([MARGIN - 40, MARGIN - 40, WIDTH - MARGIN + 40, HEIGHT - MARGIN + 40],
-                   outline=(214, 211, 200), width=3)
+    title_font = ImageFont.truetype(SERIF_BOLD, 196)
+    subtitle_font = ImageFont.truetype(SANS, 58)
+    author_font = ImageFont.truetype(SANS_BOLD, 68)
+    author_en_font = ImageFont.truetype(SANS, 50)
 
-    title_font = font(SERIF_BOLD, 148)
-    subtitle_font = font(SANS, 52)
-    author_font = font(SANS_BOLD, 60)
-    credential_font = font(SANS, 40)
-    label_font = font(SANS, 42)
+    y = 300
+    for line in book.get("cover_title_lines") or [book["title"]]:
+        y = centred(draw, y, line, title_font, INK) + 18
 
-    y = 620
-    title_lines = book.get("cover_title_lines") or wrap(
-        draw, book["title"], title_font, WIDTH - 2 * MARGIN
-    )
-    for line in title_lines:
-        y = centred(draw, y, line, title_font, INK) + 24
+    y += 74
+    draw.line([(WIDTH / 2 - 82, y), (WIDTH / 2 + 82, y)], fill=PINE, width=5)
+    y += 96
 
-    y += 40
-    rule_half = 130
-    draw.line([(WIDTH / 2 - rule_half, y), (WIDTH / 2 + rule_half, y)], fill=ACCENT, width=6)
-    y += 90
+    centred(draw, y, book["subtitle"], subtitle_font, SUBTITLE, tracking=2)
 
-    for line in wrap(draw, book["subtitle"], subtitle_font, WIDTH - 2 * MARGIN - 120):
-        y = centred(draw, y, line, subtitle_font, MUTED) + 18
+    # Equal billing: one line of Korean names, one line of English, same weight
+    # within each line and no ordering emphasis.
+    y = HEIGHT - 372
+    y = centred(draw, y, " · ".join(a["name_ko"] for a in book["authors"]), author_font, INK, 6)
+    centred(draw, y + 26, " · ".join(a["name_en"] for a in book["authors"]), author_en_font, MUTED, 4)
 
-    # Authors sit together in one block: equal billing, no ordering emphasis.
-    y = HEIGHT - MARGIN - 560
-    y = centred(draw, y, "지음", label_font, MUTED) + 60
-    for author in book["authors"]:
-        name = f"{author['name_ko']}  ·  {author['name_en']}"
-        y = centred(draw, y, name, author_font, INK) + 8
-        y = centred(draw, y, author["credential"], credential_font, MUTED) + 46
-
-    dest = IMAGES_DIR / "cover.png"
-    image.save(dest, "PNG")
-    print(f"wrote {dest.relative_to(REPO_ROOT)} ({WIDTH}x{HEIGHT})")
+    # JPEG, not PNG: the stock is grain, which PNG cannot pack.
+    dest = IMAGES_DIR / "cover.jpg"
+    image.save(dest, "JPEG", quality=92, optimize=True)
+    print(f"wrote {dest.relative_to(REPO_ROOT)} ({WIDTH}x{HEIGHT}, {dest.stat().st_size // 1024} KB)")
     return 0
 
 

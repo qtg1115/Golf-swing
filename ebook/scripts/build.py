@@ -280,6 +280,25 @@ def strip_first_heading(markdown: str) -> tuple[str, str]:
     return title, "\n".join(lines[start:]).strip()
 
 
+def plate_block(item: dict) -> str:
+    """The drawn plate for a part opener or the appendix.
+
+    Plates carry no lettering, so the alt text has to describe the mark itself.
+    """
+    plate = item.get("plate")
+    if not plate or not (EBOOK_DIR / plate).exists():
+        return ""
+    size = f' {item["plate_size"]}' if item.get("plate_size") else ""
+    alt = html.escape(item.get("plate_alt") or "")
+    # One raw block, flush left and with no blank line inside it, so pandoc
+    # passes it through whole instead of reparsing the image as a paragraph.
+    return (
+        f'<div class="part-plate{size}">\n'
+        f'<img src="{plate}" alt="{alt}" />\n'
+        "</div>"
+    )
+
+
 def title_page(book: dict) -> str:
     authors = "\n".join(
         '<p class="author">'
@@ -364,6 +383,9 @@ def assemble(book: dict, stats: Stats) -> str:
             if intro_path.exists():
                 intro = read(intro_path)
         opener = [f'# 파트 {part["number"]} · {part["title"]} {{#{part["id"]} .part-title}}\n']
+        plate = plate_block(part)
+        if plate:
+            opener.append(f"{plate}\n")
         if intro:
             # Left as plain markdown rather than wrapped in a div: the reader runs
             # with markdown_in_html_blocks disabled so that injected captions are
@@ -410,7 +432,11 @@ def assemble(book: dict, stats: Stats) -> str:
                 continue
             title, body = strip_first_heading(read(path))
             body = expand(demote(body), slots, stats, item["id"])
-            out.append(f'# {title or item["title"]} {{#{item["id"]} .front-section}}\n\n{body}\n')
+            plate = plate_block(item)
+            opening = f"{plate}\n\n" if plate else ""
+            out.append(
+                f'# {title or item["title"]} {{#{item["id"]} .front-section}}\n\n{opening}{body}\n'
+            )
         elif item["kind"] == "colophon":
             out.append(colophon(book, stats))
 
@@ -466,7 +492,7 @@ def build_epub(book: dict, source, stats: Stats) -> None:
             # pandoc ships a broken ko translation table, so name the TOC here.
             "--metadata=toc-title:차례",
             f"--css={css}",
-            f'--epub-cover-image={IMAGES_DIR / "cover.png"}',
+            f'--epub-cover-image={IMAGES_DIR / "cover.jpg"}',
             f'--metadata-file={BUILD_DIR / "metadata.yaml"}',
             f"--resource-path={EBOOK_DIR}",
             "-o",
@@ -478,24 +504,26 @@ def build_epub(book: dict, source, stats: Stats) -> None:
 
 
 def pdf_cover_html(book: dict) -> str:
+    """The printed cover: drawn plate underneath, every word set in Nanum here.
+
+    Nothing else goes on it — no company mark, no channel name, no year — so the
+    only strings emitted are the title, the subtitle and the three names.
+    """
     lines = "".join(f"{line}<br/>" for line in (book.get("cover_title_lines") or [book["title"]]))
-    authors = "\n".join(
-        f'      <span class="cover-author-name">{a["name_ko"]} · {a["name_en"]}</span>'
-        f'<span class="cover-author-credential">{a["credential"]}</span>'
-        for a in book["authors"]
-    )
+    art = book.get("cover_art")
+    style = f" style=\"background-image: url('{art}')\"" if art else ""
+    ko = " · ".join(a["name_ko"] for a in book["authors"])
+    en = " · ".join(a["name_en"] for a in book["authors"])
     return (
-        '<div class="pdf-cover">\n'
-        '  <div class="cover-frame">\n'
-        "    <div>\n"
-        f'      <p class="cover-title">{lines}</p>\n'
-        '      <hr class="cover-rule" />\n'
-        f'      <p class="cover-subtitle">{book["subtitle"]}</p>\n'
-        "    </div>\n"
-        '    <div class="cover-authors">\n'
-        '      <p class="cover-byline-label">지음</p>\n'
-        f"{authors}\n"
-        "    </div>\n"
+        f'<div class="pdf-cover"{style}>\n'
+        '  <div class="cover-head">\n'
+        f'    <p class="cover-title">{lines}</p>\n'
+        '    <hr class="cover-rule" />\n'
+        f'    <p class="cover-subtitle">{book["subtitle"]}</p>\n'
+        "  </div>\n"
+        '  <div class="cover-authors">\n'
+        f'    <p class="cover-author-ko">{ko}</p>\n'
+        f'    <p class="cover-author-en">{en}</p>\n'
         "  </div>\n"
         "</div>\n"
     )
