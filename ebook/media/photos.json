@@ -57,24 +57,10 @@
       "status": "present"
     },
     {
-      "file": "p3-c1-01-8df76124-6127-4c78-92d6-abf8d487f1bc-1024x1024.jpg",
-      "chapter": "p3-c1",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/8df76124-6127-4c78-92d6-abf8d487f1bc_1024x1024.png",
-      "status": "present"
-    },
-    {
       "file": "p3-c10-01-1b27da84-aae5-4bfd-a285-ddc50da67bc5-1024x1024.jpg",
       "chapter": "p3-c10",
       "caption": "",
       "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/1b27da84-aae5-4bfd-a285-ddc50da67bc5_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c2-01-82848db8-9764-418a-a15a-f22d2f401937-1024x1024.jpg",
-      "chapter": "p3-c2",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/82848db8-9764-418a-a15a-f22d2f401937_1024x1024.png",
       "status": "present"
     },
     {
@@ -134,13 +120,6 @@
       "status": "present"
     },
     {
-      "file": "p4-c2-01-2f45a5ba-6479-423b-b328-1a18410dbf45-1024x1024.jpg",
-      "chapter": "p4-c2",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/2f45a5ba-6479-423b-b328-1a18410dbf45_1024x1024.png",
-      "status": "present"
-    },
-    {
       "file": "p4-c3-01-cd00abc3-ca7d-43a1-9c3b-58bb76251e84-1024x1024.jpg",
       "chapter": "p4-c3",
       "caption": "",
@@ -171,29 +150,84 @@
   ],
   "pending_stills": [
     {
+      "chapter": "p1-c2",
+      "index": 1,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p1-c2",
+      "index": 2,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p1-c2",
+      "index": 3,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p1-c2",
+      "index": 4,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 1,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 2,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 3,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 4,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 5,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 6,
+      "note": "[사진]"
+    },
+    {
       "chapter": "p3-c7-release",
       "index": 1,
-      "note": "[사진"
+      "note": "[사진]"
     },
     {
       "chapter": "p3-c7-release",
       "index": 2,
-      "note": "[사진"
+      "note": "[사진]"
     },
     {
       "chapter": "p3-c7-release",
       "index": 3,
-      "note": "[사진"
+      "note": "[사진]"
     },
     {
       "chapter": "p3-c7-release",
       "index": 4,
-      "note": "[사진"
+      "note": "[사진]"
     },
     {
       "chapter": "p3-c7-release",
       "index": 5,
-      "note": "[사진"
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c9",
+      "index": 1,
+      "note": "(사진첨부)"
     }
   ],
   "expected_total_from_manuscript_inventory": 64
