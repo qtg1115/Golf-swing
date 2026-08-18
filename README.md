@@ -2,7 +2,7 @@
 
 한 아이가 전학 온 학교에서 **불리(나쁜 아이)들을 피하거나 맞서며** 학교생활을 하는 스토리 게임입니다.
 
-로블록스 스튜디오에서 `SchoolSimulator.rbxlx` 를 **File → Open from File** 로 연 뒤 **Play** 하면 바로 플레이할 수 있습니다.
+로블록스 스튜디오에서 `SchoolSimulator.rbxlx` 를 **File → Open from File** 로 연 뒤 **Play** 하면 정문 앞 파란 스폰에서 시작합니다. 하늘에서 떨어지면 최신 `SchoolSimulator.rbxlx` 를 다시 받아 열어 주세요.
 
 ## 이야기
 

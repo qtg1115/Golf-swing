@@ -50,6 +50,35 @@
       "$properties": {
         "RespectFilteringEnabled": true
       }
+    },
+
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "FallenPartsDestroyHeight": -200
+      },
+      "SafeGround": {
+        "$className": "Part",
+        "$properties": {
+          "Anchored": true,
+          "Size": [520, 4, 400],
+          "CFrame": [0, 0, -10, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+          "Color": [0.36, 0.66, 0.38],
+          "Material": "Grass"
+        }
+      },
+      "SafeSpawn": {
+        "$className": "SpawnLocation",
+        "$properties": {
+          "Anchored": true,
+          "Duration": 0,
+          "Neutral": true,
+          "Size": [16, 1, 16],
+          "CFrame": [0, 3.5, 58, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+          "Color": [0.36, 0.66, 0.86],
+          "Material": "SmoothPlastic"
+        }
+      }
     }
   }
 }
