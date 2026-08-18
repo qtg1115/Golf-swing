@@ -9,7 +9,7 @@ Korean ebook production for **「골프 느낌의 실제 원리」**
 | Subtitle | 프로가 말하는 감각을 실제 현상으로 풀다 |
 | Authors (equal billing) | 이충원 Logan Lee · 방승호 Bryan Bang · 박세인 Jason Park |
 | Language | Korean only |
-| Video channel | 느낌골프 (unlisted) |
+| Video channel | 골프느낌원리 (unlisted) |
 | Outputs | `dist/golf-neukkimui-siljae-wonri.epub`, `dist/golf-neukkimui-siljae-wonri.pdf` |
 | Trim size | A5 (148 × 210 mm) |
 
@@ -49,7 +49,7 @@ a fresh Mux token per request, so the expiry inside the redirect target does not
 affect the printed URL. If these are ever re-hosted on YouTube, put the watch URL
 in `media/videos.yaml` and rebuild; both URL shapes are accepted.
 
-The same clips are credited to the **느낌골프** channel, hosted unlisted. That name
+The same clips are credited to the **골프느낌원리** channel, hosted unlisted. That name
 is locked and appears on the 판권 (credits) page and here. The book is *not*
 renamed — the title stays 「골프 느낌의 실제 원리」 — and the cover art carries no
 channel or company mark.
