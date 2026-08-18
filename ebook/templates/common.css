@@ -1,0 +1,286 @@
+/* Shared typography for 「내 발이 만드는 스윙 시간」.
+   Korean body text is set in NanumMyeongjo; headings in NanumBarunGothic. */
+
+:root {
+  --ink: #171e1a;
+  --muted: #6c736c;
+  --accent: #3d6a4a;
+  --rule: #d6d3c8;
+  --tint: #f4f6f3;
+}
+
+body {
+  font-family: "NanumMyeongjo", "Noto Serif CJK KR", "Noto Sans CJK KR", serif;
+  color: var(--ink);
+  line-height: 1.78;
+  text-align: justify;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+
+/* Only headings and labels take the sans face. Note that pandoc's
+   --section-divs puts chapter/part classes on the <section>, so a class-based
+   font rule here would be inherited by the whole chapter body. */
+h1, h2, h3, h4,
+.book-title, .video-label, .notice-title {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: left;
+  word-break: keep-all;
+}
+
+h1 { font-size: 1.55em; margin: 0 0 1.1em; }
+h2 { font-size: 1.3em; margin: 2em 0 0.8em; }
+h3 { font-size: 1.08em; margin: 1.7em 0 0.6em; }
+h4 { font-size: 1em; margin: 1.4em 0 0.5em; color: var(--muted); }
+
+p { margin: 0 0 0.85em; }
+
+ul, ol { margin: 0.6em 0 1em; padding-left: 1.3em; }
+li { margin-bottom: 0.4em; text-align: left; }
+
+blockquote {
+  margin: 1.4em 0;
+  padding: 0.2em 0 0.2em 1em;
+  border-left: 3px solid var(--accent);
+  color: #3f4742;
+  font-style: normal;
+}
+blockquote p:last-child { margin-bottom: 0; }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2em auto;
+  width: 40%;
+}
+
+strong { font-weight: 700; }
+
+/* ---------- photos ---------- */
+
+figure.photo {
+  margin: 1.6em 0;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+figure.photo img {
+  max-width: 100%;
+  height: auto;
+}
+
+figure.photo figcaption {
+  margin-top: 0.5em;
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.82em;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ---------- video slot ----------
+   No URL and no QR until a YouTube unlisted link exists for the slot.
+   Substack links are never used here: those posts are paid/private. */
+
+figure.video-slot {
+  margin: 1.7em 0;
+  padding: 0.9em 1em;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--tint);
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.video-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9em;
+}
+
+.video-qr {
+  flex: 0 0 auto;
+  width: 26mm;
+  height: 26mm;
+  box-sizing: border-box;
+}
+
+.video-qr img { width: 100%; height: 100%; display: block; }
+
+.video-qr.empty {
+  border: 1px dashed #b9b6ab;
+  background: #fff;
+  position: relative;
+}
+
+.video-qr.empty::after {
+  content: "QR";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 42%;
+  text-align: center;
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 8pt;
+  letter-spacing: 0.08em;
+  color: #b0ada2;
+}
+
+.video-body { flex: 1 1 auto; }
+
+.video-label {
+  font-size: 0.86em;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  margin: 0 0 0.25em;
+}
+
+.video-caption {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.9em;
+  line-height: 1.55;
+  margin: 0 0 0.4em;
+  text-align: left;
+}
+
+.video-url {
+  font-family: "NanumGothicCoding", monospace;
+  font-size: 0.76em;
+  color: #4a5250;
+  word-break: break-all;
+  margin: 0;
+}
+
+.video-url.pending {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  color: var(--muted);
+  font-style: normal;
+}
+
+.video-slot-id {
+  font-family: "NanumGothicCoding", monospace;
+  font-size: 0.68em;
+  color: #9a978d;
+  margin: 0.35em 0 0;
+}
+
+/* ---------- pending photo / pending text ---------- */
+
+.photo-pending {
+  margin: 1.6em 0;
+  padding: 2.2em 1em;
+  border: 1px dashed #b9b6ab;
+  border-radius: 4px;
+  text-align: center;
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.85em;
+  color: var(--muted);
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.notice {
+  margin: 1.8em 0;
+  padding: 1em 1.1em;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  background: var(--tint);
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.86em;
+  line-height: 1.65;
+  color: #3f4742;
+  text-align: left;
+}
+
+.notice-title {
+  display: block;
+  font-size: 1em;
+  color: var(--accent);
+  margin-bottom: 0.3em;
+}
+
+.notice p { margin: 0 0 0.4em; text-align: left; }
+.notice p:last-child { margin-bottom: 0; }
+
+/* ---------- part opener ----------
+   pandoc --section-divs writes the heading class onto the <section>. */
+
+section.part-title > h1 {
+  font-size: 1.7em;
+  margin-bottom: 1.3em;
+}
+
+section.part-title > .part-intro {
+  margin-top: 1.4em;
+  color: #3f4742;
+}
+
+/* ---------- title page / colophon ---------- */
+
+.title-page { text-align: center; }
+
+.title-page .book-title {
+  font-family: "NanumMyeongjo", serif;
+  font-size: 2.1em;
+  line-height: 1.35;
+  margin: 0 0 0.5em;
+}
+
+.title-page .book-subtitle {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.95em;
+  color: var(--muted);
+  margin: 0 0 2em;
+}
+
+.title-page .byline-label {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.8em;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 0.9em;
+}
+
+.title-page .author {
+  margin: 0 0 1em;
+}
+
+.title-page .author-name {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 1.05em;
+  font-weight: 700;
+  display: block;
+}
+
+.title-page .author-credential {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.8em;
+  color: var(--muted);
+  display: block;
+}
+
+.title-rule {
+  border: 0;
+  border-top: 1px solid var(--accent);
+  width: 22%;
+  margin: 1.6em auto;
+}
+
+.colophon {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.85em;
+  color: #3f4742;
+  text-align: left;
+}
+
+.colophon dt {
+  font-weight: 700;
+  margin-top: 0.9em;
+}
+
+.colophon dd { margin: 0.1em 0 0; }

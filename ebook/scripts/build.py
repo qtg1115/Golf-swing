@@ -1,0 +1,453 @@
+#!/usr/bin/env python3
+"""Assemble the manuscript into dist/*.epub and dist/*.pdf.
+
+The build reads ebook/book.yaml for structure, ebook/manuscript/*.md for text,
+and ebook/media/videos.yaml for video slots. Three placeholder markers in the
+manuscript are expanded into styled blocks:
+
+  [[VIDEO-PUBLIC: chapter / index / description]]
+  [[PHOTO-PENDING: chapter / index / note]]
+  [[MANUSCRIPT-PENDING: slug]]
+
+A video slot renders a caption, an empty QR box, and the label
+"공개 영상 주소 예정" until media/videos.yaml carries a YouTube unlisted URL for
+it. Substack URLs are never rendered or encoded: those posts are paid/private.
+"""
+from __future__ import annotations
+
+import argparse
+import html
+import re
+import shutil
+import subprocess
+import sys
+
+from paths import (
+    BUILD_DIR,
+    DIST_DIR,
+    EBOOK_DIR,
+    FRONT_MATTER_DIR,
+    IMAGES_DIR,
+    MANUSCRIPT_DIR,
+    PHOTOS_DIR,
+    QR_DIR,
+    REPO_ROOT,
+    TEMPLATES_DIR,
+    load_book,
+    load_videos,
+)
+
+VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*([^\]]*?)\s*\]\]")
+PHOTO_PENDING = re.compile(r"\[\[PHOTO-PENDING:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*([^\]]*?)\s*\]\]")
+TEXT_PENDING = re.compile(r"\[\[MANUSCRIPT-PENDING:\s*([^\]]+?)\s*\]\]")
+FIGURE_BLOCK = re.compile(
+    r'<figure class="photo">\s*<img src="images/photos/([^"]+)"[^>]*/?>\s*'
+    r'(?:<figcaption>(.*?)</figcaption>\s*)?</figure>',
+    re.S,
+)
+ATX_HEADING = re.compile(r"^(#{1,6})(\s+)", re.M)
+
+PENDING_VIDEO_LABEL = "공개 영상 주소 예정"
+
+
+class Stats:
+    def __init__(self) -> None:
+        self.videos_with_url = 0
+        self.videos_pending = 0
+        self.photos_embedded = 0
+        self.photos_pending = 0
+        self.chapters_pending_text = 0
+
+
+def slot_lookup() -> dict[str, dict]:
+    return {v["id"]: v for v in load_videos().get("videos") or []}
+
+
+def demote(markdown: str, levels: int = 1) -> str:
+    """Push every ATX heading down N levels so chapters nest under parts."""
+    return ATX_HEADING.sub(lambda m: "#" * min(6, len(m.group(1)) + levels) + m.group(2), markdown)
+
+
+def video_block(chapter: str, index: int, description: str, slots: dict, stats: Stats) -> str:
+    slot_id = f"{chapter}-v{int(index):02d}"
+    slot = slots.get(slot_id, {})
+    caption = slot.get("description") or description or "동작 시연"
+    url = (slot.get("youtube_url") or "").strip()
+    qr_path = QR_DIR / f"{slot_id}.png"
+
+    if url and qr_path.exists():
+        stats.videos_with_url += 1
+        qr = f'<div class="video-qr"><img src="images/qr/{slot_id}.png" alt="영상 QR 코드" /></div>'
+        target = f'<p class="video-url">{html.escape(url)}</p>'
+        label = "영상 보기"
+    else:
+        stats.videos_pending += 1
+        qr = '<div class="video-qr empty"></div>'
+        target = f'<p class="video-url pending">{PENDING_VIDEO_LABEL}</p>'
+        label = "영상 보기"
+
+    # Raw HTML is emitted flush left: an indented line inside a markdown raw
+    # block would be read back as an indented code block.
+    return (
+        '<figure class="video-slot">\n'
+        '<div class="video-row">\n'
+        f"{qr}\n"
+        '<div class="video-body">\n'
+        f'<p class="video-label">{label}</p>\n'
+        f'<p class="video-caption">{html.escape(caption)}</p>\n'
+        f"{target}\n"
+        f'<p class="video-slot-id">{slot_id}</p>\n'
+        "</div>\n"
+        "</div>\n"
+        "</figure>"
+    )
+
+
+def photo_pending_block(note: str, stats: Stats) -> str:
+    stats.photos_pending += 1
+    detail = html.escape(note) if note else "사진"
+    return (
+        '<div class="photo-pending">\n'
+        f"<p>사진 자리 — {detail}</p>\n"
+        "<p>원본 사진 준비 중</p>\n"
+        "</div>"
+    )
+
+
+def text_pending_block(stats: Stats) -> str:
+    stats.chapters_pending_text += 1
+    return (
+        '<div class="notice">\n'
+        '<span class="notice-title">본문 준비 중</span>\n'
+        "<p>이 장의 본문은 원고 확정 후 이 자리에 실립니다.</p>\n"
+        "<p>현재 판에는 저자가 공개한 도입부까지만 수록되어 있습니다.</p>\n"
+        "</div>"
+    )
+
+
+def figure_block(filename: str, caption: str, stats: Stats) -> str:
+    if not (PHOTOS_DIR / filename).exists():
+        stats.photos_pending += 1
+        detail = html.escape(caption) if caption else html.escape(filename)
+        return (
+            '<div class="photo-pending">\n'
+            f"<p>사진 자리 — {detail}</p>\n"
+            f"<p>파일 준비 중: images/photos/{html.escape(filename)}</p>\n"
+            "</div>"
+        )
+    stats.photos_embedded += 1
+    alt = html.escape(caption) or "본문 사진"
+    parts = ['<figure class="photo">', f'<img src="images/photos/{filename}" alt="{alt}" />']
+    if caption:
+        parts.append(f"<figcaption>{caption}</figcaption>")
+    parts.append("</figure>")
+    return "\n".join(parts)
+
+
+def expand(markdown: str, slots: dict, stats: Stats) -> str:
+    markdown = FIGURE_BLOCK.sub(
+        lambda m: figure_block(m.group(1), (m.group(2) or "").strip(), stats), markdown
+    )
+    markdown = VIDEO_MARKER.sub(
+        lambda m: video_block(m.group(1), int(m.group(2)), m.group(3), slots, stats), markdown
+    )
+    markdown = PHOTO_PENDING.sub(lambda m: photo_pending_block(m.group(3), stats), markdown)
+    markdown = TEXT_PENDING.sub(lambda m: text_pending_block(stats), markdown)
+    return markdown
+
+
+def strip_first_heading(markdown: str) -> tuple[str, str]:
+    """Split a leading '# Title' off a manuscript file."""
+    lines = markdown.splitlines()
+    title = ""
+    start = 0
+    for i, line in enumerate(lines):
+        if line.strip():
+            if line.startswith("# "):
+                title = line[2:].strip()
+                start = i + 1
+            break
+    return title, "\n".join(lines[start:]).strip()
+
+
+def title_page(book: dict) -> str:
+    authors = "\n".join(
+        '<p class="author">'
+        f'<span class="author-name">{a["name_ko"]} · {a["name_en"]}</span>'
+        f'<span class="author-credential">{a["credential"]}</span></p>'
+        for a in book["authors"]
+    )
+    return (
+        '<div class="title-page">\n'
+        f'<h1 class="book-title">{book["title"]}</h1>\n'
+        f'<p class="book-subtitle">{book["subtitle"]}</p>\n'
+        '<hr class="title-rule" />\n'
+        '<div class="byline">\n'
+        '<p class="byline-label">지음</p>\n'
+        f"{authors}\n"
+        "</div>\n"
+        "</div>\n"
+    )
+
+
+def colophon(book: dict, stats: Stats) -> str:
+    authors = " · ".join(f'{a["name_ko"]} ({a["name_en"]})' for a in book["authors"])
+    return (
+        '<div class="colophon">\n'
+        "<h1>판권</h1>\n"
+        "<dl>\n"
+        f"<dt>제목</dt><dd>{book['title']}</dd>\n"
+        f"<dt>부제</dt><dd>{book['subtitle']}</dd>\n"
+        f"<dt>지음</dt><dd>{authors}</dd>\n"
+        "<dt>판</dt><dd>작업본 · 영상 주소 미확정</dd>\n"
+        f"<dt>저작권</dt><dd>{book['rights']}</dd>\n"
+        "</dl>\n"
+        "<p>이 책은 교육 자료입니다. 특정한 결과를 보장하지 않으며, "
+        "통증이나 부상이 있는 경우 전문가와 상의한 뒤 적용하기를 권합니다.</p>\n"
+        f"<p>본문의 영상 자리 {stats.videos_pending}곳은 공개 영상 주소가 확정되면 "
+        "QR 코드와 주소가 채워진 판으로 갱신됩니다.</p>\n"
+        "</div>\n"
+    )
+
+
+def read(path) -> str:
+    return path.read_text(encoding="utf-8").strip()
+
+
+def assemble(book: dict, stats: Stats) -> str:
+    slots = slot_lookup()
+    out: list[str] = [title_page(book)]
+
+    for item in book.get("front_matter", []):
+        if item["kind"] == "title-page":
+            continue
+        if item["kind"] == "markdown":
+            body = read(FRONT_MATTER_DIR.parent / item["file"])
+            title, rest = strip_first_heading(body)
+            title = title or item["title"]
+            # Demote so the contents list stops at part and chapter level.
+            rest = expand(demote(rest), slots, stats)
+            out.append(f'# {title} {{#{item["id"]} .front-section}}\n\n{rest}\n')
+
+    for part in book["parts"]:
+        intro = ""
+        if part.get("intro"):
+            intro_path = EBOOK_DIR / part["intro"]
+            if intro_path.exists():
+                intro = read(intro_path)
+        opener = [f'# 파트 {part["number"]} · {part["title"]} {{#{part["id"]} .part-title}}\n']
+        if intro:
+            opener.append(f'<div class="part-intro">\n\n{intro}\n\n</div>\n')
+        out.append("\n".join(opener))
+
+        for chapter in part["chapters"]:
+            path = (
+                EBOOK_DIR / chapter["file"]
+                if chapter.get("file")
+                else MANUSCRIPT_DIR / f'{chapter["id"]}.md'
+            )
+            if not path.exists():
+                print(f"! missing manuscript {path.relative_to(REPO_ROOT)}", file=sys.stderr)
+                continue
+            title, body = strip_first_heading(read(path))
+            title = title or chapter["title"]
+            body = expand(demote(body), slots, stats)
+            # A merged section sits inside its chapter as a sibling of the
+            # chapter's own headings.
+            for section in chapter.get("sections", []):
+                section_path = EBOOK_DIR / section["file"]
+                if not section_path.exists():
+                    print(f"! missing section {section['file']}", file=sys.stderr)
+                    continue
+                section_title, section_body = strip_first_heading(read(section_path))
+                section_body = expand(demote(section_body, 2), slots, stats)
+                body += (
+                    f'\n\n### {section_title or section["title"]} '
+                    f'{{#{section["id"]}}}\n\n{section_body}\n'
+                )
+            out.append(f'## {title} {{#{chapter["id"]} .chapter}}\n\n{body}\n')
+
+    for item in book.get("back_matter", []):
+        if item["kind"] == "chapter":
+            path = MANUSCRIPT_DIR / f'{item["id"]}.md'
+            if not path.exists():
+                continue
+            title, body = strip_first_heading(read(path))
+            body = expand(demote(body), slots, stats)
+            out.append(f'# {title or item["title"]} {{#{item["id"]} .front-section}}\n\n{body}\n')
+        elif item["kind"] == "colophon":
+            out.append(colophon(book, stats))
+
+    return "\n\n".join(out)
+
+
+def metadata_yaml(book: dict) -> str:
+    authors = "\n".join(f'  - {a["name_ko"]} ({a["name_en"]})' for a in book["authors"])
+    return (
+        "---\n"
+        f'title: "{book["title"]}"\n'
+        f'subtitle: "{book["subtitle"]}"\n'
+        "author:\n"
+        f"{authors}\n"
+        f'lang: {book["language"]}\n'
+        f'rights: "{book["rights"]}"\n'
+        f'identifier: {book["identifier"]}\n'
+        "---\n"
+    )
+
+
+def run(cmd: list[str], cwd=None) -> None:
+    result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(" ".join(str(c) for c in cmd), file=sys.stderr)
+        print(result.stdout, file=sys.stderr)
+        print(result.stderr, file=sys.stderr)
+        raise SystemExit(f"command failed: {cmd[0]}")
+    if result.stderr.strip():
+        for line in result.stderr.strip().splitlines():
+            print(f"  pandoc: {line}")
+
+
+def build_epub(book: dict, source, stats: Stats) -> None:
+    dest = DIST_DIR / f'{book["basename"]}.epub'
+    css = BUILD_DIR / "epub-combined.css"
+    css.write_text(
+        read(TEMPLATES_DIR / "common.css") + "\n\n" + read(TEMPLATES_DIR / "epub.css") + "\n",
+        encoding="utf-8",
+    )
+    run(
+        [
+            "pandoc",
+            str(source),
+            "-f",
+            "markdown+raw_html+native_divs",
+            "-t",
+            "epub3",
+            "--toc",
+            "--toc-depth=2",
+            "--split-level=1",
+            "--section-divs",
+            # pandoc ships a broken ko translation table, so name the TOC here.
+            "--metadata=toc-title:차례",
+            f"--css={css}",
+            f'--epub-cover-image={IMAGES_DIR / "cover.png"}',
+            f'--metadata-file={BUILD_DIR / "metadata.yaml"}',
+            f"--resource-path={EBOOK_DIR}",
+            "-o",
+            str(dest),
+        ],
+        cwd=EBOOK_DIR,
+    )
+    print(f"epub: {dest.relative_to(REPO_ROOT)} ({dest.stat().st_size // 1024} KB)")
+
+
+def pdf_cover_html(book: dict) -> str:
+    lines = "".join(f"{line}<br/>" for line in (book.get("cover_title_lines") or [book["title"]]))
+    authors = "\n".join(
+        f'      <span class="cover-author-name">{a["name_ko"]} · {a["name_en"]}</span>'
+        f'<span class="cover-author-credential">{a["credential"]}</span>'
+        for a in book["authors"]
+    )
+    return (
+        '<div class="pdf-cover">\n'
+        '  <div class="cover-frame">\n'
+        "    <div>\n"
+        f'      <p class="cover-title">{lines}</p>\n'
+        '      <hr class="cover-rule" />\n'
+        f'      <p class="cover-subtitle">{book["subtitle"]}</p>\n'
+        "    </div>\n"
+        '    <div class="cover-authors">\n'
+        '      <p class="cover-byline-label">지음</p>\n'
+        f"{authors}\n"
+        "    </div>\n"
+        "  </div>\n"
+        "</div>\n"
+    )
+
+
+def build_pdf(book: dict, source, stats: Stats) -> None:
+    from weasyprint import HTML
+
+    fragment = BUILD_DIR / "print-body.html"
+    run(
+        [
+            "pandoc",
+            str(source),
+            "-f",
+            "markdown+raw_html+native_divs",
+            "-t",
+            "html5",
+            "--section-divs",
+            "--toc",
+            "--toc-depth=2",
+            f'--template={TEMPLATES_DIR / "pandoc-body.html"}',
+            "-o",
+            str(fragment),
+        ],
+        cwd=EBOOK_DIR,
+    )
+    rendered = fragment.read_text(encoding="utf-8")
+    toc_html, _, body_html = rendered.partition("<!--/TOC-->")
+    toc_html = toc_html.replace("<!--TOC-->", "").strip()
+
+    document = (
+        "<!DOCTYPE html>\n"
+        f'<html lang="{book["language"]}">\n<head>\n<meta charset="utf-8" />\n'
+        f'<title>{book["title"]}</title>\n'
+        f'<link rel="stylesheet" href="{(TEMPLATES_DIR / "common.css").as_uri()}" />\n'
+        f'<link rel="stylesheet" href="{(TEMPLATES_DIR / "print.css").as_uri()}" />\n'
+        "</head>\n<body>\n"
+        + pdf_cover_html(book)
+        + '<section class="toc-section" id="toc">\n<h1>차례</h1>\n'
+        + toc_html
+        + "\n</section>\n"
+        + body_html
+        + "\n</body>\n</html>\n"
+    )
+    page = BUILD_DIR / "print.html"
+    page.write_text(document, encoding="utf-8")
+
+    dest = DIST_DIR / f'{book["basename"]}.pdf'
+    HTML(filename=str(page), base_url=str(EBOOK_DIR) + "/").write_pdf(str(dest))
+    print(f"pdf:  {dest.relative_to(REPO_ROOT)} ({dest.stat().st_size // 1024} KB)")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--epub-only", action="store_true")
+    parser.add_argument("--pdf-only", action="store_true")
+    args = parser.parse_args()
+
+    book = load_book()
+    if BUILD_DIR.exists():
+        shutil.rmtree(BUILD_DIR)
+    BUILD_DIR.mkdir(parents=True)
+    DIST_DIR.mkdir(parents=True, exist_ok=True)
+
+    stats = Stats()
+    body = assemble(book, stats)
+    source = BUILD_DIR / "book.md"
+    source.write_text(metadata_yaml(book) + "\n" + body + "\n", encoding="utf-8")
+    (BUILD_DIR / "metadata.yaml").write_text(metadata_yaml(book), encoding="utf-8")
+
+    if not args.pdf_only:
+        build_epub(book, source, stats)
+    if not args.epub_only:
+        # Reset per-render counters so the report is not doubled.
+        pdf_stats = Stats()
+        pdf_body = assemble(book, pdf_stats)
+        source.write_text(metadata_yaml(book) + "\n" + pdf_body + "\n", encoding="utf-8")
+        build_pdf(book, source, pdf_stats)
+        stats = pdf_stats
+
+    print(
+        f"\nphotos embedded: {stats.photos_embedded}   photo slots pending: {stats.photos_pending}\n"
+        f"video slots: {stats.videos_with_url + stats.videos_pending}   "
+        f"with YouTube URL: {stats.videos_with_url}   awaiting URL: {stats.videos_pending}\n"
+        f"chapters awaiting full text: {stats.chapters_pending_text}"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

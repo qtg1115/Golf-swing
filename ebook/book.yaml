@@ -3,11 +3,11 @@
 # Reader-facing video links are intentionally absent: see media/videos.yaml.
 
 # Working title. Stays until the authors decide otherwise.
-title: 내 발이 만드는 스윙 시간
-subtitle: 프로들이 말하는 ‘느낌’을 역학과 운동학으로 풀어내다
+title: 골프 느낌의 실체
+subtitle: 프로가 말하는 감각을 실제 현상으로 풀다
 language: ko
-identifier: nae-bali-mandeuneun-swing-time-ko
-basename: nae-bali-mandeuneun-swing-time
+identifier: golf-neukkimui-silche-ko
+basename: golf-neukkimui-silche
 
 # Three authors, equal billing. Order is fixed for every reader-facing page.
 authors:
@@ -20,6 +20,11 @@ authors:
   - name_ko: 박세인
     name_en: Jason Park
     credential: 마스터 퍼스널트레이너 · 17년
+
+# Explicit cover line break, so the title does not wrap mid-phrase.
+cover_title_lines:
+  - 골프 느낌의
+  - 실체
 
 rights: © 2026 이충원 · 방승호 · 박세인. All rights reserved.
 
@@ -35,19 +40,15 @@ source_publication: https://logicfitko.substack.com
 front_matter:
   - id: title-page
     kind: title-page
-  - id: preface
-    kind: markdown
-    title: 머리말
-    file: front-matter/preface.md
   - id: how-to-read
     kind: markdown
-    title: 이 책을 읽는 방법
+    title: 이 책을 읽는 법
     file: front-matter/how-to-read.md
 
 parts:
   - id: part-1
     number: 1
-    title: 골프 트레이닝을 바라보는 관점
+    title: 느낌은 있는데 스윙이 안 되는 이유
     intro: front-matter/part-1-intro.md
     chapters:
       - id: p1-c1
@@ -59,7 +60,7 @@ parts:
 
   - id: part-2
     number: 2
-    title: 내 스윙을 진단하기
+    title: 내 스윙의 문제를 찾는 법
     intro: front-matter/part-2-intro.md
     chapters:
       - id: p2-c1
@@ -68,7 +69,7 @@ parts:
 
   - id: part-3
     number: 3
-    title: 스윙의 시계 — 어드레스에서 피니시까지
+    title: 스윙 시계 — 느낌이 지나가는 자리
     intro: front-matter/part-3-intro.md
     chapters:
       - id: p3-c1
@@ -92,6 +93,12 @@ parts:
       - id: p3-c7
         slug: chapter-7-6
         title: 챕터 7 · 임팩트 — 다시 6시
+        # The release/foot material was too short to stand as its own part, so it
+        # lives here as a section of the impact chapter.
+        sections:
+          - id: p3-c7-release
+            title: 릴리즈 타이밍은 발바닥에서 달라진다
+            file: manuscript/p3-c7-release.md
       - id: p3-c8
         slug: chapter-8-3
         title: 챕터 8 · 팔로우스루 — 3시
@@ -104,32 +111,22 @@ parts:
 
   - id: part-4
     number: 4
-    title: 릴리즈 타이밍 — 두 발이 만드는 순간
+    title: 샷에 실리는 느낌
     intro: front-matter/part-4-intro.md
     chapters:
       - id: p4-c1
-        source: draft
-        file: manuscript/part-4-release-timing.md
-        title: 두 발이 만드는 릴리즈 타이밍
-
-  - id: part-5
-    number: 5
-    title: 샷 만들기
-    intro: front-matter/part-5-intro.md
-    chapters:
-      - id: p5-c1
         slug: "1"
         title: 테크닉 챕터 1 · 드로우 샷
-      - id: p5-c2
+      - id: p4-c2
         slug: "2"
         title: 테크닉 챕터 2 · 페이드 샷
-      - id: p5-c3
+      - id: p4-c3
         slug: "3"
         title: 테크닉 챕터 3 · 하이 런치 샷
-      - id: p5-c4
+      - id: p4-c4
         slug: "4"
         title: 테크닉 챕터 4 · 스팅어 샷
-      - id: p5-c5
+      - id: p4-c5
         slug: "5"
         title: 테크닉 챕터 5 · 스트레이트 샷
 
@@ -137,6 +134,6 @@ back_matter:
   - id: appendix-a
     kind: chapter
     slug: golf-a
-    title: 부록 A · 골프 스윙 용어 쉽게 이해하기
+    title: 부록 · 프로와 같은 말로 말하기
   - id: colophon
     kind: colophon

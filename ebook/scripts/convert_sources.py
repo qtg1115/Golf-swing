@@ -131,9 +131,9 @@ class Converter:
         self.photo_index += 1
         stem = re.sub(r"[^a-zA-Z0-9]+", "-", origin.rsplit("/", 1)[-1]).strip("-")
         stem = re.sub(r"-(png|jpg|jpeg|webp|gif)$", "", stem, flags=re.I)[:48]
-        ext = (re.search(r"\.(png|jpe?g|webp|gif)", origin, re.I) or [".jpg"])[0].lower()
-        ext = ext if ext.startswith(".") else f".{ext}"
-        filename = f"{self.chapter_id}-{self.photo_index:02d}-{stem}{ext}"
+        # Every book photo is stored as an optimised JPEG regardless of the
+        # source format; build_media.py flattens and resizes on download.
+        filename = f"{self.chapter_id}-{self.photo_index:02d}-{stem}.jpg"
 
         self.photos.append(
             {

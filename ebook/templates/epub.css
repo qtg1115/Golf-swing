@@ -1,0 +1,40 @@
+/* EPUB-specific overrides. Reflowable, so no page geometry here. */
+
+body {
+  font-size: 1em;
+  margin: 0 0.4em;
+}
+
+h1 {
+  margin-top: 1.2em;
+  page-break-before: always;
+}
+
+/* Reading systems handle their own paging; keep flex simple for older engines. */
+.video-row {
+  display: block;
+}
+
+.video-qr {
+  width: 30%;
+  max-width: 140px;
+  height: auto;
+  margin: 0 auto 0.6em;
+}
+
+.video-qr.empty {
+  height: 0;
+  padding-bottom: 30%;
+}
+
+figure.photo img {
+  max-width: 100%;
+}
+
+section.part-title {
+  page-break-before: always;
+}
+
+.title-page {
+  text-align: center;
+}

@@ -12,12 +12,15 @@ Existing youtube_url values in media/videos.yaml are always preserved.
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import re
 import sys
 import time
 import urllib.error
 import urllib.request
+
+from PIL import Image
 
 from paths import (
     MANUSCRIPT_DIR,
@@ -56,6 +59,30 @@ VIDEOS_HEADER = """\
 """
 
 
+# A5 at ~350 dpi needs roughly 1600 px on the long edge; anything more is weight
+# the EPUB and PDF do not use.
+MAX_EDGE = 1600
+JPEG_QUALITY = 92
+
+
+def optimise(data: bytes, dest) -> None:
+    """Flatten onto white, cap the long edge, and store as a progressive JPEG."""
+    with Image.open(io.BytesIO(data)) as image:
+        if image.mode in ("RGBA", "LA", "P"):
+            image = image.convert("RGBA")
+            flattened = Image.new("RGB", image.size, (255, 255, 255))
+            flattened.paste(image, mask=image.split()[-1])
+            image = flattened
+        else:
+            image = image.convert("RGB")
+        if max(image.size) > MAX_EDGE:
+            scale = MAX_EDGE / max(image.size)
+            image = image.resize(
+                (round(image.width * scale), round(image.height * scale)), Image.LANCZOS
+            )
+        image.save(dest, "JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
+
+
 def download(url: str, dest, tries: int = 3) -> bool:
     delay = 3
     for attempt in range(1, tries + 1):
@@ -65,7 +92,7 @@ def download(url: str, dest, tries: int = 3) -> bool:
                 data = resp.read()
             if not data:
                 raise RuntimeError("empty response")
-            dest.write_bytes(data)
+            optimise(data, dest)
             return True
         except (urllib.error.URLError, TimeoutError, RuntimeError) as exc:
             if attempt == tries:
