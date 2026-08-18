@@ -120,27 +120,6 @@
       "status": "present"
     },
     {
-      "file": "p4-c3-01-cd00abc3-ca7d-43a1-9c3b-58bb76251e84-1024x1024.jpg",
-      "chapter": "p4-c3",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/cd00abc3-ca7d-43a1-9c3b-58bb76251e84_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p4-c3-02-395d8339-9aa0-4389-b88c-7be1bd8be3bc-1448x1086.jpg",
-      "chapter": "p4-c3",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/395d8339-9aa0-4389-b88c-7be1bd8be3bc_1448x1086.png",
-      "status": "present"
-    },
-    {
-      "file": "p4-c4-01-892cc66b-26dc-4247-b379-719662ff4fba-1024x1024.jpg",
-      "chapter": "p4-c4",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/892cc66b-26dc-4247-b379-719662ff4fba_1024x1024.png",
-      "status": "present"
-    },
-    {
       "file": "p4-c5-01-7cc5f355-d7d4-4cff-b1ef-9e303d826bff-1024x1024.jpg",
       "chapter": "p4-c5",
       "caption": "",
