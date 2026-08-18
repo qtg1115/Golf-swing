@@ -245,10 +245,10 @@ Three markers keep unfinished material explicit instead of invented:
 | Item | State |
 |---|---|
 | EPUB | builds, 78 images packaged (23 photos + 54 QR + cover), Korean metadata, hierarchical navigation |
-| PDF | builds, 94 pages, A5, Korean fonts render, running heads, folios, contents with page numbers |
-| Photos | 23 embedded, 7 labelled placeholders, more expected with the full manuscript |
-| Videos | **54 of 54 with a QR code and a printed URL, all verified reachable** |
-| Chapter text | 4 chapters complete, 15 awaiting full manuscript, 1 release draft pending |
+| PDF | builds, 197 pages, A5, Korean fonts render, running heads, folios, contents with page numbers |
+| Photos | 23 embedded, 37 labelled 사진 자리 placeholders awaiting files |
+| Videos | **54 of 54 with a QR code and a printed URL, all inline at their authored positions** |
+| Chapter text | **complete** — all 19 chapters + the 챕터 7 release section, no pending markers |
 | Front matter | draft copy, needs author sign-off |
 
 This build is educational material. It makes no swing-fix guarantee, and the
