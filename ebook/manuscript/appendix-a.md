@@ -1,5 +1,7 @@
 # 부록 · 프로와 같은 말로 말하기
 
+다른 장을 읽다 용어가 걸리면 여기로 돌아온다. 이 부록은 사전이다. 스윙을 고치는 장이 아니다.
+
 <figure class="photo">
   <img src="images/photos/appendix-a-01-5c1ed773-e727-4fb1-b315-90d0be364ebf-1024x1024.jpg" alt="appendix-a 사진 1" />
 </figure>
