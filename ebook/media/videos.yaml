@@ -1,0 +1,59 @@
+# Video manifest for 「내 발이 만드는 스윙 시간」
+#
+# POLICY (author instruction):
+#   * Every ebook video is hosted as YouTube UNLISTED on the golf channel.
+#   * Reader-facing links and QR codes use that YouTube watch URL and nothing else.
+#   * Substack URLs are never used as a reader-facing target and never encoded
+#     into a QR code, because those posts are paid/private.
+#   * Until youtube_url is filled in, the build renders an empty QR box with the
+#     label "공개 영상 주소 예정". No URL is invented.
+#
+# substack_media_id is an INTERNAL asset-matching key only. It exists so the
+# original clip can be located for upload. It is never rendered or linked.
+#
+# To publish a video: set youtube_url to the full watch URL, e.g.
+#   youtube_url: https://www.youtube.com/watch?v=XXXXXXXXXXX
+# then re-run scripts/make_qr.py and scripts/build.py.
+
+videos:
+  - id: p3-c6-v01
+    chapter: p3-c6
+    index: 1
+    description: "2. 벤 호건의 느낌을 몸으로 하는 방법"
+    substack_media_id: 1ff8f123-43bc-46c3-b306-741d99578c19
+    youtube_url: null
+
+  - id: p3-c6-v02
+    chapter: p3-c6
+    index: 2
+    description: "2. 벤 호건의 느낌을 몸으로 하는 방법"
+    substack_media_id: ed11fdd1-c3dd-40d1-a136-f88ed8bd8bb4
+    youtube_url: null
+
+  - id: p3-c6-v03
+    chapter: p3-c6
+    index: 3
+    description: "2. 벤 호건의 느낌을 몸으로 하는 방법"
+    substack_media_id: 1e285dd9-5908-4fa1-bec2-db3ffc1ff818
+    youtube_url: null
+
+  - id: p3-c6-v04
+    chapter: p3-c6
+    index: 4
+    description: "첫번째 운동"
+    substack_media_id: 814630e9-d484-4bdb-983d-32329e0de058
+    youtube_url: null
+
+  - id: p3-c6-v05
+    chapter: p3-c6
+    index: 5
+    description: "두번째 운동"
+    substack_media_id: 06094c4b-5e08-4c62-ba0c-d40e2a9acaa4
+    youtube_url: null
+
+  - id: p3-c6-v06
+    chapter: p3-c6
+    index: 6
+    description: "세번째 운동"
+    substack_media_id: 8f60a8e4-8b03-4199-853d-6d8a1d765d70
+    youtube_url: null

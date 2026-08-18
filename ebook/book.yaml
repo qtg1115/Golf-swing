@@ -2,14 +2,30 @@
 # Single source of truth for the ebook build.
 # Reader-facing video links are intentionally absent: see media/videos.yaml.
 
+# Working title. Stays until the authors decide otherwise.
 title: 내 발이 만드는 스윙 시간
-author: 브라이언
-imprint: Logic Performance
+subtitle: 프로들이 말하는 ‘느낌’을 역학과 운동학으로 풀어내다
 language: ko
-subtitle: 지면에서 시작되는 골프 스윙의 타이밍
-rights: © Logic Performance. All rights reserved.
-identifier: logic-performance-nae-bali-swing-time-ko
+identifier: nae-bali-mandeuneun-swing-time-ko
 basename: nae-bali-mandeuneun-swing-time
+
+# Three authors, equal billing. Order is fixed for every reader-facing page.
+authors:
+  - name_ko: 이충원
+    name_en: Logan Lee
+    credential: 캐나다 골프 마스터 티칭 프로
+  - name_ko: 방승호
+    name_en: Bryan Bang
+    credential: 마스터 퍼스널트레이너 · 17년
+  - name_ko: 박세인
+    name_en: Jason Park
+    credential: 마스터 퍼스널트레이너 · 17년
+
+rights: © 2026 이충원 · 방승호 · 박세인. All rights reserved.
+
+# The cover and title page carry no company branding by author instruction:
+# no Logic Performance, no Logic Fitness.
+cover_branding: none
 
 # Substack publication the manuscript was compiled from.
 # NOTE: build-time provenance only. These URLs are paid/private and must never
