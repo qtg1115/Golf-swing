@@ -126,8 +126,11 @@ def check_epub(epub: zipfile.ZipFile, book: dict, report: Report) -> None:
     )
     tiny = [p.name for p in on_disk if p.stat().st_size < 8000]
     report.check(not tiny, "posters are real preview frames, not a tiny mark", ", ".join(tiny[:5]))
-    packaged_names = {n.split("/")[-1] for n in names}
-    missing_posters = [p.name for p in on_disk if p.name not in packaged_names]
+    # Pandoc renames posters to media/fileN.jpg, so match by bytes.
+    packaged_bytes = {
+        epub.read(name) for name in names if name.lower().endswith((".jpg", ".jpeg"))
+    }
+    missing_posters = [p.name for p in on_disk if p.read_bytes() not in packaged_bytes]
     report.check(not missing_posters, "video posters are packaged in the EPUB", ", ".join(missing_posters[:5]))
 
 

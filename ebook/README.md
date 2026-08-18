@@ -320,7 +320,7 @@ Three markers keep unfinished material explicit instead of invented:
 | Item | State |
 |---|---|
 | EPUB | builds, video posters + QR + plates + cover, tappable first-frame play buttons |
-| PDF | builds, A5, Korean fonts render, running heads, folios |
+| PDF | builds, **166 pages**, A5, Korean fonts render, running heads, folios |
 | Photos | 6 챕터 7 stills upright; other marked frames stay empty when the post is paywalled |
 | Videos | **54 of 54** — EPUB: poster button → src; print: QR, no raw URL. All inline |
 | Chapter text | **complete** — all 19 chapters + the 챕터 7 release section, no pending markers |
