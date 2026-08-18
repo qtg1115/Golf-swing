@@ -101,10 +101,18 @@ def escape_md(text: str) -> str:
     return re.sub(r"^(\s*)([#>*+]|\d+\.)(\s)", r"\1\\\2\3", text)
 
 
+def normalise_title(text: str) -> str:
+    return re.sub(r"[\s*·—–\-:]+", "", text).lower()
+
+
 class Converter:
-    def __init__(self, chapter_id: str, slug: str) -> None:
+    def __init__(self, chapter_id: str, slug: str, titles: tuple[str, ...] = ()) -> None:
         self.chapter_id = chapter_id
         self.slug = slug
+        # Substack repeats the post title as the first line of the body. Drop it
+        # so the chapter heading is not printed twice.
+        self.skip_titles = {normalise_title(t) for t in titles if t}
+        self.body_started = False
         self.video_index = 0
         self.photo_index = 0
         self.pending_photo_index = 0
@@ -200,6 +208,9 @@ class Converter:
             return self.figure(figure) if figure else ""
         if name in ("h1", "h2"):
             self.context = heading_text(node)
+            if not self.body_started and normalise_title(self.context) in self.skip_titles:
+                return ""
+            self.body_started = True
             return f"## {self.context}"
         if name == "h3":
             self.context = heading_text(node)
@@ -229,6 +240,9 @@ class Converter:
             text = inline_md(node).strip()
             if not text or any(p.search(text) for p in NOISE_PATTERNS):
                 return ""
+            if not self.body_started and normalise_title(text) in self.skip_titles:
+                return ""
+            self.body_started = True
             if PHOTO_MARKER.fullmatch(text.strip()):
                 return self.photo_marker(text.strip())
             if PHOTO_MARKER.search(text):
@@ -297,7 +311,11 @@ def main() -> int:
             print(f"! no cached source for {slug}; run fetch_sources.py")
             continue
         record = json.loads(source_path.read_text(encoding="utf-8"))
-        converter = Converter(chapter["id"], slug)
+        converter = Converter(
+            chapter["id"],
+            slug,
+            (chapter["title"], record.get("substack_title") or "", record.get("book_title") or ""),
+        )
         body = converter.run(record["body_html"])
 
         lines = [f"# {chapter['title']}", ""]

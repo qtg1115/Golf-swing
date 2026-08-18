@@ -1,4 +1,4 @@
-# 부록 A · 골프 스윙 용어 쉽게 이해하기
+# 부록 · 프로와 같은 말로 말하기
 
 <figure class="photo">
   <img src="images/photos/appendix-a-01-5c1ed773-e727-4fb1-b315-90d0be364ebf-1024x1024.jpg" alt="appendix-a 사진 1" />
