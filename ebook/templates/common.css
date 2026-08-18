@@ -215,9 +215,14 @@ section.part-title > h1 {
   margin-bottom: 1.3em;
 }
 
-section.part-title > .part-intro {
-  margin-top: 1.4em;
+/* The part intro is plain markdown right under the part heading. */
+section.part-title > p {
   color: #3f4742;
+}
+
+section.part-title > p:first-of-type {
+  font-size: 1.05em;
+  margin-bottom: 1.2em;
 }
 
 /* ---------- title page / colophon ---------- */

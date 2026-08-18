@@ -30,6 +30,7 @@ from paths import (
     REPO_ROOT,
     SOURCES_DIR,
     VIDEOS_YAML,
+    load_book,
     load_videos,
 )
 
@@ -40,10 +41,11 @@ PHOTO_PENDING_MARKER = re.compile(r"\[\[PHOTO-PENDING:\s*([^/\]]+?)\s*/\s*(\d+)\
 FIGURE_SRC = re.compile(r'<img[^>]+src="images/photos/([^"]+)"')
 
 VIDEOS_HEADER = """\
-# Video manifest for 「내 발이 만드는 스윙 시간」
+# Video manifest for 「{title}」
 #
 # POLICY (author instruction):
-#   * Every ebook video is hosted as YouTube UNLISTED on the golf channel.
+#   * Every ebook video is hosted as YouTube UNLISTED on the golf channel
+#     ({title}).
 #   * Reader-facing links and QR codes use that YouTube watch URL and nothing else.
 #   * Substack URLs are never used as a reader-facing target and never encoded
 #     into a QR code, because those posts are paid/private.
@@ -165,7 +167,14 @@ def attach_substack_ids(manifest: dict) -> None:
 
 
 def dump_videos(manifest: dict) -> None:
-    lines = [VIDEOS_HEADER, "videos:"]
+    lines = [
+        VIDEOS_HEADER.format(title=load_book()["title"]),
+        "# Total clips in the compiled manuscript inventory, including the ones",
+        "# inside posts whose body is not public yet.",
+        "expected_total_from_manuscript_inventory: 54",
+        "",
+        "videos:",
+    ]
     for slot in manifest["videos"]:
         lines.append(f"  - id: {slot['id']}")
         lines.append(f"    chapter: {slot['chapter']}")

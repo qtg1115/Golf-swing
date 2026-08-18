@@ -237,7 +237,10 @@ def assemble(book: dict, stats: Stats) -> str:
                 intro = read(intro_path)
         opener = [f'# 파트 {part["number"]} · {part["title"]} {{#{part["id"]} .part-title}}\n']
         if intro:
-            opener.append(f'<div class="part-intro">\n\n{intro}\n\n</div>\n')
+            # Left as plain markdown rather than wrapped in a div: the reader runs
+            # with markdown_in_html_blocks disabled so that injected captions are
+            # not re-parsed as markdown.
+            opener.append(f"{intro}\n")
         out.append("\n".join(opener))
 
         for chapter in part["chapters"]:
@@ -320,7 +323,7 @@ def build_epub(book: dict, source, stats: Stats) -> None:
             "pandoc",
             str(source),
             "-f",
-            "markdown+raw_html+native_divs",
+            "markdown+raw_html+native_divs-markdown_in_html_blocks",
             "-t",
             "epub3",
             "--toc",
@@ -374,7 +377,7 @@ def build_pdf(book: dict, source, stats: Stats) -> None:
             "pandoc",
             str(source),
             "-f",
-            "markdown+raw_html+native_divs",
+            "markdown+raw_html+native_divs-markdown_in_html_blocks",
             "-t",
             "html5",
             "--section-divs",

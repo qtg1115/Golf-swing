@@ -1,7 +1,8 @@
-# Video manifest for 「내 발이 만드는 스윙 시간」
+# Video manifest for 「골프 느낌의 실체」
 #
 # POLICY (author instruction):
-#   * Every ebook video is hosted as YouTube UNLISTED on the golf channel.
+#   * Every ebook video is hosted as YouTube UNLISTED on the golf channel
+#     (골프 느낌의 실체).
 #   * Reader-facing links and QR codes use that YouTube watch URL and nothing else.
 #   * Substack URLs are never used as a reader-facing target and never encoded
 #     into a QR code, because those posts are paid/private.
@@ -14,6 +15,10 @@
 # To publish a video: set youtube_url to the full watch URL, e.g.
 #   youtube_url: https://www.youtube.com/watch?v=XXXXXXXXXXX
 # then re-run scripts/make_qr.py and scripts/build.py.
+
+# Total clips in the compiled manuscript inventory, including the ones
+# inside posts whose body is not public yet.
+expected_total_from_manuscript_inventory: 54
 
 videos:
   - id: p3-c6-v01
