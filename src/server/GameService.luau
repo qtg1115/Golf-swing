@@ -5,98 +5,56 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
 local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
 local Util = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"))
-
 local DataService = require(script.Parent.DataService)
+local Progress = require(script.Parent.Progress)
 local ScheduleService = require(script.Parent.ScheduleService)
+local StoryService = require(script.Parent.StoryService)
 
 local GameService = {}
 
-local function notify(player: Player, text: string, tone: string?)
-	Remotes.get("Notify"):FireClient(player, {
-		text = text,
-		tone = tone or "info",
-	})
-end
-
-local function push(player: Player)
-	local profile = DataService.get(player)
-	if not profile then
-		return
-	end
-	DataService.createLeaderstats(player, profile)
-	Remotes.get("ProfileUpdated"):FireClient(player, DataService.publicProfile(profile))
-end
-
-local function addXp(player: Player, profile, amount: number)
-	profile.xp += amount
-	local needed = Util.xpForLevel(profile.level)
-	while profile.xp >= needed do
-		profile.xp -= needed
-		profile.level += 1
-		profile.coins += 20
-		profile.maxEnergy += 4
-		profile.energy = profile.maxEnergy
-		notify(player, string.format("레벨 %d 달성! 용돈과 체력이 올랐어요", profile.level), "good")
-		needed = Util.xpForLevel(profile.level)
-	end
-end
-
-local function bumpQuest(profile, statName: string)
-	profile.stats[statName] = (profile.stats[statName] or 0) + 1
-	for _, quest in Config.Quests do
-		if quest.stat == statName then
-			local state = profile.quests[quest.id]
-			if state and not state.claimed then
-				state.progress = math.min(quest.goal, profile.stats[statName])
-			end
-		end
-	end
-end
-
-local function changeGrade(profile, subject: string, delta: number)
-	if not profile.grades[subject] then
-		return
-	end
-	profile.grades[subject] = Util.clamp(profile.grades[subject] + delta, 0, 100)
-end
+local FLAVOR = {
+	김선생님 = "수업 종이 울리면 교실로 가렴. 레벨이 오르면 불리에게 맞설 수 있어.",
+	민지 = "사물함 뒤에 숨으면 복도 불리를 피할 수 있어!",
+	하늘 = "운동장 쪽이 아직 무서워. 네가 있어 줘서 고마워.",
+	교장선생님 = "친구를 지키는 학생이 우리 학교의 자랑이지.",
+	매점아저씨 = "운동화랑 호루라기가 잘 나가. 불리 대비에 좋지.",
+}
 
 function GameService.attendClass(player: Player, subject: string, roomId: string)
 	local profile = DataService.get(player)
 	if not profile then
 		return
 	end
-
 	local period = ScheduleService.snapshot()
 	if period.kind ~= "class" then
-		notify(player, "지금은 수업 시간이 아니에요. 시간표를 확인하세요!", "warn")
+		Progress.notify(player, "지금은 수업 시간이 아니에요.", "warn")
 		return
 	end
 	if period.room ~= roomId and period.subject ~= subject then
-		notify(player, string.format("지금은 %s 시간이에요. 해당 장소로 이동하세요.", period.name), "warn")
+		Progress.notify(player, string.format("지금은 %s 이에요. 그곳으로 가세요.", period.name), "warn")
 		return
 	end
 	if ScheduleService.didAttend(player.UserId) then
-		notify(player, "이번 교시 수업은 이미 들었어요.", "info")
+		Progress.notify(player, "이번 교시 수업은 이미 들었어요.", "info")
 		return
 	end
 	if profile.energy < Config.Class.energyCost then
-		notify(player, "에너지가 부족해요. 급식을 먹거나 매점에서 간식을 사세요.", "warn")
+		Progress.notify(player, "에너지가 부족해요. 급식이나 초콜릿을 챙기세요.", "warn")
 		return
 	end
 
 	profile.energy -= Config.Class.energyCost
 	profile.coins += Config.Class.coinReward
-	profile.popularity += Config.Class.popularityGain
-	changeGrade(profile, subject, Config.Class.gradeGain)
-	addXp(player, profile, Config.Class.xpReward)
+	profile.courage = Util.clamp(profile.courage + Config.Class.courageGain, 0, profile.maxCourage)
+	if profile.grades[subject] then
+		profile.grades[subject] = Util.clamp(profile.grades[subject] + Config.Class.gradeGain, 0, 100)
+	end
+	Progress.addXp(player, profile, Config.Class.xpReward)
 	ScheduleService.markAttended(player.UserId)
-	bumpQuest(profile, "classesAttended")
-	notify(
-		player,
-		string.format("%s 수업을 들었어요! 성적 +%.1f", Config.SubjectNames[subject] or subject, Config.Class.gradeGain),
-		"good"
-	)
-	push(player)
+	Progress.bump(profile, "classesAttended")
+	Progress.notify(player, string.format("%s 수업 완료! 경험치와 용기가 올랐어요.", Config.SubjectNames[subject] or subject), "good")
+	StoryService.onClass(player)
+	Progress.push(player)
 end
 
 function GameService.eatLunch(player: Player)
@@ -104,24 +62,22 @@ function GameService.eatLunch(player: Player)
 	if not profile then
 		return
 	end
-
 	local period = ScheduleService.snapshot()
 	if period.kind ~= "lunch" then
-		notify(player, "급식은 점심시간에만 먹을 수 있어요.", "warn")
+		Progress.notify(player, "급식은 점심시간에만 먹을 수 있어요.", "warn")
 		return
 	end
 	if profile.lastLunchPeriod == period.id .. period.day then
-		notify(player, "이번 점심은 이미 먹었어요.", "info")
+		Progress.notify(player, "이번 점심은 이미 먹었어요.", "info")
 		return
 	end
-
 	profile.lastLunchPeriod = period.id .. period.day
 	profile.energy = Util.clamp(profile.energy + Config.Lunch.energyRestore, 0, profile.maxEnergy)
-	profile.popularity += Config.Lunch.popularityGain
-	addXp(player, profile, 8)
-	bumpQuest(profile, "lunchesEaten")
-	notify(player, "맛있는 급식을 먹었어요! 에너지가 회복됐습니다.", "good")
-	push(player)
+	profile.courage = Util.clamp(profile.courage + Config.Lunch.courageRestore, 0, profile.maxCourage)
+	Progress.addXp(player, profile, 10)
+	Progress.bump(profile, "lunchesEaten")
+	Progress.notify(player, "급식을 먹었어요. 에너지와 용기가 회복됐습니다.", "good")
+	Progress.push(player)
 end
 
 function GameService.play(player: Player)
@@ -129,24 +85,21 @@ function GameService.play(player: Player)
 	if not profile then
 		return
 	end
-
 	local period = ScheduleService.snapshot()
 	if period.kind == "class" and period.subject == "pe" then
 		GameService.attendClass(player, "pe", "Playground")
 		return
 	end
-
 	if profile.energy < Config.Play.energyCost then
-		notify(player, "놀기엔 에너지가 부족해요.", "warn")
+		Progress.notify(player, "놀기엔 에너지가 부족해요.", "warn")
 		return
 	end
-
 	profile.energy -= Config.Play.energyCost
-	profile.popularity += Config.Play.popularityGain
-	addXp(player, profile, Config.Play.xpReward)
-	bumpQuest(profile, "plays")
-	notify(player, "운동장에서 뛰어 놀았어요! 인기가 올랐습니다.", "good")
-	push(player)
+	profile.courage = Util.clamp(profile.courage + Config.Play.courageGain, 0, profile.maxCourage)
+	Progress.addXp(player, profile, Config.Play.xpReward)
+	Progress.bump(profile, "plays")
+	Progress.notify(player, "운동장에서 몸을 풀었어요.", "good")
+	Progress.push(player)
 end
 
 function GameService.talk(player: Player, npcName: string)
@@ -154,27 +107,20 @@ function GameService.talk(player: Player, npcName: string)
 	if not profile then
 		return
 	end
-
 	local now = os.clock()
-	if now - (profile.lastTalkAt or 0) < Config.Talk.cooldown then
-		notify(player, "조금 뒤에 다시 인사해 보세요.", "info")
+	if StoryService.onTalk(player, npcName) then
+		Progress.bump(profile, "talks")
 		return
 	end
-
+	if now - (profile.lastTalkAt or 0) < 8 then
+		Progress.notify(player, "조금 뒤에 다시 이야기해 보세요.", "info")
+		return
+	end
 	profile.lastTalkAt = now
-	profile.popularity += Config.Talk.popularityGain
-	addXp(player, profile, Config.Talk.xpReward)
-	bumpQuest(profile, "talks")
-
-	local lines = {
-		교장선생님 = "오늘도 성실하게 생활하렴. 성적과 인기 둘 다 중요하다.",
-		김선생 = "수업 종이 울리면 제시간에 교실로 오너라.",
-		이수진 = "점심에 급식실에서 같이 먹자!",
-		박도윤 = "방과후에 매점에서 간식 먹을래?",
-		최하늘 = "체육 시간엔 운동장으로 가야 해!",
-	}
-	notify(player, string.format("%s: %s", npcName, lines[npcName] or "안녕! 오늘 학교 생활 재밌다."), "info")
-	push(player)
+	Progress.bump(profile, "talks")
+	Progress.addXp(player, profile, 4)
+	Progress.notify(player, string.format("%s: %s", npcName, FLAVOR[npcName] or "오늘도 힘내!"), "info")
+	Progress.push(player)
 end
 
 function GameService.study(player: Player)
@@ -183,17 +129,16 @@ function GameService.study(player: Player)
 		return
 	end
 	if profile.energy < 10 then
-		notify(player, "자습하기엔 너무 피곤해요.", "warn")
+		Progress.notify(player, "자습하기엔 너무 피곤해요.", "warn")
 		return
 	end
-
 	profile.energy -= 10
 	for _, key in Config.GradeKeys do
-		changeGrade(profile, key, 0.6)
+		profile.grades[key] = Util.clamp(profile.grades[key] + 0.5, 0, 100)
 	end
-	addXp(player, profile, 10)
-	notify(player, "도서관에서 자습했어요. 전체 성적이 조금 올랐습니다.", "good")
-	push(player)
+	Progress.addXp(player, profile, 12)
+	Progress.notify(player, "도서관에서 자습했어요.", "good")
+	Progress.push(player)
 end
 
 function GameService.locker(player: Player)
@@ -201,61 +146,84 @@ function GameService.locker(player: Player)
 	if not profile then
 		return
 	end
-	local now = os.clock()
-	if now - (profile.lastLockerAt or 0) < 15 then
-		notify(player, "사물함은 잠시 뒤에 다시 열 수 있어요.", "info")
+	if os.clock() - (profile.lastLockerAt or 0) < 12 then
+		Progress.notify(player, "사물함은 잠시 뒤에 다시 열 수 있어요.", "info")
 		return
 	end
-	profile.lastLockerAt = now
-	profile.energy = Util.clamp(profile.energy + 6, 0, profile.maxEnergy)
-	notify(player, "사물함에서 물과 준비물을 챙겼어요. 에너지 +6", "good")
-	push(player)
+	profile.lastLockerAt = os.clock()
+	profile.energy = Util.clamp(profile.energy + 8, 0, profile.maxEnergy)
+	Progress.notify(player, "사물함에서 준비물을 챙겼어요. 뒤에 숨으면 불리를 피할 수 있어요.", "good")
+	Progress.push(player)
+end
+
+function GameService.pickup(player: Player, itemId: string)
+	local profile = DataService.get(player)
+	if not profile or not Config.Items[itemId] then
+		return
+	end
+	Progress.giveItem(player, profile, itemId, 1)
+	Progress.push(player)
 end
 
 function GameService.buy(player: Player, itemId: string)
 	local profile = DataService.get(player)
-	if not profile then
+	local item = Config.Items[itemId]
+	if not profile or not item or item.price <= 0 then
 		return
 	end
-
-	local item
-	for _, entry in Config.ShopItems do
-		if entry.id == itemId then
-			item = entry
-			break
-		end
-	end
-	if not item then
-		notify(player, "없는 상품이에요.", "warn")
-		return
-	end
-	if profile.owned[item.id] and item.id == "uniform" then
-		notify(player, "이미 새 교복을 가지고 있어요.", "info")
+	if item.kind == "equip" and profile.owned[itemId] then
+		Progress.notify(player, "이미 가지고 있어요.", "info")
 		return
 	end
 	if profile.coins < item.price then
-		notify(player, "코인이 부족해요.", "warn")
+		Progress.notify(player, "코인이 부족해요. 수업을 들으면 용돈을 받아요.", "warn")
 		return
 	end
-
 	profile.coins -= item.price
+	Progress.giveItem(player, profile, itemId, 1)
+	if item.kind == "equip" then
+		Progress.applySpeed(player)
+	end
+	StoryService.onBuy(player, itemId)
+	StoryService.syncOwned(player)
+	Progress.push(player)
+end
+
+function GameService.useItem(player: Player, itemId: string)
+	local profile = DataService.get(player)
+	local item = Config.Items[itemId]
+	if not profile or not item then
+		return
+	end
+	if item.kind == "equip" then
+		Progress.notify(player, "장착 아이템은 가지고 있으면 자동으로 효과가 있어요.", "info")
+		return
+	end
+	if (profile.inventory[itemId] or 0) < 1 then
+		Progress.notify(player, "가방에 그 아이템이 없어요.", "warn")
+		return
+	end
+	if item.escape or item.scare then
+		Progress.notify(player, "이 아이템은 불리와 마주쳤을 때 쓰세요.", "info")
+		return
+	end
+	profile.inventory[itemId] -= 1
 	if item.energy then
 		profile.energy = Util.clamp(profile.energy + item.energy, 0, profile.maxEnergy)
 	end
-	if item.popularity then
-		profile.popularity += item.popularity
+	if item.courage then
+		profile.courage = Util.clamp(profile.courage + item.courage, 0, profile.maxCourage)
 	end
 	if item.allGrades then
 		for _, key in Config.GradeKeys do
-			changeGrade(profile, key, item.allGrades)
+			profile.grades[key] = Util.clamp(profile.grades[key] + item.allGrades, 0, 100)
 		end
 	end
-	if item.title then
-		profile.title = item.title
+	if item.xp then
+		Progress.addXp(player, profile, item.xp)
 	end
-	profile.owned[item.id] = true
-	notify(player, string.format("%s을(를) 구매했어요!", item.name), "good")
-	push(player)
+	Progress.notify(player, item.name .. " 을(를) 사용했어요.", "good")
+	Progress.push(player)
 end
 
 function GameService.claimQuest(player: Player, questId: string)
@@ -263,7 +231,6 @@ function GameService.claimQuest(player: Player, questId: string)
 	if not profile then
 		return
 	end
-
 	local quest
 	for _, entry in Config.Quests do
 		if entry.id == questId then
@@ -272,43 +239,33 @@ function GameService.claimQuest(player: Player, questId: string)
 		end
 	end
 	local state = profile.quests[questId]
-	if not quest or not state then
-		return
-	end
-	if state.claimed then
-		notify(player, "이미 보상을 받았어요.", "info")
+	if not quest or not state or state.claimed then
 		return
 	end
 	if (state.progress or 0) < quest.goal then
-		notify(player, "아직 퀘스트를 끝내지 못했어요.", "warn")
+		Progress.notify(player, "아직 끝나지 않은 할 일이에요.", "warn")
 		return
 	end
-
 	state.claimed = true
 	profile.coins += quest.rewardCoins
-	addXp(player, profile, quest.rewardXp)
-	if quest.rewardPopularity then
-		profile.popularity += quest.rewardPopularity
-	end
-	notify(player, string.format("퀘스트 완료: %s", quest.name), "good")
-	push(player)
+	Progress.addXp(player, profile, quest.rewardXp)
+	Progress.notify(player, "할 일 보상: " .. quest.name, "good")
+	Progress.push(player)
 end
 
 function GameService.handleSkip(period, attendedMap)
 	if period.kind ~= "class" then
 		return
 	end
-
 	for _, player in Players:GetPlayers() do
 		local profile = DataService.get(player)
 		if profile and not attendedMap[player.UserId] then
-			profile.stats.skipped += 1
-			profile.popularity = math.max(0, profile.popularity - Config.Class.skipPopularityPenalty)
-			if period.subject then
-				changeGrade(profile, period.subject, -Config.Class.skipGradePenalty)
+			Progress.bump(profile, "skipped")
+			if period.subject and profile.grades[period.subject] then
+				profile.grades[period.subject] = Util.clamp(profile.grades[period.subject] - Config.Class.skipGradePenalty, 0, 100)
 			end
-			notify(player, string.format("%s를 빠졌어요. 성적과 인기가 조금 내려갔습니다.", period.name), "warn")
-			push(player)
+			Progress.notify(player, period.name .. " 를 빠졌어요. 수업은 레벨 올리는 제일 쉬운 방법이에요.", "warn")
+			Progress.push(player)
 		end
 	end
 end
@@ -335,6 +292,12 @@ function GameService.bind()
 				GameService.study(player)
 			elseif interact == "Locker" then
 				GameService.locker(player)
+			elseif interact == "Pickup" then
+				local itemId = instance:GetAttribute("ItemId")
+				if typeof(itemId) == "string" then
+					GameService.pickup(player, itemId)
+					instance:Destroy()
+				end
 			elseif interact == "OpenShop" then
 				Remotes.get("Notify"):FireClient(player, { text = "SHOP_OPEN", tone = "shop" })
 			end
@@ -347,19 +310,21 @@ function GameService.bind()
 	CollectionService:GetInstanceAddedSignal("SchoolInteract"):Connect(bindPrompt)
 
 	Remotes.get("GetProfile").OnServerEvent:Connect(function(player)
-		local profile = DataService.get(player)
-		if profile then
-			Remotes.get("ProfileUpdated"):FireClient(player, DataService.publicProfile(profile))
+		if DataService.get(player) then
+			Progress.push(player)
 			Remotes.get("PeriodChanged"):FireClient(player, ScheduleService.snapshot())
 		end
 	end)
-
 	Remotes.get("BuyItem").OnServerEvent:Connect(function(player, itemId)
 		if typeof(itemId) == "string" then
 			GameService.buy(player, itemId)
 		end
 	end)
-
+	Remotes.get("UseItem").OnServerEvent:Connect(function(player, itemId)
+		if typeof(itemId) == "string" then
+			GameService.useItem(player, itemId)
+		end
+	end)
 	Remotes.get("ClaimQuest").OnServerEvent:Connect(function(player, questId)
 		if typeof(questId) == "string" then
 			GameService.claimQuest(player, questId)

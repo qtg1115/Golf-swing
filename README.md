@@ -1,88 +1,55 @@
-# 스쿨 시뮬레이터
+# 우리학교 대모험
 
-로블록스 스튜디오에서 바로 열고 이어서 작업할 수 있는 **학교 생활 시뮬레이터**입니다.
+한 아이가 전학 온 학교에서 **불리(나쁜 아이)들을 피하거나 맞서며** 학교생활을 하는 스토리 게임입니다.
 
-이 저장소의 `.luau` 파일은 로블록스 게임이 됩니다. 스튜디오로 불러온 뒤 Play를 누르면 캠퍼스, 시간표, 수업, 급식, 매점, 퀘스트가 동작합니다.
+로블록스 스튜디오에서 `SchoolSimulator.rbxlx` 를 **File → Open from File** 로 연 뒤 **Play** 하면 바로 플레이할 수 있습니다.
 
-## 스튜디오로 불러오는 방법
+## 이야기
 
-가장 쉬운 방법은 **Rojo**입니다. 코드는 이 폴더에 두고, 로블록스 스튜디오는 그 코드를 실시간으로 받아 실행합니다.
+1. 첫 등교 — 김선생님을 만난다
+2. 민지가 복도 불리 **왕딱**을 조심하라고 알려 준다
+3. 왕딱을 피하거나 이긴다
+4. 수업을 두 번 들어 레벨을 올린다
+5. 매점에서 **운동화**를 산다
+6. 운동장에서 친구 **하늘**을 구한다
+7. 선생님께 보고하고 **용기 배지**를 받는다
+8. 제일 센 불리 **3학년 형**에게 맞선다
 
-### 1) 한 번만 준비
+## 플레이 방법
 
-1. [로블록스 스튜디오](https://create.roblox.com/docs/studio/setup)를 설치합니다.
-2. Rojo 플러그인을 설치합니다. 가장 쉬운 방법은 이 링크입니다.  
-   https://create.roblox.com/store/asset/13916111004/Rojo  
-   **Get Plugin / Install** 을 누른 뒤 스튜디오 **PLUGINS** 탭에 Rojo가 보이는지 확인하세요.  
-   그림이 있는 자세한 순서는 `STUDIO.md` 에 있습니다.
-3. 컴퓨터에 Rojo CLI를 설치합니다.
+- **WASD** 로 이동, 오브젝트 앞에서 **E** (근접 버튼)
+- 왼쪽 위 **스토리 목표**를 따라 이동하세요
+- 불리에게 잡히면
+  - **도망가기** — 멀리 떨어지면 성공
+  - **숨기** — 초록 덤불/사물함 뒤
+  - **맞서기** — 내 힘이 상대보다 같거나 커야 이김
+  - **아이템** — 친구의 쪽지, 호루라기
+- 수업 = 경험치/레벨/용돈
+- 매점과 가방에서 아이템 사용
 
-```bash
-# Windows (PowerShell)
-irm https://raw.githubusercontent.com/rojo-rbx/rojo/master/scripts/install.ps1 | iex
-```
+## 레벨과 아이템
 
-macOS / Linux는 [Rojo 설치 문서](https://rojo.space/docs/v7/getting-started/installation/)를 따릅니다.
+레벨이 오르면 칭호가 바뀌고 맞서기 힘이 커집니다.
 
-### 2) 이 프로젝트를 스튜디오에 연결
-
-터미널에서 이 저장소 폴더로 들어간 뒤:
-
-```bash
-rojo serve
-```
-
-그다음 로블록스 스튜디오에서
-
-1. **File → New** 로 빈 플레이스를 만듭니다.
-2. 플러그인 **Rojo → Connect** 를 누릅니다.
-3. `localhost:34872` 에 연결합니다.
-
-Explorer에 `ReplicatedStorage/Shared`, `ServerScriptService/Server`, `StarterPlayer/StarterPlayerScripts/Client`가 보이면 성공입니다.
-
-4. **Play** 를 누르면 학교가 생성되고 게임이 시작됩니다.
-
-이후에는 이 폴더의 코드를 수정하면 스튜디오에 바로 반영됩니다. 맵 모양, 수업 시간, 상점 가격, UI 문구를 여기서 바꾼 뒤 스튜디오에서 테스트하면 됩니다.
-
-### 3) 파일로 바로 열기
-
-저장소에 이미 `SchoolSimulator.rbxlx` 가 있습니다. 이 파일을 로블록스 스튜디오에서 **File → Open from File** 으로 열면 됩니다.
-
-코드를 고친 뒤에는 다시 빌드하세요.
-
-```bash
-rojo build -o SchoolSimulator.rbxlx
-```
-
-## 게임에서 할 수 있는 것
-
-- 시간표에 맞춰 교실에 앉아 **수업 듣기**
-- 점심시간에 **급식실**에서 에너지 회복
-- **운동장**에서 놀기, NPC와 인사하기
-- **매점**에서 간식/교복/참고서 구매
-- 오늘 할 일을 끝내고 보상 받기
-- 성적, 인기, 코인, 레벨 성장
-
-조작은 로블록스 기본 이동 + 각 오브젝트 앞의 **근접 버튼(E)** 입니다.
-
-## 코드를 어디서 고치나
-
-| 하고 싶은 일 | 파일 |
+| 아이템 | 효과 |
 | --- | --- |
-| 교시 길이, 과목, 상점, 퀘스트 | `src/shared/Config.luau` |
-| 학교 건물/교실/운동장 배치 | `src/server/SchoolBuilder.luau` |
-| 수업, 급식, 구매, 퀘스트 규칙 | `src/server/GameService.luau` |
-| 시간표 진행 | `src/server/ScheduleService.luau` |
-| NPC 이름과 이동 | `src/server/NPCService.luau` |
-| 화면 UI | `src/client/Hud.luau` |
+| 초콜릿 | 에너지 회복 |
+| 용기 주스 | 용기 회복 |
+| 도시락 | 에너지+용기 |
+| 참고서 | 성적과 경험치 |
+| 호루라기 | 맞서기 힘 +5 |
+| 친구의 쪽지 | 불리에게서 탈출 |
+| 운동화 | 이동 속도 증가 |
+| 용기 배지 | 맞서기 힘 +3 |
 
-스튜디오에서 파트나 GUI를 직접 만들어도 됩니다. 다만 Rojo가 동기화하는 폴더(`Shared`, `Server`, `Client`) 안의 스크립트를 스튜디오에서 직접 고치면, 다음 동기화 때 이 저장소 코드로 덮어쓰일 수 있습니다. 스크립트는 이 폴더에서 수정하는 편이 안전합니다.
+## 스튜디오로 열기
 
-## 스튜디오에서 퍼블리시
+1. `SchoolSimulator.rbxlx` 를 스튜디오에서 엽니다. 홈 화면 최근 항목이 `HTTP 403` 이면 그 카드는 누르지 마세요.
+2. 코드를 계속 고치려면 Rojo 플러그인 + `rojo serve` 로 연결합니다. 설치법은 `STUDIO.md`.
 
-1. 스튜디오에서 Play로 확인합니다.
-2. **File → Publish to Roblox**
-3. 새 게임을 만들거나 기존 게임에 덮어씁니다.
-4. Game Settings에서 게임 이름, 아이콘, 권한을 정합니다.
+고치기 좋은 파일:
 
-데이터 저장(DataStore)을 쓰려면 Game Settings → Security에서 **Enable Studio Access to API Services** 를 켜세요. 꺼져 있어도 스튜디오 테스트는 되고, 재접속 시 진행 상황만 초기화됩니다.
+- `src/shared/Config.luau` — 스토리, 불리 힘, 아이템, 레벨
+- `src/server/BullyService.luau` — 불리 행동
+- `src/server/StoryService.luau` — 이야기 진행
+- `src/client/Hud.luau` — 화면

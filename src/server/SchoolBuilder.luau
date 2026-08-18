@@ -553,6 +553,61 @@ function SchoolBuilder.build()
 	makeLockers(campus, Vector3.new(-10, 0, -1))
 	makeNpcWaypoints(campus)
 
+	local nurse = roomBox(campus, Vector3.new(-42, 0, 72), Vector3.new(24, WALL_HEIGHT, 20), COLORS.brick, Color3.fromRGB(240, 236, 230), "Nurse", "negZ")
+	local bed = part({
+		name = "NurseBed",
+		parent = nurse,
+		size = Vector3.new(8, 1.4, 4),
+		cframe = CFrame.new(-42, 3, 72),
+		color = Color3.fromRGB(240, 240, 250),
+	})
+	billboard(bed, "보건실")
+
+	local hideSpots = {
+		{ Vector3.new(-12, 3, 6), Vector3.new(6, 4, 3), "사물함 뒤" },
+		{ Vector3.new(36, 3, -92), Vector3.new(7, 4, 5), "덤불" },
+		{ Vector3.new(-36, 3, -92), Vector3.new(7, 4, 5), "덤불" },
+		{ Vector3.new(16, 3, 72), Vector3.new(5, 4, 4), "깃대 뒤" },
+	}
+	for index, spot in hideSpots do
+		local bush = part({
+			name = "HideSpot" .. index,
+			parent = campus,
+			size = spot[2],
+			cframe = CFrame.new(spot[1]),
+			color = Color3.fromRGB(48, 120, 62),
+			material = Enum.Material.Grass,
+		})
+		CollectionService:AddTag(bush, "HideSpot")
+		billboard(bush, "숨기: " .. spot[3], Color3.fromRGB(180, 255, 190))
+	end
+
+	local pickups = {
+		{ "chocolate", Vector3.new(8, 3.4, 4), Color3.fromRGB(120, 72, 40) },
+		{ "juice", Vector3.new(-92, 3.4, 8), Color3.fromRGB(255, 140, 80) },
+	}
+	for _, pickup in pickups do
+		local box = part({
+			name = "Pickup_" .. pickup[1],
+			parent = campus,
+			size = Vector3.new(2.4, 2.4, 2.4),
+			cframe = CFrame.new(pickup[2]),
+			color = pickup[3],
+		})
+		tagInteract(box, { Interact = "Pickup", ItemId = pickup[1] })
+		addPrompt(box, "줍기", 0.1)
+		billboard(box, if pickup[1] == "chocolate" then "초콜릿" else "용기 주스")
+	end
+
+	local storyBoard = part({
+		name = "StoryBoard",
+		parent = campus,
+		size = Vector3.new(16, 8, 0.6),
+		cframe = CFrame.new(-22, 8, 58),
+		color = COLORS.sign,
+	})
+	surfaceText(storyBoard, "우리학교 대모험\n불리를 피하거나 이겨라", Enum.NormalId.Front, 28)
+
 	local spawn = Instance.new("SpawnLocation")
 	spawn.Name = "SchoolSpawn"
 	spawn.Anchored = true

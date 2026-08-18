@@ -35,7 +35,7 @@ function Util.deepCopy(value)
 end
 
 function Util.xpForLevel(level: number): number
-	return 80 + (level - 1) * 35
+	return 70 + (level - 1) * 40
 end
 
 function Util.formatTime(seconds: number): string
@@ -43,6 +43,25 @@ function Util.formatTime(seconds: number): string
 	local minutes = math.floor(seconds / 60)
 	local remain = seconds % 60
 	return string.format("%d:%02d", minutes, remain)
+end
+
+function Util.titleForLevel(level: number, titles): string
+	local current = "신입생"
+	for _, entry in titles do
+		if level >= entry.min then
+			current = entry.title
+		end
+	end
+	return current
+end
+
+function Util.confrontPower(profile, config): number
+	local power = profile.level
+	if profile.owned.courage_badge then
+		power += config.Items.courage_badge.power or 3
+	end
+	power += (profile.stats.friendsHelped or 0)
+	return power
 end
 
 return Util

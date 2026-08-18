@@ -8,8 +8,15 @@ local REMOTE_NAMES = {
 	"ProfileUpdated",
 	"PeriodChanged",
 	"Notify",
+	"StoryUpdated",
+	"Dialogue",
 	"BuyItem",
+	"UseItem",
 	"ClaimQuest",
+	"EncounterStart",
+	"EncounterEnd",
+	"EncounterAction",
+	"BullyWarning",
 }
 
 local function getFolder(): Folder
