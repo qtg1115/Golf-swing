@@ -53,7 +53,8 @@ VIDEOS_HEADER = """\
 #       - the author-verified Substack video endpoint
 #         https://logicfitko.substack.com/api/v1/video/upload/{{id}}/src
 #         which redirects to a signed Mux mp4 and needs no login
-#       - a YouTube watch URL (channel: {title}), for anything re-hosted later
+#       - a YouTube watch URL (channel: {channel}, unlisted), for anything
+#         re-hosted later
 #   * Substack POST pages (logicfitko.substack.com/p/…) are paywalled and are
 #     never linked or encoded. scripts/make_qr.py rejects them.
 #   * A slot with no video_url renders an empty QR box labelled
@@ -190,7 +191,10 @@ def merge_videos(found: list[dict]) -> dict:
 
 def dump_videos(manifest: dict) -> None:
     lines = [
-        VIDEOS_HEADER.format(title=load_book()["title"]),
+        VIDEOS_HEADER.format(
+            title=load_book()["title"],
+            channel=load_book().get("video_channel") or "unset",
+        ),
         "# Total clips in the compiled manuscript inventory, including the ones",
         "# inside posts whose body is not public yet.",
         "expected_total_from_manuscript_inventory: 54",

@@ -14,5 +14,5 @@ cd ebook && make
 ```
 
 All 54 videos carry a QR code and a printed URL, each verified reachable without a
-login. See [`ebook/README.md`](ebook/README.md) for the inventory and current
-status.
+login, and are credited to the 느낌골프 channel (unlisted). See
+[`ebook/README.md`](ebook/README.md) for the inventory and current status.

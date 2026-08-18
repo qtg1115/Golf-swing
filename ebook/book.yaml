@@ -29,8 +29,12 @@ cover_title_lines:
 rights: © 2026 이충원 · 방승호 · 박세인. All rights reserved.
 
 # The cover and title page carry no company branding by author instruction:
-# no Logic Performance, no Logic Fitness.
+# no Logic Performance, no Logic Fitness. The video channel is credited on the
+# 판권 (credits) page, not on the cover art.
 cover_branding: none
+
+# Locked channel name for the book's videos, hosted unlisted.
+video_channel: 느낌골프
 
 # Substack publication the manuscript was compiled from.
 # NOTE: build-time provenance only. These URLs are paid/private and must never

@@ -224,20 +224,38 @@ def title_page(book: dict) -> str:
 
 def colophon(book: dict, stats: Stats) -> str:
     authors = " · ".join(f'{a["name_ko"]} ({a["name_en"]})' for a in book["authors"])
+    channel = book.get("video_channel")
+    total_videos = stats.videos_with_url + stats.videos_pending
+    rows = [
+        f"<dt>제목</dt><dd>{book['title']}</dd>",
+        f"<dt>부제</dt><dd>{book['subtitle']}</dd>",
+        f"<dt>지음</dt><dd>{authors}</dd>",
+    ]
+    if channel:
+        rows.append(f"<dt>영상 채널</dt><dd>{channel} (비공개 링크)</dd>")
+    rows.append(f"<dt>저작권</dt><dd>{book['rights']}</dd>")
+
+    notes = [
+        "이 책은 교육 자료입니다. 특정한 결과를 보장하지 않으며, "
+        "통증이나 부상이 있는 경우 전문가와 상의한 뒤 적용하기를 권합니다."
+    ]
+    if channel and total_videos:
+        notes.append(
+            f"본문의 영상 {total_videos}편은 QR 코드와 주소로 바로 볼 수 있으며, "
+            f"{channel} 채널에 비공개(unlisted)로도 함께 올라갑니다."
+        )
+    if stats.videos_pending:
+        notes.append(
+            f"아직 주소가 확정되지 않은 영상 자리 {stats.videos_pending}곳은 "
+            "주소가 정해지면 QR 코드와 함께 채워진 판으로 갱신됩니다."
+        )
+    body = "\n".join(rows)
+    paragraphs = "\n".join(f"<p>{note}</p>" for note in notes)
     return (
         '<div class="colophon">\n'
         "<h1>판권</h1>\n"
-        "<dl>\n"
-        f"<dt>제목</dt><dd>{book['title']}</dd>\n"
-        f"<dt>부제</dt><dd>{book['subtitle']}</dd>\n"
-        f"<dt>지음</dt><dd>{authors}</dd>\n"
-        "<dt>판</dt><dd>작업본 · 영상 주소 미확정</dd>\n"
-        f"<dt>저작권</dt><dd>{book['rights']}</dd>\n"
-        "</dl>\n"
-        "<p>이 책은 교육 자료입니다. 특정한 결과를 보장하지 않으며, "
-        "통증이나 부상이 있는 경우 전문가와 상의한 뒤 적용하기를 권합니다.</p>\n"
-        f"<p>본문의 영상 자리 {stats.videos_pending}곳은 공개 영상 주소가 확정되면 "
-        "QR 코드와 주소가 채워진 판으로 갱신됩니다.</p>\n"
+        f"<dl>\n{body}\n</dl>\n"
+        f"{paragraphs}\n"
         "</div>\n"
     )
 
