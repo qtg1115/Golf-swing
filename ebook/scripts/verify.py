@@ -339,6 +339,13 @@ def check_art(book: dict, epub: zipfile.ZipFile, report: Report) -> None:
         and photo_layout_class(resolve_photo_path(s["dest"])) != "portrait"
     ]
     report.check(not sideways, "챕터 7 gym stills are portrait on disk", ", ".join(sideways))
+    mapped = [s for s in stills if s.get("source_url")]
+    present_mapped = [s["dest"] for s in mapped if resolve_photo_path(s["dest"])]
+    report.check(
+        len(present_mapped) == len(mapped),
+        f"{len(mapped)} Substack author stills on disk",
+        f"{len(present_mapped)} of {len(mapped)}",
+    )
     report.check(
         (EBOOK_DIR / "images/plates/play-mark.png").exists(),
         "play-mark plate drawn",

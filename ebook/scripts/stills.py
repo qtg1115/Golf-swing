@@ -42,9 +42,30 @@ def resolve_photo_path(filename: str) -> Path | None:
 
 
 def still_for_pending(chapter: str, index: int) -> dict | None:
-    for still in load_stills():
-        if still.get("chapter") == chapter and still.get("index") == int(index):
-            return still
+    found = stills_for_pending(chapter, index)
+    return found[0] if found else None
+
+
+def stills_for_pending(chapter: str, index: int) -> list[dict]:
+    """Every still mapped to this PHOTO-PENDING slot, gallery order preserved."""
+    matches = [
+        still
+        for still in load_stills()
+        if still.get("chapter") == chapter and still.get("index") == int(index)
+    ]
+    return sorted(matches, key=lambda s: (s.get("gallery") or 0, s.get("id") or ""))
+
+
+def incoming_for_still(still: dict) -> Path | None:
+    """Match an incoming file to a still by dest name, then by stem."""
+    dest = still.get("dest") or ""
+    if not dest:
+        return None
+    name = Path(dest).name
+    stem = Path(dest).stem
+    for path in incoming_files():
+        if path.name == name or path.stem == stem:
+            return path
     return None
 
 

@@ -38,7 +38,7 @@ from paths import (
     load_book,
     load_videos,
 )
-from stills import photo_layout_class, resolve_photo_path, still_for_pending
+from stills import photo_layout_class, resolve_photo_path, stills_for_pending
 
 FIGURE_MARKER = re.compile(r"\[\[FIGURE:\s*([a-z0-9-]+)\s*\]\](?!\])")
 VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*(.*?)\s*\]\](?!\])")
@@ -194,11 +194,21 @@ def photo_pending_block(
     note: str, stats: Stats, chapter: str | None = None, index: int | None = None
 ) -> str:
     if chapter and index is not None:
-        still = still_for_pending(chapter, int(index))
-        if still:
+        matches = stills_for_pending(chapter, int(index))
+        figures = []
+        for i, still in enumerate(matches):
             path = resolve_photo_path(still["dest"])
             if path:
-                return figure_block(path.name, still.get("caption") or "", stats)
+                caption = still.get("caption") or "" if i == 0 else ""
+                figures.append(figure_block(path.name, caption, stats))
+        if figures:
+            if len(figures) == 1:
+                return figures[0]
+            return (
+                f'<div class="photo-gallery gallery-{len(figures)}">\n'
+                + "\n".join(figures)
+                + "\n</div>"
+            )
     stats.photos_pending += 1
     note = (note or "").strip()
     if not note or GENERIC_PHOTO_NOTE.match(note):

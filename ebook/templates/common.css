@@ -139,6 +139,28 @@ figure.photo figcaption {
   line-height: 1.5;
 }
 
+.photo-gallery {
+  margin: 1.6em 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55em;
+}
+
+.photo-gallery figure.photo {
+  margin: 0;
+  flex: 1 1 42%;
+}
+
+.photo-gallery figure.photo img.portrait {
+  max-width: 100%;
+}
+
+.photo-gallery.gallery-3 figure.photo,
+.photo-gallery.gallery-4 figure.photo {
+  flex: 1 1 30%;
+}
+
 /* ---------- typeset assessment figures ----------
    The 2부 diagrams are markup, not pictures, so the Korean is set in Nanum with
    the rest of the book and stays sharp at A5. Cream panel, pine rules, charcoal

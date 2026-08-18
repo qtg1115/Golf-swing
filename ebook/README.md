@@ -184,8 +184,11 @@ author put one.
   Logic Fitness arch mp4s are not imported. `https://logicfitko.substack.com/p/golf`
   is this same section of 챕터 7, not a new chapter. The matching public stills
   on `/p/a90` carry EXIF orientation 6 and confirm the gym shots stand upright.
-- Other marked stills stay labelled empty frames until a real file is dropped
-  into `images/photos/`. Nothing is generated or substituted.
+- Author iPhone stills from the Korean Substack posts live in `media/stills.yaml`
+  with their public S3 URLs. `make media` fetches them into `images/incoming/`
+  and flattens them (EXIF first) into `images/photos/`. Galleries share one
+  `[사진]` slot. Stock 1024² Golf+club headers, teal/archer diagrams and the
+  hi-launch AI graphic stay out. Slots with no original stay labelled empty.
 - The compiled manuscript inventory counts **64 photos**. The rest sit inside post
   bodies that are still paywalled, so they are not fetchable yet.
 

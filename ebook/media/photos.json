@@ -2,44 +2,177 @@
   "photos": [
     {
       "file": "01-swing-both-feet.jpg",
-      "chapter": "01",
-      "caption": "",
+      "chapter": "p3-c7",
+      "caption": "두 발이 지면과 닿아 있는 방식이 릴리즈의 시점을 결정한다.",
       "source_url": null,
       "status": "present"
     },
     {
+      "file": "p1-c2-01.jpg",
+      "chapter": "p1-c2",
+      "caption": "컵이나 펜을 잡을 때 새끼손가락이 떨어진다.",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/8790232d-e579-48e1-bffc-7f1c7338af83_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p1-c2-02.jpg",
+      "chapter": "p1-c2",
+      "caption": "그립 손",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/501fa047-62d3-4170-a8b9-d776fc936abb_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p1-c2-02b.jpg",
+      "chapter": "p1-c2",
+      "caption": "그립 손",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/de9a7ad8-2ceb-4fde-a273-c2212c8da34e_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p1-c2-03.jpg",
+      "chapter": "p1-c2",
+      "caption": "오른발 셋업",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/987b372d-1025-4599-8121-399392cf250c_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p1-c2-04.jpg",
+      "chapter": "p1-c2",
+      "caption": "왼발 셋업",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/d647a696-a0ae-4b67-b9ff-ffa3dff4747b_3024x4032.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c2-01.jpg",
+      "chapter": "p3-c2",
+      "caption": "암 스윙과 바디 스윙",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/910fa1a0-a33b-4023-a912-83fb1a74fc99_2000x1789.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-01.jpg",
+      "chapter": "p3-c5",
+      "caption": "앞으로 점프",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/05505f32-9133-413d-85ec-59bd50805dea_2000x842.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-02.jpg",
+      "chapter": "p3-c5",
+      "caption": "뒤로 점프",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/60742332-300a-4e37-b79d-720f4f6ad6a1_2000x842.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-03a.jpg",
+      "chapter": "p3-c5",
+      "caption": "클럽 페이스",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/2cee1de1-9ed7-4c7f-bd82-f9cd774b597b_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-03b.jpg",
+      "chapter": "p3-c5",
+      "caption": "클럽 페이스",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/43c50ead-608d-404e-9e37-a5fde92abd82_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-03c.jpg",
+      "chapter": "p3-c5",
+      "caption": "클럽 페이스",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/12a04123-e7c9-4e7d-b505-56dae3ea0cfd_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
       "file": "p3-c7-01-short-arch.jpg",
-      "chapter": "p3",
-      "caption": "",
+      "chapter": "p3-c7",
+      "caption": "짧은 아치",
       "source_url": null,
       "status": "present"
     },
     {
       "file": "p3-c7-02-long-arch.jpg",
-      "chapter": "p3",
-      "caption": "",
+      "chapter": "p3-c7",
+      "caption": "긴 아치",
       "source_url": null,
       "status": "present"
     },
     {
       "file": "p3-c7-03-test-1.jpg",
-      "chapter": "p3",
-      "caption": "",
+      "chapter": "p3-c7",
+      "caption": "테스트 1",
       "source_url": null,
       "status": "present"
     },
     {
       "file": "p3-c7-04-test-2.jpg",
-      "chapter": "p3",
-      "caption": "",
+      "chapter": "p3-c7",
+      "caption": "테스트 2",
       "source_url": null,
       "status": "present"
     },
     {
       "file": "p3-c7-05-test-3.jpg",
-      "chapter": "p3",
-      "caption": "",
+      "chapter": "p3-c7",
+      "caption": "테스트 3",
       "source_url": null,
+      "status": "present"
+    },
+    {
+      "file": "p4-c2-01.jpg",
+      "chapter": "p4-c2",
+      "caption": "페이드 발과 클럽",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/c371ce54-dcf2-4196-b4ed-ef616a6ddb24_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-01a.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/de7803b6-7ba9-45d2-b42a-995a753a9385_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-01b.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/c07a09cd-07c3-4630-a914-fa86c45b34a8_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-01c.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/2f906468-ece5-4e29-a3f6-737639c53d7c_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-02a.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/e822d6cc-4817-4c80-b2d8-eccafb4aa16b_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-02b.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/b663e79e-675f-4cd4-9080-b3bf099d9b4b_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-02c.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/024c13d6-2b6b-4520-b8f7-f53b762059f2_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-02d.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/514fada9-5fca-4ebb-8c30-79ce85240d7a_1729x2305.jpeg",
       "status": "present"
     }
   ],

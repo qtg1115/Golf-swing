@@ -24,7 +24,7 @@ from pathlib import Path
 import yaml
 from PIL import Image
 
-from stills import incoming_files, load_stills, resolve_photo_path, upright
+from stills import incoming_for_still, incoming_files, load_stills, resolve_photo_path, upright
 from paths import (
     MANUSCRIPT_DIR,
     MEDIA_DIR,
@@ -95,7 +95,7 @@ def optimise(data: bytes, dest, rotate_cw: int = 0) -> None:
         image.save(dest, "JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
 
 
-def download(url: str, dest, tries: int = 3) -> bool:
+def fetch_bytes(url: str, tries: int = 3) -> bytes | None:
     delay = 3
     for attempt in range(1, tries + 1):
         try:
@@ -104,15 +104,32 @@ def download(url: str, dest, tries: int = 3) -> bool:
                 data = resp.read()
             if not data:
                 raise RuntimeError("empty response")
-            optimise(data, dest)
-            return True
+            return data
         except (urllib.error.URLError, TimeoutError, RuntimeError) as exc:
             if attempt == tries:
                 print(f"  ! failed {url}: {exc}", file=sys.stderr)
-                return False
+                return None
             time.sleep(delay)
             delay *= 2
-    return False
+    return None
+
+
+def download(url: str, dest, tries: int = 3, rotate_cw: int = 0) -> bool:
+    data = fetch_bytes(url, tries)
+    if not data:
+        return False
+    dest = Path(dest)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(data)
+    return True
+
+
+def download_optimised(url: str, dest, tries: int = 3, rotate_cw: int = 0) -> bool:
+    data = fetch_bytes(url, tries)
+    if not data:
+        return False
+    optimise(data, dest, rotate_cw=rotate_cw)
+    return True
 
 
 def scan_manuscript() -> tuple[list[dict], list[dict], set[str]]:
@@ -225,37 +242,65 @@ def dump_videos(manifest: dict) -> None:
 def ingest_incoming() -> int:
     """Copy author stills from images/incoming/ into images/photos/.
 
-    Files named 01…06 (any suffix) map onto media/stills.yaml in that order.
-    A file already sitting under its dest name is left alone.
+    Each still is matched by dest filename (or stem). The numbered 01…06 drop
+    still maps onto the original 챕터 7 stills only, so new Substack originals
+    sitting in incoming/ do not get zipped onto those six.
     """
+    from stills import INCOMING_DIR
+
     stills = load_stills()
     if not stills:
         return 0
-    incoming = incoming_files()
     written = 0
-    if incoming:
-        pairs = list(zip(incoming, stills))
-        for src, still in pairs:
-            dest = PHOTOS_DIR / still["dest"]
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            optimise(src.read_bytes(), dest, rotate_cw=still.get("rotate_cw") or 0)
-            print(
-                f"  ingested {src.name} -> {dest.relative_to(REPO_ROOT)}"
-                f" rotate_cw={still.get('rotate_cw') or 0}"
-            )
-            written += 1
-    # Re-optimise dest files that were dropped in place as png/webp.
+    numbered = {
+        path.stem: path
+        for path in incoming_files()
+        if path.stem in {f"{n:02d}" for n in range(1, 7)}
+    }
+    ch7 = [s for s in stills if not s.get("source_url") and s.get("dest")]
+    for src, still in zip(
+        [numbered[f"{n:02d}"] for n in range(1, 7) if f"{n:02d}" in numbered],
+        ch7,
+    ):
+        dest = PHOTOS_DIR / still["dest"]
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        optimise(src.read_bytes(), dest, rotate_cw=still.get("rotate_cw") or 0)
+        print(
+            f"  ingested {src.name} -> {dest.relative_to(REPO_ROOT)}"
+            f" rotate_cw={still.get('rotate_cw') or 0}"
+        )
+        written += 1
+
+    INCOMING_DIR.mkdir(parents=True, exist_ok=True)
     for still in stills:
         dest = PHOTOS_DIR / still["dest"]
-        if dest.exists():
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        src = incoming_for_still(still)
+        url = (still.get("source_url") or "").strip()
+        if src is None and url:
+            raw = INCOMING_DIR / still["dest"]
+            if download(url, raw):
+                src = raw
+                print(f"  fetched {still['dest']}")
+        if src is None:
+            if dest.exists():
+                continue
+            found = resolve_photo_path(still["dest"])
+            if found and found.suffix.lower() != ".jpg":
+                optimise(found.read_bytes(), dest, rotate_cw=still.get("rotate_cw") or 0)
+                if found != dest:
+                    found.unlink()
+                print(f"  flattened {found.name} -> {dest.relative_to(REPO_ROOT)}")
+                written += 1
             continue
-        found = resolve_photo_path(still["dest"])
-        if found and found.suffix.lower() != ".jpg":
-            optimise(found.read_bytes(), dest, rotate_cw=still.get("rotate_cw") or 0)
-            if found != dest:
-                found.unlink()
-            print(f"  flattened {found.name} -> {dest.relative_to(REPO_ROOT)}")
-            written += 1
+        if dest.exists() and dest.stat().st_mtime >= src.stat().st_mtime:
+            continue
+        optimise(src.read_bytes(), dest, rotate_cw=still.get("rotate_cw") or 0)
+        print(
+            f"  processed {src.name} -> {dest.relative_to(REPO_ROOT)}"
+            f" rotate_cw={still.get('rotate_cw') or 0}"
+        )
+        written += 1
     return written
 
 
@@ -282,17 +327,19 @@ def main() -> int:
 
     # Photos: everything the manuscript references, plus authored still dests.
     by_file = {p["file"]: p for p in detected.get("photos", [])}
-    for still in load_stills():
+    still_by_dest = {s["dest"]: s for s in load_stills()}
+    for still in still_by_dest.values():
         figures.add(still["dest"])
     photos = []
     for filename in sorted(figures):
         record = by_file.get(filename, {})
+        still = still_by_dest.get(filename, {})
         photos.append(
             {
                 "file": filename,
-                "chapter": record.get("chapter") or filename.split("-")[0],
-                "caption": record.get("caption", ""),
-                "source_url": record.get("source_url"),
+                "chapter": still.get("chapter") or record.get("chapter") or filename.split("-")[0],
+                "caption": still.get("caption") or record.get("caption", ""),
+                "source_url": still.get("source_url") or record.get("source_url"),
             }
         )
 
@@ -307,7 +354,7 @@ def main() -> int:
             photo["status"] = "missing"
             missing += 1
             continue
-        if download(photo["source_url"], dest):
+        if download_optimised(photo["source_url"], dest):
             photo["status"] = "downloaded"
             downloaded += 1
         else:
