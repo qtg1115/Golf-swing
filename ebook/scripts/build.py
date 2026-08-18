@@ -22,6 +22,7 @@ import shutil
 import subprocess
 import sys
 
+from figures import load_figures, render as render_figure
 from paths import (
     BUILD_DIR,
     DIST_DIR,
@@ -37,6 +38,7 @@ from paths import (
     load_videos,
 )
 
+FIGURE_MARKER = re.compile(r"\[\[FIGURE:\s*([a-z0-9-]+)\s*\]\](?!\])")
 VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*(.*?)\s*\]\](?!\])")
 PHOTO_PENDING = re.compile(r"\[\[PHOTO-PENDING:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*(.*?)\s*\]\](?!\])")
 TEXT_PENDING = re.compile(r"\[\[MANUSCRIPT-PENDING:\s*(.*?)\s*\]\](?!\])")
@@ -55,6 +57,9 @@ FIGURE_SRC = re.compile(r'<img[^>]+src="images/photos/([^"]+)"')
 
 PENDING_VIDEO_LABEL = "공개 영상 주소 예정"
 
+# Assessment figures are typeset, not drawn, so they load once per build.
+FIGURES = load_figures()
+
 
 class Stats:
     def __init__(self) -> None:
@@ -65,6 +70,7 @@ class Stats:
         self.chapters_pending_text = 0
         self.videos_appended = 0
         self.photos_auto_placed = 0
+        self.figures_typeset = 0
         # Slot ids already laid out, so a chapter appendix does not repeat them.
         self.placed: set[str] = set()
 
@@ -252,7 +258,18 @@ def expand_bare_markers(markdown: str, chapter_id: str, slots: dict, stats: Stat
     return BARE_PHOTO.sub(photo, markdown)
 
 
+def diagram_block(figure_id: str, stats: Stats) -> str:
+    """A typeset assessment figure, or a loud gap if the id is unknown."""
+    markup = render_figure(figure_id, FIGURES)
+    if not markup:
+        print(f"! unknown figure id: {figure_id}", file=sys.stderr)
+        return f'<div class="photo-pending">\n<p>그림 자리 — {html.escape(figure_id)}</p>\n</div>'
+    stats.figures_typeset += 1
+    return markup
+
+
 def expand(markdown: str, slots: dict, stats: Stats, chapter_id: str | None = None) -> str:
+    markdown = FIGURE_MARKER.sub(lambda m: diagram_block(m.group(1), stats), markdown)
     markdown = FIGURE_BLOCK.sub(
         lambda m: figure_block(m.group(1), (m.group(2) or "").strip(), stats), markdown
     )
@@ -611,6 +628,7 @@ def main() -> int:
         f"  of those, {stats.videos_appended} collected at chapter end "
         f"(no marker position in the manuscript yet)\n"
         f"photos auto-placed from a [사진] marker: {stats.photos_auto_placed}\n"
+        f"figures typeset from figures.yaml: {stats.figures_typeset}\n"
         f"chapters awaiting full text: {stats.chapters_pending_text}"
     )
     return 0

@@ -199,6 +199,52 @@ COVER_FORBIDDEN = (
 )
 
 
+# Five AI-generated images the author rejected: four teal/navy infographics and a
+# photoreal golfer. They are replaced by typeset figures and a drawn plate, and
+# must not come back through a refetch.
+RETIRED_IMAGES = (
+    "p2-c1-02",
+    "p2-c1-03",
+    "p2-c1-04",
+    "p2-c1-05",
+    "p4-c3-02",
+)
+FIGURE_MARKER = re.compile(r"\[\[FIGURE:\s*([a-z0-9-]+)\s*\]\]")
+
+
+def check_figures(report: Report) -> None:
+    """Typeset figures resolve, and the rejected images stay gone."""
+    from figures import load_figures
+
+    figures = load_figures()
+    unknown: list[str] = []
+    used = 0
+    for path in MANUSCRIPT_DIR.glob("*.md"):
+        for figure_id in FIGURE_MARKER.findall(path.read_text(encoding="utf-8")):
+            used += 1
+            if figure_id not in figures:
+                unknown.append(f"{path.name}: {figure_id}")
+    report.check(not unknown, "every figure marker resolves in figures.yaml", "; ".join(unknown))
+    report.note(f"{used} typeset figure(s) placed from figures.yaml")
+
+    on_disk = [p.name for p in PHOTOS_DIR.glob("*") if any(r in p.name for r in RETIRED_IMAGES)]
+    report.check(not on_disk, "no rejected AI image left on disk", ", ".join(on_disk))
+
+    referenced: list[str] = []
+    for path in MANUSCRIPT_DIR.glob("*.md"):
+        text = path.read_text(encoding="utf-8")
+        referenced += [f"{path.name}: {r}" for r in RETIRED_IMAGES if r in text]
+    report.check(not referenced, "no rejected AI image referenced", "; ".join(referenced))
+
+    # A picture figure has to be a drawn plate, never a photo path.
+    photo_plates = [
+        fid
+        for fid, fig in figures.items()
+        if fig.get("plate") and "images/plates/" not in str(fig["plate"])
+    ]
+    report.check(not photo_plates, "figure plates come from images/plates", ", ".join(photo_plates))
+
+
 def check_art(book: dict, epub: zipfile.ZipFile, report: Report) -> None:
     """Cover art and part plates: present, packaged, and free of stray marks."""
     art = book.get("cover_art")
@@ -263,6 +309,9 @@ def main() -> int:
 
     print("cover and plates")
     check_art(book, epub, report)
+
+    print("typeset figures")
+    check_figures(report)
 
     print("reader-facing links")
     check_no_substack(epub, pdf_bytes, report)

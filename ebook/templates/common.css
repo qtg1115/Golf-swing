@@ -97,6 +97,185 @@ figure.photo figcaption {
   line-height: 1.5;
 }
 
+/* ---------- typeset assessment figures ----------
+   The 2부 diagrams are markup, not pictures, so the Korean is set in Nanum with
+   the rest of the book and stays sharp at A5. Cream panel, pine rules, charcoal
+   type: the same palette as the drawn plates. */
+
+figure.diagram {
+  margin: 1.8em 0;
+  padding: 1em 1.1em 0.9em;
+  background: var(--paper);
+  border-top: 0.9pt solid var(--accent);
+  border-bottom: 0.4pt solid var(--rule);
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  text-align: left;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.diagram-title {
+  font-weight: 700;
+  font-size: 0.95em;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  margin: 0 0 0.15em;
+  text-align: left;
+}
+
+.diagram-flow {
+  font-size: 0.78em;
+  color: var(--accent);
+  margin: 0 0 0.9em;
+  text-align: left;
+}
+
+.diagram-footer {
+  font-size: 0.76em;
+  color: var(--muted);
+  margin: 0.85em 0 0;
+  padding-top: 0.5em;
+  border-top: 0.4pt solid var(--rule);
+  text-align: left;
+}
+
+figure.diagram ol,
+figure.diagram ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+figure.diagram li {
+  margin: 0 0 0.5em;
+  text-align: left;
+  line-height: 1.5;
+}
+
+figure.diagram li:last-child { margin-bottom: 0; }
+
+/* Steps carry their own number, drawn as an inked counter rather than a badge. */
+figure.diagram ol.steps { counter-reset: step; }
+
+ol.steps li {
+  counter-increment: step;
+  padding-left: 7.5mm;
+  position: relative;
+}
+
+ol.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  width: 4.6mm;
+  height: 4.6mm;
+  line-height: 4.6mm;
+  text-align: center;
+  border: 0.5pt solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 0.72em;
+  font-weight: 700;
+}
+
+.step-title {
+  display: block;
+  font-weight: 700;
+  font-size: 0.86em;
+  color: var(--ink);
+}
+
+.step-body {
+  display: block;
+  font-size: 0.78em;
+  color: #4a5250;
+}
+
+/* A ball result and the segments it points at. */
+.path-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.84em;
+  color: var(--ink);
+}
+
+.path-route {
+  display: block;
+  font-size: 0.78em;
+  color: #4a5250;
+}
+
+/* Eight stages, stacked: an eight-across row cannot hold Korean at A5. */
+figure.diagram ol.stages { counter-reset: stage; }
+
+ol.stages li {
+  counter-increment: stage;
+  padding-left: 6.5mm;
+  position: relative;
+  margin-bottom: 0.35em;
+}
+
+ol.stages li::before {
+  content: counter(stage);
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  font-size: 0.74em;
+  font-weight: 700;
+}
+
+.stage-name {
+  font-weight: 700;
+  font-size: 0.82em;
+  color: var(--ink);
+}
+
+.stage-question {
+  font-size: 0.79em;
+  color: #4a5250;
+  margin-left: 1.6mm;
+}
+
+/* The quick map: one problem per block, two labelled lines under it. */
+ul.map li {
+  margin-bottom: 0.6em;
+  padding-bottom: 0.55em;
+  border-bottom: 0.3pt dotted var(--rule);
+}
+
+ul.map li:last-child { border-bottom: 0; padding-bottom: 0; }
+
+.map-problem {
+  display: block;
+  font-weight: 700;
+  font-size: 0.84em;
+  color: var(--ink);
+  margin-bottom: 0.1em;
+}
+
+.map-line { display: block; font-size: 0.76em; line-height: 1.45; }
+
+.map-key {
+  display: inline-block;
+  min-width: 22mm;
+  color: var(--accent);
+}
+
+.map-value { color: #4a5250; }
+
+/* The one figure that really is a picture. */
+figure.diagram.plate { text-align: center; padding-bottom: 1em; }
+
+figure.diagram.plate img {
+  width: 100%;
+  max-width: 96mm;
+  height: auto;
+}
+
+figure.diagram.plate .diagram-title { text-align: center; }
+
 /* ---------- video slot ----------
    No URL and no QR until a YouTube unlisted link exists for the slot.
    Substack links are never used here: those posts are paid/private. */

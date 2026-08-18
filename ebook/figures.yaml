@@ -1,0 +1,100 @@
+# Typeset figures for the 2부 어세스먼트 로드맵, plus the 4부 plate.
+#
+# These replace five AI-generated images the author rejected. Nothing here is a
+# raster of Hangul: the strings below are set in Nanum at build time by
+# scripts/figures.py, so the type stays sharp at A5 and can be corrected in one
+# place. The wording is the author's own — the diagnostic mappings are lifted
+# from the 최종 로드맵 표 and the 자가 평가표 in manuscript/p2-c1.md — with the
+# roadmap's third step retargeted forward to 3부, which is where this book puts
+# the clock chapters.
+
+figures:
+  roadmap:
+    kind: steps
+    title: 스윙 어세스먼트 로드맵
+    flow: 문제 발견 → 원인 추적 → 3부에서 볼 챕터
+    steps:
+      - title: 공의 결과 확인
+        body: 밀림 · 감김 · 뒤땅 · 탑핑 · 비거리
+      - title: 스윙 구간 점검
+        body: 어드레스 → 테이크어웨이 → 백스윙 → 전환 → 다운스윙 → 임팩트 → 3시 팔로우스루 → 피니시
+      - title: 해당 챕터 연결
+        body: 문제가 보인 지점보다 한 단계 앞 챕터부터 3부에서 펼치기
+    footer: 좋은 교정은 결과가 아니라 원인을 찾는 것에서 시작된다.
+
+  ball-result:
+    kind: paths
+    title: 1단계 · 공의 결과로 진단하기
+    rows:
+      - label: 오른쪽 밀림
+        path: 어드레스 → 백스윙 → 다운스윙 → 3시 팔로우스루
+      - label: 왼쪽 감김
+        path: 어드레스 → 테이크어웨이 → 전환 → 임팩트 → 팔로우스루
+      - label: 뒤땅
+        path: 어드레스 → 중심축 → 체중 이동 → 임팩트
+      - label: 탑핑
+        path: 어드레스 → 척추 각도 → 다운스윙 → 임팩트 → 피니시
+      - label: 비거리 부족
+        path: 그립 → 어드레스 → 백스윙 → 전환 → 임팩트 → 팔로우스루
+    footer: 결과는 단서이고, 원인은 스윙 과정 속에 있다.
+
+  stage-check:
+    kind: stages
+    title: 2단계 · 스윙 구간별 자가 평가
+    stages:
+      - name: 어드레스
+        question: 정렬과 균형이 맞는가
+      - name: 테이크어웨이
+        question: 몸과 팔이 함께 움직이는가
+      - name: 백스윙
+        question: 회전과 균형이 유지되는가
+      - name: 전환
+        question: 하체가 먼저 시작되는가
+      - name: 다운스윙
+        question: 클럽이 몸 앞에서 내려오는가
+      - name: 임팩트
+        question: 체중이 왼발로 이동했는가
+      - name: 3시 팔로우스루
+        question: 클럽이 길게 빠져나가는가
+      - name: 피니시
+        question: 3초간 균형을 유지하는가
+    footer: 문제는 보이는 지점보다 한 단계 앞에서 시작되는 경우가 많다.
+
+  quick-map:
+    kind: map
+    title: 빠른 진단 맵
+    labels:
+      check: 먼저 점검
+      chapters: 3부에서 볼 챕터
+    rows:
+      - problem: 슬라이스
+        check: 그립, 어드레스, 다운스윙 궤도
+        chapters: 그립 / 어드레스 / 다운스윙 / 임팩트
+      - problem: 훅
+        check: 그립, 손목 사용, 몸 회전 정지
+        chapters: 그립 / 백스윙 / 임팩트 / 팔로우스루
+      - problem: 뒤땅
+        check: 체중 이동, 최저점, 몸의 높이
+        chapters: 어드레스 / 백스윙 / 다운스윙 / 임팩트
+      - problem: 탑핑
+        check: 척추각, 몸 일어남, 팔 펴짐
+        chapters: 어드레스 / 다운스윙 / 임팩트 / 피니시
+      - problem: 비거리 부족
+        check: 백스윙 꼬임, 전환 순서, 임팩트 전달
+        chapters: 백스윙 / 전환 / 임팩트 / 팔로우스루
+      - problem: 방향성 불안
+        check: 정렬, 페이스, 궤도
+        chapters: 어드레스 / 테이크어웨이 / 다운스윙 / 임팩트
+      - problem: 팔로우스루 어색함
+        check: 임팩트 전 회전 부족
+        chapters: 다운스윙 / 임팩트 / 3시 팔로우스루
+      - problem: 피니시 불안정
+        check: 체중 이동, 회전 방향, 균형
+        chapters: 다운스윙 / 팔로우스루 / 피니시
+    footer: 증상 확인 → 구간 점검 → 해당 챕터 확인
+
+  hi-launch:
+    kind: plate
+    # Drawn by scripts/make_plates.py: one high arc, no person and no course.
+    plate: images/plates/fig-hi-launch.jpg
+    alt: 높은 탄도 하나가 솟아올라 짧게 떨어지는 그림

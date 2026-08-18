@@ -444,6 +444,35 @@ def part4_arcs() -> None:
     plate.save("part-4-arcs.jpg")
 
 
+def figure_hi_launch() -> None:
+    """4부 챕터 3 — one high launch and a short landing.
+
+    Replaces a photoreal golfer on a mountain course. No person, no face, no
+    fairway, no club: the chapter is about the shape of the flight, so the plate
+    draws only the flight.
+    """
+    # Shorter frame than a part plate: this one sits inline, so it should not
+    # carry a part opener's worth of empty paper.
+    plate = Plate((1500, 820), seed=7701)
+    w, h = plate.w * SS, plate.h * SS
+    ground = h * 0.90
+    launch = (w * 0.20, ground)
+
+    img, draw = plate.canvas()
+    bar(draw, w * 0.04, ground, w * 0.96, ground, w * 0.0045)
+    plate.press(img, CHARCOAL, bite=0.34, soften=8, starve=0.88, wear=0.34)
+
+    img, draw = plate.canvas()
+    # The control sits above the frame so the flight actually climbs: a quadratic
+    # only reaches halfway to its control point.
+    end = (w * 0.80, ground)
+    bezier(draw, launch, (w * 0.50, -h * 0.30), end, w * 0.0034)
+    # It lands steeply and stops, so the mark ends on the ground.
+    dot(draw, end[0], end[1] - h * 0.008, w * 0.0075)
+    plate.press(img, CHARCOAL, bite=0.11, soften=2, starve=0.995, wear=0.10)
+    plate.save("fig-hi-launch.jpg")
+
+
 def appendix_mark() -> None:
     """부록 — a small index mark, nothing figurative.
 
@@ -469,6 +498,7 @@ def main() -> int:
     part2_grid()
     part3_clock()
     part4_arcs()
+    figure_hi_launch()
     appendix_mark()
     return 0
 
