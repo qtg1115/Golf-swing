@@ -38,8 +38,8 @@ from paths import (
 
 UA = "Mozilla/5.0 (compatible; LogicPerformance-ebook-build/1.0)"
 
-VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*([^\]]*?)\s*\]\]")
-PHOTO_PENDING_MARKER = re.compile(r"\[\[PHOTO-PENDING:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*([^\]]*?)\s*\]\]")
+VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*(.*?)\s*\]\](?!\])")
+PHOTO_PENDING_MARKER = re.compile(r"\[\[PHOTO-PENDING:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*(.*?)\s*\]\](?!\])")
 FIGURE_SRC = re.compile(r'<img[^>]+src="images/photos/([^"]+)"')
 
 VIDEOS_HEADER = """\

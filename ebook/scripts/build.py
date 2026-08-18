@@ -37,9 +37,9 @@ from paths import (
     load_videos,
 )
 
-VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*([^\]]*?)\s*\]\]")
-PHOTO_PENDING = re.compile(r"\[\[PHOTO-PENDING:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*([^\]]*?)\s*\]\]")
-TEXT_PENDING = re.compile(r"\[\[MANUSCRIPT-PENDING:\s*([^\]]+?)\s*\]\]")
+VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*(.*?)\s*\]\](?!\])")
+PHOTO_PENDING = re.compile(r"\[\[PHOTO-PENDING:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*(.*?)\s*\]\](?!\])")
+TEXT_PENDING = re.compile(r"\[\[MANUSCRIPT-PENDING:\s*(.*?)\s*\]\](?!\])")
 FIGURE_BLOCK = re.compile(
     r'<figure class="photo">\s*<img src="images/photos/([^"]+)"[^>]*/?>\s*'
     r'(?:<figcaption>(.*?)</figcaption>\s*)?</figure>',

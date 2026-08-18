@@ -28,7 +28,7 @@ ALLOWED_SUBSTACK = re.compile(
     re.I,
 )
 IMG_SRC = re.compile(rb'src="([^"]+\.(?:jpe?g|png))"')
-VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/")
+VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/")  # note may contain brackets
 
 
 class Report:
