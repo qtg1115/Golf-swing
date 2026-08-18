@@ -60,7 +60,7 @@ parts:
         title: 골프 트레이닝에 대한 생각
       - id: p1-c2
         slug: 05f
-        title: 골프를 배워도 잘 안되는 이유
+        title: 골프를 배워도 잘 안 되는 이유
 
   - id: part-2
     number: 2

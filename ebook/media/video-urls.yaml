@@ -14,7 +14,7 @@
 base: https://logicfitko.substack.com/api/v1/video/upload/{id}/src
 
 chapters:
-  # 1부 · 골프를 배워도 잘 안되는 이유
+  # 1부 · 골프를 배워도 잘 안 되는 이유
   p1-c2:
     - 2a3340b4-1ff9-43bc-b2cb-6c1a9d58aab5
 

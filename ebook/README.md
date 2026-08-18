@@ -64,7 +64,7 @@ other Substack URL reaches the EPUB or the PDF.
 
 | Chapter | Videos | Placement |
 |---|---|---|
-| 1부 · 골프를 배워도 잘 안되는 이유 | 1 | inline |
+| 1부 · 골프를 배워도 잘 안 되는 이유 | 1 | inline |
 | 3부 · 챕터 1 어드레스 — 6시 | 2 | inline |
 | 3부 · 챕터 2 테이크어웨이 — 7시 | 8 | inline |
 | 3부 · 챕터 3 백스윙 하프웨이 — 9시 | 8 | inline |
@@ -147,7 +147,7 @@ belongs. **No chapter body has been written, paraphrased, or padded out.**
 | Chapter | Part | Source | Text | Photos | Videos |
 |---|---|---|---|---|---|
 | 골프 트레이닝에 대한 생각 | 1부 | `womakers` | full | 0 | 0 |
-| 골프를 배워도 잘 안되는 이유 | 1부 | `05f` | full | 1 | 0 |
+| 골프를 배워도 잘 안 되는 이유 | 1부 | `05f` | full | 1 | 0 |
 | 나의 스윙 문제를 찾는 어세스먼트 로드맵 | 2부 | `434` | full | 5 | 0 |
 | 챕터 1 · 어드레스 — 6시 | 3부 | `1-6` | full | 1 | 0 |
 | 챕터 2 · 테이크어웨이 — 7시 | 3부 | `chapter-2-takeaway-7` | full | 1 | 0 |

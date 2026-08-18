@@ -59,7 +59,7 @@ videos:
   - id: p3-c2-v02
     chapter: p3-c2
     index: 2
-    description: "2) 하체 셋팅 후 가슴을 움직이기"
+    description: "2) 하체 세팅 후 가슴을 움직이기"
     substack_media_id: 62bc49d0-7aba-4c0e-8f00-ea56ee4d80eb
     video_url: https://logicfitko.substack.com/api/v1/video/upload/62bc49d0-7aba-4c0e-8f00-ea56ee4d80eb/src
     inline: true
@@ -67,7 +67,7 @@ videos:
   - id: p3-c2-v03
     chapter: p3-c2
     index: 3
-    description: "2) 하체 셋팅 후 가슴을 움직이기"
+    description: "2) 하체 세팅 후 가슴을 움직이기"
     substack_media_id: ebf25adb-eb8a-4d5c-a12e-252fd06d3832
     video_url: https://logicfitko.substack.com/api/v1/video/upload/ebf25adb-eb8a-4d5c-a12e-252fd06d3832/src
     inline: true
@@ -75,7 +75,7 @@ videos:
   - id: p3-c2-v04
     chapter: p3-c2
     index: 4
-    description: "2) 하체 셋팅 후 가슴을 움직이기"
+    description: "2) 하체 세팅 후 가슴을 움직이기"
     substack_media_id: a7d0974e-2e6c-4066-881d-0d8942b4cf82
     video_url: https://logicfitko.substack.com/api/v1/video/upload/a7d0974e-2e6c-4066-881d-0d8942b4cf82/src
     inline: true
@@ -171,7 +171,7 @@ videos:
   - id: p3-c3-v08
     chapter: p3-c3
     index: 8
-    description: "네번째 운동"
+    description: "네 번째 운동"
     substack_media_id: c79e3665-0222-48fe-9014-323a6bff2039
     video_url: https://logicfitko.substack.com/api/v1/video/upload/c79e3665-0222-48fe-9014-323a6bff2039/src
     inline: true
