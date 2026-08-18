@@ -189,7 +189,7 @@ author put one.
   and flattens them (EXIF first) into `images/photos/`. Galleries share one
   `[사진]` slot. Stock 1024² Golf+club headers stay out. The author's archer,
   foot, roadmap and hi-launch body graphics are the Substack originals and
-  are embedded. p3-c9 #1 stays empty — that gap is videos, not a still.
+  are embedded. The old p3-c9 “(사진첨부)” marker is gone — that gap was videos.
 - The compiled manuscript inventory counts **64 photos**. The rest sit inside post
   bodies that are still paywalled, so they are not fetchable yet.
 
@@ -325,7 +325,7 @@ Three markers keep unfinished material explicit instead of invented:
 |---|---|
 | EPUB | builds, video posters + QR + plates + cover, tappable first-frame play buttons |
 | PDF | builds, **188 pages**, A5, Korean fonts render, running heads, folios |
-| Photos | 52 on disk (6 챕터 7 + 46 Substack originals); only p3-c9 #1 stays empty |
+| Photos | 52 on disk (6 챕터 7 + 46 Substack originals); no empty [사진] slots |
 | Videos | **54 of 54** — EPUB: poster button → src; print: QR, no raw URL. All inline |
 | Chapter text | **complete** — all 19 chapters + the 챕터 7 release section, no pending markers |
 | Front matter | draft copy, needs author sign-off |

@@ -118,8 +118,7 @@ parts:
       - id: p3-c9
         slug: chapter-9-1
         title: 챕터 9 · 두 번째 팔로우스루 — 1시
-        # The "(사진첨부)" still is now marked in the manuscript itself, at the
-        # author's own position, so it is no longer declared here.
+        # No still: the old “(사진첨부)” marker was a reminder, not a photo.
       - id: p3-c10
         slug: chapter-10
         title: 챕터 10 · 피니시

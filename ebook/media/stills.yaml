@@ -204,7 +204,7 @@ stills:
 
 # Round 2: post-body diagrams that were wrongly skipped as “AI/illustration”.
 # These are the Substack originals. Honour EXIF. Do not restore the stock
-# 1024 Golf+club/ball header. p3-c9 #1 stays empty (that gap is videos).
+# 1024 Golf+club/ball header. The p3-c9 “(사진첨부)” reminder is removed.
 
   - id: p3-c1-01
     chapter: p3-c1
