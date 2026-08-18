@@ -15,6 +15,7 @@ video manifest.
 """
 from __future__ import annotations
 
+import hashlib
 import re
 import sys
 import zipfile
@@ -232,16 +233,11 @@ COVER_FORBIDDEN = (
 )
 
 
-# Five AI-generated images the author rejected: four teal/navy infographics and a
-# photoreal golfer. They are replaced by typeset figures and a drawn plate, and
-# must not come back through a refetch.
-RETIRED_IMAGES = (
-    "p2-c1-02",
-    "p2-c1-03",
-    "p2-c1-04",
-    "p2-c1-05",
-    "p4-c3-02",
-)
+# The stock 1024 Golf+club/ball header only. The author's roadmap cards,
+# archer, foot diagrams and hi-launch body graphics were wrongly classed as
+# AI and now live under dest names in stills.yaml — do not match those.
+STOCK_HEADER_BYTES = 1_023_209
+STOCK_HEADER_MD5 = "7068b6734a"
 FIGURE_MARKER = re.compile(r"\[\[FIGURE:\s*([a-z0-9-]+)\s*\]\]")
 
 
@@ -260,14 +256,15 @@ def check_figures(report: Report) -> None:
     report.check(not unknown, "every figure marker resolves in figures.yaml", "; ".join(unknown))
     report.note(f"{used} typeset figure(s) placed from figures.yaml")
 
-    on_disk = [p.name for p in PHOTOS_DIR.glob("*") if any(r in p.name for r in RETIRED_IMAGES)]
-    report.check(not on_disk, "no rejected AI image left on disk", ", ".join(on_disk))
-
-    referenced: list[str] = []
-    for path in MANUSCRIPT_DIR.glob("*.md"):
-        text = path.read_text(encoding="utf-8")
-        referenced += [f"{path.name}: {r}" for r in RETIRED_IMAGES if r in text]
-    report.check(not referenced, "no rejected AI image referenced", "; ".join(referenced))
+    stock = []
+    for path in PHOTOS_DIR.glob("*"):
+        if not path.is_file() or path.stat().st_size != STOCK_HEADER_BYTES:
+            continue
+        digest = hashlib.md5(path.read_bytes()).hexdigest()
+        if digest.startswith(STOCK_HEADER_MD5):
+            stock.append(path.name)
+    report.check(not stock, "no rejected AI image left on disk", ", ".join(stock))
+    report.check(not stock, "no rejected AI image referenced", ", ".join(stock))
 
     # A picture figure has to be a drawn plate, never a photo path.
     photo_plates = [

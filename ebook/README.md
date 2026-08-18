@@ -187,8 +187,9 @@ author put one.
 - Author iPhone stills from the Korean Substack posts live in `media/stills.yaml`
   with their public S3 URLs. `make media` fetches them into `images/incoming/`
   and flattens them (EXIF first) into `images/photos/`. Galleries share one
-  `[사진]` slot. Stock 1024² Golf+club headers, teal/archer diagrams and the
-  hi-launch AI graphic stay out. Slots with no original stay labelled empty.
+  `[사진]` slot. Stock 1024² Golf+club headers stay out. The author's archer,
+  foot, roadmap and hi-launch body graphics are the Substack originals and
+  are embedded. p3-c9 #1 stays empty — that gap is videos, not a still.
 - The compiled manuscript inventory counts **64 photos**. The rest sit inside post
   bodies that are still paywalled, so they are not fetchable yet.
 
@@ -324,7 +325,7 @@ Three markers keep unfinished material explicit instead of invented:
 |---|---|
 | EPUB | builds, video posters + QR + plates + cover, tappable first-frame play buttons |
 | PDF | builds, **174 pages**, A5, Korean fonts render, running heads, folios |
-| Photos | 25 on disk (6 챕터 7 + 19 Substack originals); 20 marked frames stay empty |
+| Photos | 52 on disk (6 챕터 7 + 46 Substack originals); only p3-c9 #1 stays empty |
 | Videos | **54 of 54** — EPUB: poster button → src; print: QR, no raw URL. All inline |
 | Chapter text | **complete** — all 19 chapters + the 챕터 7 release section, no pending markers |
 | Front matter | draft copy, needs author sign-off |
