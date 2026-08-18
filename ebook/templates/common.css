@@ -17,9 +17,16 @@ body {
   line-height: 1.78;
   text-align: justify;
   word-break: keep-all;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   -webkit-hyphens: none;
   hyphens: none;
+}
+
+/* Loanword swing tokens must never split across a line. keep-all is the
+   default; nowrap is the belt for the six words the author flagged. */
+.term {
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 /* Only headings and labels take the sans face. Note that pandoc's
@@ -38,6 +45,33 @@ h1 { font-size: 1.55em; margin: 0 0 1.1em; }
 h2 { font-size: 1.3em; margin: 2em 0 0.8em; }
 h3 { font-size: 1.08em; margin: 1.7em 0 0.6em; }
 h4 { font-size: 1em; margin: 1.4em 0 0.5em; color: var(--muted); }
+
+/* A heading or a bold-only lead-in is never the last line on a page. */
+h1, h2, h3, h4, h5, h6,
+p:has(> strong:only-child),
+p.lead-in,
+.keep {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+h1 + *, h2 + *, h3 + *, h4 + *, h5 + *, h6 + *,
+p:has(> strong:only-child) + *,
+p.lead-in + * {
+  break-before: avoid;
+  page-break-before: avoid;
+}
+
+.keep {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+h2:has(+ figure),
+h3:has(+ figure),
+h4:has(+ figure) {
+  margin-bottom: 0.45em;
+}
 
 p { margin: 0 0 0.85em; }
 
@@ -110,6 +144,20 @@ figure.diagram {
   border-bottom: 0.4pt solid var(--rule);
   font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
   text-align: left;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* The quick map is eight problems tall. Forcing the whole panel onto one
+   page is what left 「문제별 빠른 진단 로드맵」 sitting above a blank. The
+   title and each problem stay together; the list may continue. */
+figure.diagram.map {
+  page-break-inside: auto;
+  break-inside: auto;
+}
+
+figure.diagram .diagram-title,
+ul.map li {
   page-break-inside: avoid;
   break-inside: avoid;
 }
@@ -277,8 +325,9 @@ figure.diagram.plate img {
 figure.diagram.plate .diagram-title { text-align: center; }
 
 /* ---------- video slot ----------
-   No URL and no QR until a YouTube unlisted link exists for the slot.
-   Substack links are never used here: those posts are paid/private. */
+   EPUB: a clickable ink preview next to the QR, linking the playable src.
+   Print: the QR block only — no click, no poster. Substack /p/ pages stay
+   out of both. */
 
 figure.video-slot {
   margin: 1.7em 0;
@@ -288,6 +337,20 @@ figure.video-slot {
   background: var(--tint);
   page-break-inside: avoid;
   break-inside: avoid;
+}
+
+a.video-preview {
+  flex: 0 0 auto;
+  display: block;
+  width: 26mm;
+  text-decoration: none;
+  color: inherit;
+}
+
+a.video-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .video-row {

@@ -110,7 +110,8 @@ parts:
         title: 챕터 7 · 임팩트 — 다시 6시
         # The release/foot material was too short to stand as its own part. It is
         # now merged directly into this chapter's manuscript as the section
-        # "릴리즈 타이밍은 발바닥에서 달라진다".
+        # "릴리즈 타이밍은 발바닥에서 달라진다". The Substack post /p/golf is
+        # that same section — not a new chapter.
       - id: p3-c8
         slug: chapter-8-3
         title: 챕터 8 · 팔로우스루 — 3시

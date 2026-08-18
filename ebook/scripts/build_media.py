@@ -19,10 +19,12 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 import yaml
-from PIL import Image
+from PIL import Image, ImageOps
 
+from stills import incoming_files, load_stills, resolve_photo_path
 from paths import (
     MANUSCRIPT_DIR,
     MEDIA_DIR,
@@ -73,8 +75,9 @@ JPEG_QUALITY = 92
 
 
 def optimise(data: bytes, dest) -> None:
-    """Flatten onto white, cap the long edge, and store as a progressive JPEG."""
+    """Flatten onto white, honour EXIF rotation, cap the long edge, JPEG."""
     with Image.open(io.BytesIO(data)) as image:
+        image = ImageOps.exif_transpose(image)
         if image.mode in ("RGBA", "LA", "P"):
             image = image.convert("RGBA")
             flattened = Image.new("RGB", image.size, (255, 255, 255))
@@ -87,6 +90,8 @@ def optimise(data: bytes, dest) -> None:
             image = image.resize(
                 (round(image.width * scale), round(image.height * scale)), Image.LANCZOS
             )
+        dest = Path(dest)
+        dest.parent.mkdir(parents=True, exist_ok=True)
         image.save(dest, "JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
 
 
@@ -217,6 +222,40 @@ def dump_videos(manifest: dict) -> None:
     VIDEOS_YAML.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
 
 
+def ingest_incoming() -> int:
+    """Copy author stills from images/incoming/ into images/photos/.
+
+    Files named 01…06 (any suffix) map onto media/stills.yaml in that order.
+    A file already sitting under its dest name is left alone.
+    """
+    stills = load_stills()
+    if not stills:
+        return 0
+    incoming = incoming_files()
+    written = 0
+    if incoming:
+        pairs = list(zip(incoming, stills))
+        for src, still in pairs:
+            dest = PHOTOS_DIR / still["dest"]
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            optimise(src.read_bytes(), dest)
+            print(f"  ingested {src.name} -> {dest.relative_to(REPO_ROOT)}")
+            written += 1
+    # Re-optimise dest files that were dropped in place as png/webp.
+    for still in stills:
+        dest = PHOTOS_DIR / still["dest"]
+        if dest.exists():
+            continue
+        found = resolve_photo_path(still["dest"])
+        if found and found.suffix.lower() != ".jpg":
+            optimise(found.read_bytes(), dest)
+            if found != dest:
+                found.unlink()
+            print(f"  flattened {found.name} -> {dest.relative_to(REPO_ROOT)}")
+            written += 1
+    return written
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skip-download", action="store_true", help="manifests only")
@@ -234,9 +273,14 @@ def main() -> int:
     )
 
     videos, pending_stills, figures = scan_manuscript()
+    ingested = ingest_incoming()
+    if ingested:
+        print(f"stills ingested: {ingested}")
 
-    # Photos: everything the manuscript references, with a source URL when known.
+    # Photos: everything the manuscript references, plus authored still dests.
     by_file = {p["file"]: p for p in detected.get("photos", [])}
+    for still in load_stills():
+        figures.add(still["dest"])
     photos = []
     for filename in sorted(figures):
         record = by_file.get(filename, {})

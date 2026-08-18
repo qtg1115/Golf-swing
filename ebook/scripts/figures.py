@@ -26,8 +26,25 @@ def load_figures() -> dict:
     return data.get("figures") or {}
 
 
+# Never split these tokens, including inside the typeset 2부 figures.
+SWING_TERMS = ("테이크어웨이", "팔로우스루", "다운스윙", "어드레스", "임팩트", "피니시")
+
+
+def wrap_terms(text: str) -> str:
+    """Mark the six swing tokens so CSS can keep each one on one line.
+
+    Safe to run more than once: an already-wrapped token is left alone.
+    """
+    for i, term in enumerate(SWING_TERMS):
+        token = f"\x00T{i}\x00"
+        text = text.replace(f'<span class="term">{term}</span>', token)
+        text = text.replace(term, f'<span class="term">{term}</span>')
+        text = text.replace(token, f'<span class="term">{term}</span>')
+    return text
+
+
 def esc(text: object) -> str:
-    return html.escape(str(text or ""))
+    return wrap_terms(html.escape(str(text or "")))
 
 
 def _shell(fig: dict, body: list[str], kind: str) -> str:

@@ -46,6 +46,12 @@ them: every one answers `206 video/mp4` with no login and no cookie, and lands o
 `stream.mux.com`. Each generated QR was then decoded back and compared against
 the manifest — 54 of 54 match.
 
+The EPUB and the print PDF treat the same 54 URLs differently. In the EPUB each
+slot is a clickable preview (the drawn play-mark: cover open-circle + triangle)
+sitting next to its QR, and the preview links the `src` URL. In the A5 PDF the
+slot is a designed QR block — caption plus a scannable code — with no click and
+no poster. Neither format uses a photoreal golfer as a poster.
+
 Worth knowing: the QR resolves to a bare mp4 file rather than a player page, so a
 phone opens it in the browser's video view with no player chrome. Substack mints
 a fresh Mux token per request, so the expiry inside the redirect target does not
@@ -167,16 +173,14 @@ author put one.
 
 ### Photo inventory
 
-- **0 photos embedded.** Everything that was fetched turned out to be generated,
-  and all of it is gone: the 18 stock "Golf + club/ball" clipart headers, then the
-  five images above. The download path still works — a real still dropped into
-  `images/photos/` is flattened onto white, capped at 1600 px, JPEG q92, and
-  embedded locally, with nothing hotlinking a gated host.
-- **37 photo placeholders**, each a labelled empty frame where the author marked a
-  still. Drop a file into `images/photos/` under the name in `media/photos.json`
-  and rerun `make book`; the build swaps the frame for the picture automatically.
-  The both-feet swing photo for the release section is the one with a fixed name:
-  `images/photos/01-swing-both-feet.png`.
+- **챕터 7 release stills** live in `media/stills.yaml`. Drop the six originals
+  into `images/incoming/` as `01`…`06` (any suffix) or under the dest names in
+  `images/photos/`, then `make media && make book`. They flatten onto white,
+  honour EXIF rotation, and cap at 1600 px. The stock Golf+club/ball header is
+  skipped; Logic Fitness arch mp4s are not imported. `https://logicfitko.substack.com/p/golf`
+  is this same section of 챕터 7, not a new chapter.
+- Other marked stills stay labelled empty frames until a real file is dropped
+  into `images/photos/`. Nothing is generated or substituted.
 - The compiled manuscript inventory counts **64 photos**. The rest sit inside post
   bodies that are still paywalled, so they are not fetchable yet.
 

@@ -1,0 +1,46 @@
+# Original stills for 3부 챕터 7 「릴리즈 타이밍은 발바닥에서 달라진다」.
+#
+# The six photographs the author attached, in this order. They are not a new
+# chapter and they are not the stock Golf+club/ball header. Drop the files into
+# images/incoming/ as 01…06 (any common image suffix) or write them under the
+# dest names in images/photos/, then rerun `make media && make book`.
+#
+# https://logicfitko.substack.com/p/golf is this same section. Do not import
+# its header graphic or any Logic Fitness arch mp4.
+
+stills:
+  - id: both-feet
+    chapter: p3-c7
+    dest: 01-swing-both-feet.jpg
+    caption: 두 발이 지면과 닿아 있는 방식이 릴리즈의 시점을 결정한다.
+    alt: 두 발이 지면을 딛고 있는 스윙 자세
+  - id: short-arch
+    chapter: p3-c7
+    index: 1
+    dest: p3-c7-01-short-arch.jpg
+    caption: 짧은 아치
+    alt: 짧은 아치
+  - id: long-arch
+    chapter: p3-c7
+    index: 2
+    dest: p3-c7-02-long-arch.jpg
+    caption: 긴 아치
+    alt: 긴 아치
+  - id: test-1
+    chapter: p3-c7
+    index: 3
+    dest: p3-c7-03-test-1.jpg
+    caption: 테스트 1
+    alt: 테스트 1
+  - id: test-2
+    chapter: p3-c7
+    index: 4
+    dest: p3-c7-04-test-2.jpg
+    caption: 테스트 2
+    alt: 테스트 2
+  - id: test-3
+    chapter: p3-c7
+    index: 5
+    dest: p3-c7-05-test-3.jpg
+    caption: 테스트 3
+    alt: 테스트 3

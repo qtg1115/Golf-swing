@@ -22,7 +22,7 @@ import shutil
 import subprocess
 import sys
 
-from figures import load_figures, render as render_figure
+from figures import load_figures, render as render_figure, wrap_terms
 from paths import (
     BUILD_DIR,
     DIST_DIR,
@@ -37,6 +37,7 @@ from paths import (
     load_book,
     load_videos,
 )
+from stills import resolve_photo_path, still_for_pending
 
 FIGURE_MARKER = re.compile(r"\[\[FIGURE:\s*([a-z0-9-]+)\s*\]\](?!\])")
 VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*(.*?)\s*\]\](?!\])")
@@ -84,7 +85,17 @@ def demote(markdown: str, levels: int = 1) -> str:
     return ATX_HEADING.sub(lambda m: "#" * min(6, len(m.group(1)) + levels) + m.group(2), markdown)
 
 
-def video_block(chapter: str, index: int, description: str, slots: dict, stats: Stats) -> str:
+PLAY_MARK = "images/plates/play-mark.png"
+
+
+def video_block(
+    chapter: str,
+    index: int,
+    description: str,
+    slots: dict,
+    stats: Stats,
+    fmt: str = "print",
+) -> str:
     slot_id = f"{chapter}-v{int(index):02d}"
     slot = slots.get(slot_id, {})
     caption = slot.get("description") or description or f"영상 {int(index)}"
@@ -92,11 +103,20 @@ def video_block(chapter: str, index: int, description: str, slots: dict, stats: 
     qr_path = QR_DIR / f"{slot_id}.png"
     stats.placed.add(slot_id)
 
+    preview = ""
     if url and qr_path.exists():
         stats.videos_with_url += 1
         qr = f'<div class="video-qr"><img src="images/qr/{slot_id}.png" alt="영상 QR 코드" /></div>'
         target = f'<p class="video-url">{html.escape(url)}</p>'
         label = "영상 보기"
+        # EPUB only: a tap target next to the QR. The poster is the drawn
+        # play-mark (cover open-circle + triangle), never a photoreal golfer.
+        if fmt == "epub" and (EBOOK_DIR / PLAY_MARK).exists():
+            preview = (
+                f'<a class="video-preview" href="{html.escape(url, quote=True)}">'
+                f'<img src="{PLAY_MARK}" alt="영상 재생" />'
+                "</a>\n"
+            )
     else:
         stats.videos_pending += 1
         qr = '<div class="video-qr empty"></div>'
@@ -106,8 +126,9 @@ def video_block(chapter: str, index: int, description: str, slots: dict, stats: 
     # Raw HTML is emitted flush left: an indented line inside a markdown raw
     # block would be read back as an indented code block.
     return (
-        '<figure class="video-slot">\n'
+        f'<figure class="video-slot video-{fmt}">\n'
         '<div class="video-row">\n'
+        f"{preview}"
         f"{qr}\n"
         '<div class="video-body">\n'
         f'<p class="video-label">{label}</p>\n'
@@ -120,7 +141,9 @@ def video_block(chapter: str, index: int, description: str, slots: dict, stats: 
     )
 
 
-def chapter_video_appendix(chapter_id: str, slots: dict, placed: set[str], stats: Stats) -> str:
+def chapter_video_appendix(
+    chapter_id: str, slots: dict, placed: set[str], stats: Stats, fmt: str = "print"
+) -> str:
     """Lay out a chapter's videos that no manuscript marker has positioned yet.
 
     The URLs and their order within a chapter are known, but the exact paragraph
@@ -143,7 +166,9 @@ def chapter_video_appendix(chapter_id: str, slots: dict, placed: set[str], stats
     for slot in pending:
         stats.videos_appended += 1
         blocks.append(
-            video_block(chapter_id, slot["index"], slot.get("description", ""), slots, stats)
+            video_block(
+                chapter_id, slot["index"], slot.get("description", ""), slots, stats, fmt
+            )
         )
     return "\n\n".join(blocks)
 
@@ -152,7 +177,15 @@ def chapter_video_appendix(chapter_id: str, slots: dict, placed: set[str], stats
 GENERIC_PHOTO_NOTE = re.compile(r"^[\[\(]?\s*사진\s*(?:첨부)?\s*[\]\)]?$")
 
 
-def photo_pending_block(note: str, stats: Stats) -> str:
+def photo_pending_block(
+    note: str, stats: Stats, chapter: str | None = None, index: int | None = None
+) -> str:
+    if chapter and index is not None:
+        still = still_for_pending(chapter, int(index))
+        if still:
+            path = resolve_photo_path(still["dest"])
+            if path:
+                return figure_block(path.name, still.get("caption") or "", stats)
     stats.photos_pending += 1
     note = (note or "").strip()
     if not note or GENERIC_PHOTO_NOTE.match(note):
@@ -179,7 +212,8 @@ def text_pending_block(stats: Stats) -> str:
 
 
 def figure_block(filename: str, caption: str, stats: Stats) -> str:
-    if not (PHOTOS_DIR / filename).exists():
+    path = resolve_photo_path(filename)
+    if path is None:
         stats.photos_pending += 1
         detail = html.escape(caption) if caption else html.escape(filename)
         return (
@@ -190,7 +224,10 @@ def figure_block(filename: str, caption: str, stats: Stats) -> str:
         )
     stats.photos_embedded += 1
     alt = html.escape(caption) or "본문 사진"
-    parts = ['<figure class="photo">', f'<img src="images/photos/{filename}" alt="{alt}" />']
+    parts = [
+        '<figure class="photo">',
+        f'<img src="images/photos/{path.name}" alt="{alt}" />',
+    ]
     if caption:
         parts.append(f"<figcaption>{caption}</figcaption>")
     parts.append("</figure>")
@@ -210,7 +247,9 @@ def chapter_photo_files(chapter_id: str, already_used: set[str]) -> list[str]:
     ]
 
 
-def expand_bare_markers(markdown: str, chapter_id: str, slots: dict, stats: Stats) -> str:
+def expand_bare_markers(
+    markdown: str, chapter_id: str, slots: dict, stats: Stats, fmt: str = "print"
+) -> str:
     """Turn the author's [사진] / [영상] shorthand into real blocks.
 
     The nth [영상] in a chapter takes the nth video slot for that chapter, which is
@@ -238,7 +277,9 @@ def expand_bare_markers(markdown: str, chapter_id: str, slots: dict, stats: Stat
         position = counters["video"]
         if position <= len(chapter_slots):
             slot = chapter_slots[position - 1]
-            return video_block(chapter_id, slot["index"], slot.get("description", ""), slots, stats)
+            return video_block(
+                chapter_id, slot["index"], slot.get("description", ""), slots, stats, fmt
+            )
         # More markers than supplied videos: leave an honest empty slot.
         stats.videos_pending += 1
         return (
@@ -268,18 +309,28 @@ def diagram_block(figure_id: str, stats: Stats) -> str:
     return markup
 
 
-def expand(markdown: str, slots: dict, stats: Stats, chapter_id: str | None = None) -> str:
+def expand(
+    markdown: str,
+    slots: dict,
+    stats: Stats,
+    chapter_id: str | None = None,
+    fmt: str = "print",
+) -> str:
     markdown = FIGURE_MARKER.sub(lambda m: diagram_block(m.group(1), stats), markdown)
     markdown = FIGURE_BLOCK.sub(
         lambda m: figure_block(m.group(1), (m.group(2) or "").strip(), stats), markdown
     )
     markdown = VIDEO_MARKER.sub(
-        lambda m: video_block(m.group(1), int(m.group(2)), m.group(3), slots, stats), markdown
+        lambda m: video_block(m.group(1), int(m.group(2)), m.group(3), slots, stats, fmt),
+        markdown,
     )
-    markdown = PHOTO_PENDING.sub(lambda m: photo_pending_block(m.group(3), stats), markdown)
+    markdown = PHOTO_PENDING.sub(
+        lambda m: photo_pending_block(m.group(3), stats, m.group(1), int(m.group(2))),
+        markdown,
+    )
     markdown = TEXT_PENDING.sub(lambda m: text_pending_block(stats), markdown)
     if chapter_id:
-        markdown = expand_bare_markers(markdown, chapter_id, slots, stats)
+        markdown = expand_bare_markers(markdown, chapter_id, slots, stats, fmt)
     return markdown
 
 
@@ -378,7 +429,26 @@ def read(path) -> str:
     return path.read_text(encoding="utf-8").strip()
 
 
-def assemble(book: dict, stats: Stats) -> str:
+def wrap_terms_outside_tags(text: str) -> str:
+    """Keep 다운스윙 / 테이크어웨이 / … unsplit, without touching attributes."""
+    parts = re.split(r"(<[^>]+>)", text)
+    out: list[str] = []
+    inside_term = False
+    for part in parts:
+        if part.startswith('<span class="term"'):
+            inside_term = True
+            out.append(part)
+        elif inside_term and part == "</span>":
+            inside_term = False
+            out.append(part)
+        elif part.startswith("<") or inside_term:
+            out.append(part)
+        else:
+            out.append(wrap_terms(part))
+    return "".join(out)
+
+
+def assemble(book: dict, stats: Stats, fmt: str = "print") -> str:
     slots = slot_lookup()
     out: list[str] = [title_page(book)]
 
@@ -390,7 +460,7 @@ def assemble(book: dict, stats: Stats) -> str:
             title, rest = strip_first_heading(body)
             title = title or item["title"]
             # Demote so the contents list stops at part and chapter level.
-            rest = expand(demote(rest), slots, stats)
+            rest = expand(demote(rest), slots, stats, fmt=fmt)
             out.append(f'# {title} {{#{item["id"]} .front-section}}\n\n{rest}\n')
 
     for part in book["parts"]:
@@ -421,7 +491,7 @@ def assemble(book: dict, stats: Stats) -> str:
                 continue
             title, body = strip_first_heading(read(path))
             title = title or chapter["title"]
-            body = expand(demote(body), slots, stats, chapter["id"])
+            body = expand(demote(body), slots, stats, chapter["id"], fmt)
             # A merged section sits inside its chapter as a sibling of the
             # chapter's own headings.
             for section in chapter.get("sections", []):
@@ -430,14 +500,18 @@ def assemble(book: dict, stats: Stats) -> str:
                     print(f"! missing section {section['file']}", file=sys.stderr)
                     continue
                 section_title, section_body = strip_first_heading(read(section_path))
-                section_body = expand(demote(section_body, 2), slots, stats, section["id"])
+                section_body = expand(
+                    demote(section_body, 2), slots, stats, section["id"], fmt
+                )
                 body += (
                     f'\n\n### {section_title or section["title"]} '
                     f'{{#{section["id"]}}}\n\n{section_body}\n'
                 )
             for still in chapter.get("pending_stills", []):
                 body += "\n\n" + photo_pending_block(still.get("note", ""), stats)
-            appendix = chapter_video_appendix(chapter["id"], slots, stats.placed, stats)
+            appendix = chapter_video_appendix(
+                chapter["id"], slots, stats.placed, stats, fmt
+            )
             if appendix:
                 body += f"\n\n{appendix}\n"
             out.append(f'## {title} {{#{chapter["id"]} .chapter}}\n\n{body}\n')
@@ -448,7 +522,7 @@ def assemble(book: dict, stats: Stats) -> str:
             if not path.exists():
                 continue
             title, body = strip_first_heading(read(path))
-            body = expand(demote(body), slots, stats, item["id"])
+            body = expand(demote(body), slots, stats, item["id"], fmt)
             plate = plate_block(item)
             opening = f"{plate}\n\n" if plate else ""
             out.append(
@@ -457,7 +531,7 @@ def assemble(book: dict, stats: Stats) -> str:
         elif item["kind"] == "colophon":
             out.append(colophon(book, stats))
 
-    return "\n\n".join(out)
+    return wrap_terms_outside_tags("\n\n".join(out))
 
 
 def metadata_yaml(book: dict) -> str:
@@ -606,7 +680,7 @@ def main() -> int:
     DIST_DIR.mkdir(parents=True, exist_ok=True)
 
     stats = Stats()
-    body = assemble(book, stats)
+    body = assemble(book, stats, fmt="epub")
     source = BUILD_DIR / "book.md"
     source.write_text(metadata_yaml(book) + "\n" + body + "\n", encoding="utf-8")
     (BUILD_DIR / "metadata.yaml").write_text(metadata_yaml(book), encoding="utf-8")
@@ -616,7 +690,7 @@ def main() -> int:
     if not args.epub_only:
         # Reset per-render counters so the report is not doubled.
         pdf_stats = Stats()
-        pdf_body = assemble(book, pdf_stats)
+        pdf_body = assemble(book, pdf_stats, fmt="print")
         source.write_text(metadata_yaml(book) + "\n" + pdf_body + "\n", encoding="utf-8")
         build_pdf(book, source, pdf_stats)
         stats = pdf_stats

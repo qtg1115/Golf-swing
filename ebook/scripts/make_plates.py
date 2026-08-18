@@ -473,6 +473,29 @@ def figure_hi_launch() -> None:
     plate.save("fig-hi-launch.jpg")
 
 
+def play_mark() -> None:
+    """Small ink poster for EPUB video slots: the cover's open circle + a triangle.
+
+    Drawn, not generated. No person, no club, no course. Print does not use it.
+    """
+    # Cream stock, not transparency: many reading systems ignore PNG alpha and
+    # would otherwise print a black square behind the mark.
+    plate = Plate((640, 640), seed=8801, paper=True)
+    w, h = plate.w * SS, plate.h * SS
+    cx, cy, r = w * 0.5, h * 0.5, w * 0.34
+
+    img, draw = plate.canvas()
+    # Same language as the cover: one sweep that never closes.
+    arc(draw, cx, cy, r, 108, 428, w * 0.014, w * 0.008)
+    plate.press(img, PINE, bite=0.20, soften=5, starve=0.99)
+
+    img, draw = plate.canvas()
+    # Play triangle in the opening, pointing through the gap.
+    arrowhead(draw, cx - w * 0.03, cy, 0, w * 0.16, w * 0.11)
+    plate.press(img, PINE, bite=0.22, soften=4)
+    plate.save("play-mark.png")
+
+
 def appendix_mark() -> None:
     """부록 — a small index mark, nothing figurative.
 
@@ -500,6 +523,7 @@ def main() -> int:
     part4_arcs()
     figure_hi_launch()
     appendix_mark()
+    play_mark()
     return 0
 
 

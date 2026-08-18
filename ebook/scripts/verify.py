@@ -106,6 +106,20 @@ def check_epub(epub: zipfile.ZipFile, book: dict, report: Report) -> None:
     images = [n for n in names if re.search(r"\.(jpe?g|png)$", n, re.I)]
     report.note(f"{len(images)} image file(s) packaged")
 
+    previews = 0
+    play_mark = False
+    for name in names:
+        if name.endswith(".xhtml"):
+            previews += epub.read(name).count(b'class="video-preview"')
+        if name.endswith("play-mark.png"):
+            play_mark = True
+    report.check(
+        previews == 54,
+        "EPUB has a clickable preview next to every video QR",
+        f"{previews} of 54",
+    )
+    report.check(play_mark, "ink play-mark packaged for EPUB posters")
+
 
 def check_no_substack(epub: zipfile.ZipFile, pdf_bytes: bytes, report: Report) -> None:
     hits: list[str] = []
@@ -292,6 +306,16 @@ def check_art(book: dict, epub: zipfile.ZipFile, report: Report) -> None:
 
     kept = sorted(p.name for p in PHOTOS_DIR.glob("*") if p.is_file())
     report.note(f"{len(kept)} author photo/diagram file(s) kept in images/photos")
+
+    from stills import load_stills, resolve_photo_path
+
+    stills = load_stills()
+    present = [s["id"] for s in stills if resolve_photo_path(s["dest"])]
+    report.note(f"{len(present)} of {len(stills)} 챕터 7 release stills on disk")
+    report.check(
+        (EBOOK_DIR / "images/plates/play-mark.png").exists(),
+        "play-mark plate drawn",
+    )
 
 
 def main() -> int:

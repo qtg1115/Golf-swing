@@ -92,7 +92,12 @@ h1, h2, h3, h4 {
   break-after: avoid;
 }
 
-p, li { orphans: 2; widows: 2; }
+h1 + *, h2 + *, h3 + *, h4 + * {
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+p, li { orphans: 3; widows: 3; }
 
 /* ---------- cover page ---------- */
 
@@ -247,11 +252,14 @@ section.chapter {
 
 figure.photo img { max-height: 105mm; }
 
-/* Chapters can carry eight of these, so keep them compact. */
+/* Print is a designed QR block: caption + scannable code. No click, no
+   poster — the preview lives only in the EPUB. */
 figure.video-slot {
   margin: 1.1em 0;
   padding: 0.7em 0.8em;
 }
+
+a.video-preview { display: none; }
 
 .video-qr { width: 22mm; height: 22mm; }
 
