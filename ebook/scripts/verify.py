@@ -107,18 +107,33 @@ def check_epub(epub: zipfile.ZipFile, book: dict, report: Report) -> None:
     report.note(f"{len(images)} image file(s) packaged")
 
     previews = 0
-    play_mark = False
+    preview_srcs: list[str] = []
     for name in names:
-        if name.endswith(".xhtml"):
-            previews += epub.read(name).count(b'class="video-preview"')
-        if name.endswith("play-mark.png"):
-            play_mark = True
+        if not name.endswith(".xhtml"):
+            continue
+        page = epub.read(name)
+        previews += page.count(b'class="video-preview"')
+        preview_srcs.extend(
+            src.decode()
+            for src in IMG_SRC.findall(page)
+            if b"video-preview" in page
+        )
     report.check(
         previews == 54,
         "EPUB has a clickable preview next to every video QR",
         f"{previews} of 54",
     )
-    report.check(play_mark, "ink play-mark packaged for EPUB posters")
+    # Pandoc renames plates/play-mark.png to media/fileN.png, so match by bytes.
+    mark = EBOOK_DIR / "images/plates/play-mark.png"
+    packaged = {n.split("/")[-1] for n in names}
+    mark_packaged = False
+    if mark.exists():
+        mark_bytes = mark.read_bytes()
+        for name in names:
+            if name.endswith(".png") and epub.read(name) == mark_bytes:
+                mark_packaged = True
+                break
+    report.check(mark_packaged, "ink play-mark packaged for EPUB posters")
 
 
 def check_no_substack(epub: zipfile.ZipFile, pdf_bytes: bytes, report: Report) -> None:

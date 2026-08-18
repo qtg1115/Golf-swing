@@ -312,10 +312,10 @@ Three markers keep unfinished material explicit instead of invented:
 
 | Item | State |
 |---|---|
-| EPUB | builds, 60 images packaged (5 photos + 54 QR + cover), Korean metadata, hierarchical navigation |
-| PDF | builds, 185 pages, A5, Korean fonts render, running heads, folios, contents with page numbers |
-| Photos | 6 embedded (author diagrams only), 36 labelled 사진 자리 placeholders awaiting files |
-| Videos | **54 of 54 with a QR code and a printed URL, all inline at their authored positions** |
+| EPUB | builds, 62 images packaged (54 QR + play-mark + plates + cover), clickable video previews |
+| PDF | builds, **163 pages**, A5, Korean fonts render, running heads, folios |
+| Photos | 0 embedded stills; 6 챕터 7 slots wait in `media/stills.yaml`; other marked frames stay empty |
+| Videos | **54 of 54** — EPUB: play-mark + QR + src link; print: QR block. All inline |
 | Chapter text | **complete** — all 19 chapters + the 챕터 7 release section, no pending markers |
 | Front matter | draft copy, needs author sign-off |
 

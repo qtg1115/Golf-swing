@@ -27,7 +27,18 @@ def load_figures() -> dict:
 
 
 # Never split these tokens, including inside the typeset 2부 figures.
-SWING_TERMS = ("테이크어웨이", "팔로우스루", "다운스윙", "어드레스", "임팩트", "피니시")
+# Longest first so 「3시 팔로우스루」 is one token, not 3시 + 팔로우스루.
+SWING_TERMS = (
+    "3시 팔로우스루",
+    "테이크어웨이",
+    "팔로우스루",
+    "다운스윙",
+    "어드레스",
+    "임팩트",
+    "피니시",
+    "전환",
+    "3시",
+)
 
 
 def wrap_terms(text: str) -> str:
