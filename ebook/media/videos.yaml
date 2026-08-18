@@ -35,82 +35,82 @@ videos:
   - id: p3-c1-v01
     chapter: p3-c1
     index: 1
-    description: ""
+    description: "2. 타이거 우즈의 느낌을 우리 몸으로 하는 방법?"
     substack_media_id: 69a0973a-c720-4184-b844-97a1db0d9fe8
     video_url: https://logicfitko.substack.com/api/v1/video/upload/69a0973a-c720-4184-b844-97a1db0d9fe8/src
-    inline: false
+    inline: true
 
   - id: p3-c1-v02
     chapter: p3-c1
     index: 2
-    description: ""
+    description: "이완 – 불필요한 힘을 버리는 기술"
     substack_media_id: c9d2f1d3-695d-44ee-9fac-6d910e1be839
     video_url: https://logicfitko.substack.com/api/v1/video/upload/c9d2f1d3-695d-44ee-9fac-6d910e1be839/src
-    inline: false
+    inline: true
 
   - id: p3-c2-v01
     chapter: p3-c2
     index: 1
-    description: ""
+    description: "1) 가슴을 먼저 움직이려면 뭘 먼저 해야할까?"
     substack_media_id: 21cf52df-40df-4263-9e83-26d044ade53c
     video_url: https://logicfitko.substack.com/api/v1/video/upload/21cf52df-40df-4263-9e83-26d044ade53c/src
-    inline: false
+    inline: true
 
   - id: p3-c2-v02
     chapter: p3-c2
     index: 2
-    description: ""
+    description: "2) 하체 셋팅 후 가슴을 움직이기"
     substack_media_id: 62bc49d0-7aba-4c0e-8f00-ea56ee4d80eb
     video_url: https://logicfitko.substack.com/api/v1/video/upload/62bc49d0-7aba-4c0e-8f00-ea56ee4d80eb/src
-    inline: false
+    inline: true
 
   - id: p3-c2-v03
     chapter: p3-c2
     index: 3
-    description: ""
+    description: "2) 하체 셋팅 후 가슴을 움직이기"
     substack_media_id: ebf25adb-eb8a-4d5c-a12e-252fd06d3832
     video_url: https://logicfitko.substack.com/api/v1/video/upload/ebf25adb-eb8a-4d5c-a12e-252fd06d3832/src
-    inline: false
+    inline: true
 
   - id: p3-c2-v04
     chapter: p3-c2
     index: 4
-    description: ""
+    description: "2) 하체 셋팅 후 가슴을 움직이기"
     substack_media_id: a7d0974e-2e6c-4066-881d-0d8942b4cf82
     video_url: https://logicfitko.substack.com/api/v1/video/upload/a7d0974e-2e6c-4066-881d-0d8942b4cf82/src
-    inline: false
+    inline: true
 
   - id: p3-c2-v05
     chapter: p3-c2
     index: 5
-    description: ""
+    description: "2) 몸통 회전 – 테이크어웨이를 여는 가슴의 움직임"
     substack_media_id: 5a77a927-2d54-4add-b252-32b692b911d0
     video_url: https://logicfitko.substack.com/api/v1/video/upload/5a77a927-2d54-4add-b252-32b692b911d0/src
-    inline: false
+    inline: true
 
   - id: p3-c2-v06
     chapter: p3-c2
     index: 6
-    description: ""
+    description: "운동 효과"
     substack_media_id: 7f7580dd-e985-4549-83ad-473e593d359f
     video_url: https://logicfitko.substack.com/api/v1/video/upload/7f7580dd-e985-4549-83ad-473e593d359f/src
-    inline: false
+    inline: true
 
   - id: p3-c2-v07
     chapter: p3-c2
     index: 7
-    description: ""
+    description: "4) 대칭 유지 – 몸이 이동하지 않는 중심의 기술"
     substack_media_id: 3180eb43-d670-42dc-9721-34a2427e8b29
     video_url: https://logicfitko.substack.com/api/v1/video/upload/3180eb43-d670-42dc-9721-34a2427e8b29/src
-    inline: false
+    inline: true
 
   - id: p3-c2-v08
     chapter: p3-c2
     index: 8
-    description: ""
+    description: "5) 리듬과 이완 – 회전이 자연스러워지는 마지막 단계"
     substack_media_id: ea9fd106-2856-4b77-8dca-7b88793d9847
     video_url: https://logicfitko.substack.com/api/v1/video/upload/ea9fd106-2856-4b77-8dca-7b88793d9847/src
-    inline: false
+    inline: true
 
   - id: p3-c3-v01
     chapter: p3-c3
@@ -451,7 +451,7 @@ videos:
   - id: p4-c2-v01
     chapter: p4-c2
     index: 1
-    description: ""
+    description: "1) 아웃-인 궤도를 만드는 기본 원리"
     substack_media_id: 5991ba6f-890e-4f3f-a63a-297a6027864c
     video_url: https://logicfitko.substack.com/api/v1/video/upload/5991ba6f-890e-4f3f-a63a-297a6027864c/src
-    inline: false
+    inline: true
