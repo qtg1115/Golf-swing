@@ -7,62 +7,55 @@ local Util = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util
 
 local DataService = {}
 
-local STORE_NAME = "SchoolStory_v1"
+local STORE_NAME = "BraveKid_v1"
 local profiles: { [number]: any } = {}
 local store
 
 local function getStore()
-	if store then
+	if store ~= nil then
 		return store
 	end
 	local ok, result = pcall(function()
 		return DataStoreService:GetDataStore(STORE_NAME)
 	end)
-	if ok then
-		store = result
-	end
+	store = if ok then result else false
 	return store
 end
 
-local function blankProfile()
+local function newProfile()
 	return {
-		coins = Config.Starting.coins,
-		energy = Config.Starting.energy,
-		maxEnergy = Config.Starting.maxEnergy,
-		courage = Config.Starting.courage,
-		maxCourage = Config.Starting.maxCourage,
-		popularity = Config.Starting.popularity,
-		xp = Config.Starting.xp,
-		level = Config.Starting.level,
-		title = Config.Starting.title,
-		storyStep = 0,
-		classesThisStory = 0,
-		inventory = {},
-		owned = {},
-		grades = Util.deepCopy(Config.StartingGrades),
+		coins = Config.Start.coins,
+		energy = Config.Start.energy,
+		maxEnergy = Config.Start.maxEnergy,
+		courage = Config.Start.courage,
+		maxCourage = Config.Start.maxCourage,
+		xp = Config.Start.xp,
+		level = Config.Start.level,
+		title = Config.Start.title,
+		story = 0,
+		storyClasses = 0,
+		bag = {},
+		gear = {},
+		grades = Util.copy(Config.StartGrades),
 		stats = {
-			classesAttended = 0,
-			lunchesEaten = 0,
-			talks = 0,
-			plays = 0,
-			skipped = 0,
-			bulliesDodged = 0,
-			bulliesDefeated = 0,
+			classes = 0,
+			lunches = 0,
+			escapes = 0,
+			standups = 0,
 			friendsHelped = 0,
-			storyStep = 0,
+			story = 0,
 		},
-		quests = {},
-		lastLunchPeriod = "",
-		lastTalkAt = 0,
-		lastLockerAt = 0,
+		tasks = {},
+		lastLunch = "",
+		lastLocker = 0,
 	}
 end
 
-local function ensureShape(profile)
-	local blank = blankProfile()
+local function repair(profile)
+	local blank = newProfile()
 	for key, value in blank do
 		if profile[key] == nil then
-			profile[key] = Util.deepCopy(value)
+			profile[key] = Util.copy(value)
 		end
 	end
 	for key, value in blank.stats do
@@ -70,16 +63,21 @@ local function ensureShape(profile)
 			profile.stats[key] = value
 		end
 	end
-	for _, quest in Config.Quests do
-		if not profile.quests[quest.id] then
-			profile.quests[quest.id] = { progress = 0, claimed = false }
+	for key, value in blank.grades do
+		if typeof(profile.grades[key]) ~= "number" then
+			profile.grades[key] = value
 		end
 	end
-	profile.stats.storyStep = profile.storyStep
-	profile.title = Util.titleForLevel(profile.level, Config.LevelTitles)
+	for _, task in Config.Tasks do
+		if profile.tasks[task.id] == nil then
+			profile.tasks[task.id] = { progress = 0, claimed = false }
+		end
+	end
+	profile.stats.story = profile.story
+	profile.title = Util.titleForLevel(profile.level, Config.Titles)
 end
 
-function DataService.createLeaderstats(player: Player, profile)
+function DataService.leaderstats(player: Player, profile)
 	local folder = player:FindFirstChild("leaderstats")
 	if not folder then
 		folder = Instance.new("Folder")
@@ -87,46 +85,45 @@ function DataService.createLeaderstats(player: Player, profile)
 		folder.Parent = player
 	end
 
-	local function stat(name: string, value: number)
-		local int = folder:FindFirstChild(name)
-		if not int then
-			int = Instance.new("IntValue")
-			int.Name = name
-			int.Parent = folder
+	local function set(name: string, value: number)
+		local entry = folder:FindFirstChild(name)
+		if not entry then
+			entry = Instance.new("IntValue")
+			entry.Name = name
+			entry.Parent = folder
 		end
-		int.Value = math.floor(value + 0.5)
+		entry.Value = math.floor(value + 0.5)
 	end
 
-	stat("레벨", profile.level)
-	stat("용기", profile.courage)
-	stat("코인", profile.coins)
+	set("Level", profile.level)
+	set("Courage", profile.courage)
+	set("Coins", profile.coins)
 end
 
-function DataService.publicProfile(profile)
+function DataService.toClient(profile)
 	return {
 		coins = profile.coins,
 		energy = profile.energy,
 		maxEnergy = profile.maxEnergy,
 		courage = profile.courage,
 		maxCourage = profile.maxCourage,
-		popularity = profile.popularity,
 		xp = profile.xp,
 		xpNeeded = Util.xpForLevel(profile.level),
 		level = profile.level,
 		title = profile.title,
-		storyStep = profile.storyStep,
-		inventory = Util.deepCopy(profile.inventory),
-		owned = Util.deepCopy(profile.owned),
-		grades = Util.deepCopy(profile.grades),
-		gpa = Util.round(Util.average(profile.grades), 1),
-		stats = Util.deepCopy(profile.stats),
-		quests = Util.deepCopy(profile.quests),
-		power = Util.confrontPower(profile, Config),
+		story = profile.story,
+		bag = Util.copy(profile.bag),
+		gear = Util.copy(profile.gear),
+		grades = Util.copy(profile.grades),
+		gpa = Util.round(Util.average(profile.grades), 0),
+		stats = Util.copy(profile.stats),
+		tasks = Util.copy(profile.tasks),
+		power = Util.standUpPower(profile),
 	}
 end
 
 function DataService.load(player: Player)
-	local profile = blankProfile()
+	local profile = newProfile()
 	local dataStore = getStore()
 	if dataStore then
 		local ok, saved = pcall(function()
@@ -138,9 +135,9 @@ function DataService.load(player: Player)
 			end
 		end
 	end
-	ensureShape(profile)
+	repair(profile)
 	profiles[player.UserId] = profile
-	DataService.createLeaderstats(player, profile)
+	DataService.leaderstats(player, profile)
 	return profile
 end
 
@@ -159,14 +156,10 @@ function DataService.save(player: Player)
 	end)
 end
 
-function DataService.release(player: Player)
-	DataService.save(player)
-	profiles[player.UserId] = nil
-end
-
 function DataService.bind()
 	Players.PlayerRemoving:Connect(function(player)
-		DataService.release(player)
+		DataService.save(player)
+		profiles[player.UserId] = nil
 	end)
 	game:BindToClose(function()
 		for _, player in Players:GetPlayers() do

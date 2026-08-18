@@ -1,55 +1,88 @@
-# 우리학교 대모험
+# Brave Kid: School Story
 
-한 아이가 전학 온 학교에서 **불리(나쁜 아이)들을 피하거나 맞서며** 학교생활을 하는 스토리 게임입니다.
+A Roblox game where a new kid goes to school and deals with bullies by **running, hiding, or standing up to them**. Going to class raises your level, and items from the school shop make you stronger.
 
-로블록스 스튜디오에서 `SchoolSimulator.rbxlx` 를 **File → Open from File** 로 연 뒤 **Play** 하면 정문 앞 파란 스폰에서 시작합니다. 하늘에서 떨어지면 최신 `SchoolSimulator.rbxlx` 를 다시 받아 열어 주세요.
+Everything in the game is in English.
 
-## 이야기
+## Play it in Roblox Studio
 
-1. 첫 등교 — 김선생님을 만난다
-2. 민지가 복도 불리 **왕딱**을 조심하라고 알려 준다
-3. 왕딱을 피하거나 이긴다
-4. 수업을 두 번 들어 레벨을 올린다
-5. 매점에서 **운동화**를 산다
-6. 운동장에서 친구 **하늘**을 구한다
-7. 선생님께 보고하고 **용기 배지**를 받는다
-8. 제일 센 불리 **3학년 형**에게 맞선다
+1. Download `SchoolSimulator.rbxlx` from this repository.
+2. In Roblox Studio choose **File → Open from File** and pick that file.
+3. Press **Play**.
 
-## 플레이 방법
+You start on the blue pad at the front gate. The goal for your current chapter is always shown on the left side of the screen.
 
-- **WASD** 로 이동, 오브젝트 앞에서 **E** (근접 버튼)
-- 왼쪽 위 **스토리 목표**를 따라 이동하세요
-- 불리에게 잡히면
-  - **도망가기** — 멀리 떨어지면 성공
-  - **숨기** — 초록 덤불/사물함 뒤
-  - **맞서기** — 내 힘이 상대보다 같거나 커야 이김
-  - **아이템** — 친구의 쪽지, 호루라기
-- 수업 = 경험치/레벨/용돈
-- 매점과 가방에서 아이템 사용
+If Studio shows `HTTP 403` for a recent place on the home screen, close that message and open the file instead.
 
-## 레벨과 아이템
+## Story
 
-레벨이 오르면 칭호가 바뀌고 맞서기 힘이 커집니다.
+1. Talk to **Mr. Park** at the front gate
+2. Find **Mia** by the lockers, she gives you a Friend's Note
+3. Escape or stand up to **Rex** in the hallway
+4. Attend 2 classes to level up
+5. Buy the **Fast Sneakers** at the school shop
+6. Help **Sky** at the playground
+7. Report back to Mr. Park and get the **Courage Badge**
+8. Face **Max**, the toughest bully
 
-| 아이템 | 효과 |
+## Controls
+
+- **W A S D** to move
+- **E** to interact when you are near a person or object
+- Buttons appear on screen when a bully catches you
+
+## What to do at school
+
+| Place | What happens |
 | --- | --- |
-| 초콜릿 | 에너지 회복 |
-| 용기 주스 | 용기 회복 |
-| 도시락 | 에너지+용기 |
-| 참고서 | 성적과 경험치 |
-| 호루라기 | 맞서기 힘 +5 |
-| 친구의 쪽지 | 불리에게서 탈출 |
-| 운동화 | 이동 속도 증가 |
-| 용기 배지 | 맞서기 힘 +3 |
+| Classrooms | Join class for XP, coins, and better grades |
+| Cafeteria | Eat at lunch to refill energy and courage |
+| School shop | Buy candy, juice, a whistle, sneakers |
+| Playground | Play, and take gym class |
+| Library | Study to raise every grade |
+| Nurse office | Rest and recover |
+| Green bushes and lockers | Hide from bullies |
 
-## 스튜디오로 열기
+## Bully encounters
 
-1. `SchoolSimulator.rbxlx` 를 스튜디오에서 엽니다. 홈 화면 최근 항목이 `HTTP 403` 이면 그 카드는 누르지 마세요.
-2. 코드를 계속 고치려면 Rojo 플러그인 + `rojo serve` 로 연결합니다. 설치법은 `STUDIO.md`.
+When a bully reaches you, four choices appear:
 
-고치기 좋은 파일:
+- **Run away** — get far enough away before they catch up (sneakers help a lot)
+- **Hide** — only works when you are standing near bushes or lockers
+- **Stand up** — you win when your stand-up power is at least their power
+- **Items** — the Friend's Note escapes instantly, the Whistle adds +5 power
 
-- `src/shared/Config.luau` — 스토리, 불리 힘, 아이템, 레벨
-- `src/server/BullyService.luau` — 불리 행동
-- `src/server/StoryService.luau` — 이야기 진행
-- `src/client/Hud.luau` — 화면
+Stand-up power = your level + Courage Badge + friends you helped.
+
+## Items
+
+| Item | Effect |
+| --- | --- |
+| Candy Bar | +25 energy |
+| Brave Juice | +30 courage |
+| Lunch Box | energy and courage |
+| Study Book | better grades and XP |
+| Whistle | +5 power during an encounter |
+| Friend's Note | escape an encounter |
+| Fast Sneakers | run faster |
+| Courage Badge | +3 power, always on |
+
+## Editing the game
+
+You can change the game by editing these files, then rebuilding.
+
+| To change | File |
+| --- | --- |
+| Story, bullies, items, levels | `src/shared/Config.luau` |
+| The school map | `src/server/SchoolBuilder.luau` |
+| Bully behaviour | `src/server/BullyService.luau` |
+| Class, shop, task rules | `src/server/GameService.luau` |
+| On-screen UI | `src/client/Hud.luau` |
+
+Rebuild the place file after editing:
+
+```bash
+rojo build -o SchoolSimulator.rbxlx
+```
+
+Or use live sync with the Rojo Studio plugin (`rojo serve`). Plugin setup is described in `STUDIO.md`.

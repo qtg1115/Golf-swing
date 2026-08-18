@@ -2,87 +2,83 @@ local CollectionService = game:GetService("CollectionService")
 
 local SchoolBuilder = {}
 
-local WALL_HEIGHT = 16
-local WALL_THICKNESS = 1.2
 local FLOOR_Y = 2
+local WALL_H = 15
+local WALL_T = 1.2
+local DOOR_W = 10
+local DOOR_H = 11
 
-local COLORS = {
-	grass = Color3.fromRGB(92, 168, 96),
+local C = {
+	grass = Color3.fromRGB(96, 168, 96),
 	path = Color3.fromRGB(214, 196, 158),
-	dirt = Color3.fromRGB(145, 118, 82),
-	brick = Color3.fromRGB(188, 86, 78),
-	trim = Color3.fromRGB(236, 228, 210),
-	floor = Color3.fromRGB(214, 196, 168),
-	hallway = Color3.fromRGB(232, 220, 198),
+	brick = Color3.fromRGB(188, 92, 82),
+	floor = Color3.fromRGB(218, 200, 170),
+	hall = Color3.fromRGB(232, 220, 198),
 	roof = Color3.fromRGB(72, 84, 102),
-	desk = Color3.fromRGB(158, 108, 68),
-	chair = Color3.fromRGB(92, 122, 168),
+	wood = Color3.fromRGB(150, 104, 66),
 	board = Color3.fromRGB(46, 78, 58),
-	glass = Color3.fromRGB(164, 206, 230),
-	locker = Color3.fromRGB(72, 118, 168),
-	field = Color3.fromRGB(70, 148, 78),
-	line = Color3.fromRGB(245, 245, 245),
 	sign = Color3.fromRGB(48, 72, 128),
-	wood = Color3.fromRGB(140, 96, 62),
-	food = Color3.fromRGB(240, 196, 92),
+	seat = Color3.fromRGB(92, 122, 168),
+	field = Color3.fromRGB(74, 150, 82),
+	white = Color3.fromRGB(244, 244, 244),
+	bush = Color3.fromRGB(48, 122, 62),
 	shop = Color3.fromRGB(214, 92, 98),
+	food = Color3.fromRGB(240, 196, 92),
+	metal = Color3.fromRGB(96, 132, 178),
 }
 
 local function part(props): BasePart
-	local instance = Instance.new("Part")
-	instance.Anchored = true
-	instance.CastShadow = true
-	instance.TopSurface = Enum.SurfaceType.Smooth
-	instance.BottomSurface = Enum.SurfaceType.Smooth
-	instance.Material = props.material or Enum.Material.SmoothPlastic
-	instance.Color = props.color or Color3.new(1, 1, 1)
-	instance.Size = props.size
-	instance.CFrame = props.cframe
-	instance.Name = props.name or "Part"
-	instance.CanCollide = if props.canCollide == nil then true else props.canCollide
-	instance.Transparency = props.transparency or 0
-	if props.parent then
-		instance.Parent = props.parent
-	end
-	return instance
+	local p = Instance.new("Part")
+	p.Anchored = true
+	p.TopSurface = Enum.SurfaceType.Smooth
+	p.BottomSurface = Enum.SurfaceType.Smooth
+	p.Name = props.name or "Part"
+	p.Size = props.size
+	p.CFrame = props.cframe
+	p.Color = props.color or C.white
+	p.Material = props.material or Enum.Material.SmoothPlastic
+	p.Transparency = props.transparency or 0
+	p.CanCollide = if props.collide == nil then true else props.collide
+	p.Parent = props.parent
+	return p
 end
 
-local function surfaceText(parent: BasePart, text: string, face: Enum.NormalId, textSize: number, color: Color3?)
+local function faceText(target: BasePart, text: string, face: Enum.NormalId, size: number)
 	local gui = Instance.new("SurfaceGui")
 	gui.Face = face
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
 	gui.PixelsPerStud = 18
-	gui.LightInfluence = 0.15
-	gui.Parent = parent
+	gui.LightInfluence = 0.2
+	gui.Parent = target
 
 	local label = Instance.new("TextLabel")
 	label.BackgroundTransparency = 1
 	label.Size = UDim2.fromScale(1, 1)
 	label.Font = Enum.Font.GothamBold
 	label.Text = text
-	label.TextScaled = false
-	label.TextSize = textSize
-	label.TextColor3 = color or Color3.new(1, 1, 1)
+	label.TextSize = size
+	label.TextColor3 = C.white
 	label.TextWrapped = true
 	label.Parent = gui
 end
 
-local function billboard(parent: BasePart, text: string, color: Color3?)
+local function tag(target: BasePart, text: string, color: Color3?)
 	local gui = Instance.new("BillboardGui")
-	gui.Name = "Label"
-	gui.Size = UDim2.fromOffset(220, 42)
-	gui.StudsOffset = Vector3.new(0, 4.2, 0)
+	gui.Name = "Tag"
+	gui.Size = UDim2.fromOffset(210, 40)
+	gui.StudsOffset = Vector3.new(0, 4, 0)
 	gui.AlwaysOnTop = true
-	gui.Parent = parent
+	gui.MaxDistance = 220
+	gui.Parent = target
 
 	local label = Instance.new("TextLabel")
-	label.BackgroundColor3 = Color3.fromRGB(28, 36, 52)
-	label.BackgroundTransparency = 0.15
+	label.BackgroundColor3 = Color3.fromRGB(26, 34, 50)
+	label.BackgroundTransparency = 0.2
 	label.Size = UDim2.fromScale(1, 1)
 	label.Font = Enum.Font.GothamBold
+	label.TextScaled = true
 	label.Text = text
 	label.TextColor3 = color or Color3.fromRGB(255, 236, 180)
-	label.TextScaled = true
 	label.Parent = gui
 
 	local corner = Instance.new("UICorner")
@@ -90,71 +86,66 @@ local function billboard(parent: BasePart, text: string, color: Color3?)
 	corner.Parent = label
 end
 
-local function tagInteract(instance: Instance, data: { [string]: any })
-	CollectionService:AddTag(instance, "SchoolInteract")
-	for key, value in data do
-		instance:SetAttribute(key, value)
+local function interact(target: BasePart, action: string, data, prompt: string)
+	CollectionService:AddTag(target, "Interact")
+	target:SetAttribute("Action", action)
+	for key, value in data or {} do
+		target:SetAttribute(key, value)
 	end
+
+	local p = Instance.new("ProximityPrompt")
+	p.ActionText = prompt
+	p.ObjectText = "School"
+	p.HoldDuration = 0.15
+	p.MaxActivationDistance = 11
+	p.RequiresLineOfSight = false
+	p.Parent = target
 end
 
-local function addPrompt(parent: Instance, text: string, hold: number?)
-	local prompt = Instance.new("ProximityPrompt")
-	prompt.ActionText = text
-	prompt.ObjectText = "우리학교"
-	prompt.HoldDuration = hold or 0.35
-	prompt.MaxActivationDistance = 10
-	prompt.RequiresLineOfSight = false
-	prompt.Parent = parent
-	return prompt
-end
-
-local DOOR_WIDTH = 9
-local DOOR_HEIGHT = 11
-
-local function addSolidWall(folder: Instance, size: Vector3, worldPos: Vector3, color: Color3, name: string)
+local function wall(parent: Instance, size: Vector3, pos: Vector3, name: string)
 	part({
 		name = name,
-		parent = folder,
+		parent = parent,
 		size = size,
-		cframe = CFrame.new(worldPos + Vector3.new(0, WALL_HEIGHT / 2 + 0.5, 0)),
-		color = color,
+		cframe = CFrame.new(pos + Vector3.new(0, WALL_H / 2 + 0.5, 0)),
+		color = C.brick,
 		material = Enum.Material.Brick,
 	})
 end
 
-local function addDoorWall(folder: Instance, center: Vector3, size: Vector3, color: Color3, axis: string, sign: number)
-	local half = if axis == "z" then size.X / 2 else size.Z / 2
-	local side = (half * 2 - DOOR_WIDTH) / 2
-	local offset = (side / 2) + (DOOR_WIDTH / 2)
+local function doorWall(parent: Instance, center: Vector3, size: Vector3, axis: string, sign: number)
+	local span = if axis == "z" then size.X else size.Z
+	local side = (span - DOOR_W) / 2
+	local offset = side / 2 + DOOR_W / 2
 
 	if axis == "z" then
-		local z = center.Z + sign * (size.Z / 2)
-		addSolidWall(folder, Vector3.new(side, WALL_HEIGHT, WALL_THICKNESS), Vector3.new(center.X - offset, 0, z), color, "DoorWallL")
-		addSolidWall(folder, Vector3.new(side, WALL_HEIGHT, WALL_THICKNESS), Vector3.new(center.X + offset, 0, z), color, "DoorWallR")
+		local z = center.Z + sign * size.Z / 2
+		wall(parent, Vector3.new(side, WALL_H, WALL_T), Vector3.new(center.X - offset, 0, z), "Wall")
+		wall(parent, Vector3.new(side, WALL_H, WALL_T), Vector3.new(center.X + offset, 0, z), "Wall")
 		part({
-			name = "DoorLintel",
-			parent = folder,
-			size = Vector3.new(DOOR_WIDTH, WALL_HEIGHT - DOOR_HEIGHT, WALL_THICKNESS),
-			cframe = CFrame.new(center.X, FLOOR_Y + DOOR_HEIGHT + (WALL_HEIGHT - DOOR_HEIGHT) / 2 + 0.5, z),
-			color = color,
+			name = "DoorTop",
+			parent = parent,
+			size = Vector3.new(DOOR_W, WALL_H - DOOR_H, WALL_T),
+			cframe = CFrame.new(center.X, FLOOR_Y + DOOR_H + (WALL_H - DOOR_H) / 2 + 0.5, z),
+			color = C.brick,
 			material = Enum.Material.Brick,
 		})
 	else
-		local x = center.X + sign * (size.X / 2)
-		addSolidWall(folder, Vector3.new(WALL_THICKNESS, WALL_HEIGHT, side), Vector3.new(x, 0, center.Z - offset), color, "DoorWallL")
-		addSolidWall(folder, Vector3.new(WALL_THICKNESS, WALL_HEIGHT, side), Vector3.new(x, 0, center.Z + offset), color, "DoorWallR")
+		local x = center.X + sign * size.X / 2
+		wall(parent, Vector3.new(WALL_T, WALL_H, side), Vector3.new(x, 0, center.Z - offset), "Wall")
+		wall(parent, Vector3.new(WALL_T, WALL_H, side), Vector3.new(x, 0, center.Z + offset), "Wall")
 		part({
-			name = "DoorLintel",
-			parent = folder,
-			size = Vector3.new(WALL_THICKNESS, WALL_HEIGHT - DOOR_HEIGHT, DOOR_WIDTH),
-			cframe = CFrame.new(x, FLOOR_Y + DOOR_HEIGHT + (WALL_HEIGHT - DOOR_HEIGHT) / 2 + 0.5, center.Z),
-			color = color,
+			name = "DoorTop",
+			parent = parent,
+			size = Vector3.new(WALL_T, WALL_H - DOOR_H, DOOR_W),
+			cframe = CFrame.new(x, FLOOR_Y + DOOR_H + (WALL_H - DOOR_H) / 2 + 0.5, center.Z),
+			color = C.brick,
 			material = Enum.Material.Brick,
 		})
 	end
 end
 
-local function roomBox(parent: Instance, center: Vector3, size: Vector3, wallColor: Color3, floorColor: Color3, name: string, doorSide: string)
+local function room(parent: Instance, name: string, center: Vector3, size: Vector3, floorColor: Color3, door: string)
 	local folder = Instance.new("Folder")
 	folder.Name = name
 	folder.Parent = parent
@@ -168,308 +159,96 @@ local function roomBox(parent: Instance, center: Vector3, size: Vector3, wallCol
 		material = Enum.Material.WoodPlanks,
 	})
 
-	local faces = {
-		posZ = { "z", 1, Vector3.new(size.X, WALL_HEIGHT, WALL_THICKNESS), Vector3.new(0, 0, size.Z / 2) },
-		negZ = { "z", -1, Vector3.new(size.X, WALL_HEIGHT, WALL_THICKNESS), Vector3.new(0, 0, -size.Z / 2) },
-		posX = { "x", 1, Vector3.new(WALL_THICKNESS, WALL_HEIGHT, size.Z), Vector3.new(size.X / 2, 0, 0) },
-		negX = { "x", -1, Vector3.new(WALL_THICKNESS, WALL_HEIGHT, size.Z), Vector3.new(-size.X / 2, 0, 0) },
+	local sides = {
+		posZ = { "z", 1, Vector3.new(size.X, WALL_H, WALL_T), Vector3.new(0, 0, size.Z / 2) },
+		negZ = { "z", -1, Vector3.new(size.X, WALL_H, WALL_T), Vector3.new(0, 0, -size.Z / 2) },
+		posX = { "x", 1, Vector3.new(WALL_T, WALL_H, size.Z), Vector3.new(size.X / 2, 0, 0) },
+		negX = { "x", -1, Vector3.new(WALL_T, WALL_H, size.Z), Vector3.new(-size.X / 2, 0, 0) },
 	}
 
-	for side, info in faces do
-		if side == doorSide then
-			addDoorWall(folder, center, size, wallColor, info[1], info[2])
+	for key, info in sides do
+		if key == door then
+			doorWall(folder, center, size, info[1], info[2])
 		else
-			addSolidWall(folder, info[3], center + info[4], wallColor, "Wall_" .. side)
+			wall(folder, info[3], center + info[4], "Wall")
 		end
 	end
 
 	part({
 		name = "Roof",
 		parent = folder,
-		size = Vector3.new(size.X + 4, 2, size.Z + 4),
-		cframe = CFrame.new(center.X, FLOOR_Y + WALL_HEIGHT + 2, center.Z),
-		color = COLORS.roof,
+		size = Vector3.new(size.X + 3, 1.5, size.Z + 3),
+		cframe = CFrame.new(center.X, FLOOR_Y + WALL_H + 1.5, center.Z),
+		color = C.roof,
 		material = Enum.Material.Slate,
 	})
 
 	return folder
 end
 
-local function makeDesk(parent: Instance, position: Vector3, subject: string, roomId: string)
-	local desk = part({
-		name = "Desk",
-		parent = parent,
-		size = Vector3.new(4.2, 1.4, 2.4),
-		cframe = CFrame.new(position),
-		color = COLORS.desk,
-		material = Enum.Material.Wood,
-	})
-
-	local seat = Instance.new("Seat")
-	seat.Name = "ClassSeat"
-	seat.Anchored = true
-	seat.Size = Vector3.new(2, 0.5, 2)
-	seat.Color = COLORS.chair
-	seat.Material = Enum.Material.SmoothPlastic
-	seat.CFrame = CFrame.new(position + Vector3.new(0, 0.2, 2.1))
-	seat.Parent = parent
-	tagInteract(seat, {
-		Interact = "AttendClass",
-		Subject = subject,
-		RoomId = roomId,
-	})
-	addPrompt(seat, "수업 듣기")
-	return desk
-end
-
-local function makeClassroom(campus: Instance, roomId: string, subject: string, title: string, center: Vector3, doorSide: string)
-	local folder = roomBox(campus, center, Vector3.new(42, WALL_HEIGHT, 32), COLORS.brick, COLORS.floor, roomId, doorSide)
+local function classroom(parent: Instance, id: string, subject: string, title: string, center: Vector3, door: string)
+	local folder = room(parent, id, center, Vector3.new(40, WALL_H, 30), C.floor, door)
 
 	local board = part({
-		name = "Blackboard",
+		name = "Board",
 		parent = folder,
-		size = Vector3.new(18, 7, 0.4),
-		cframe = CFrame.new(center + Vector3.new(0, 8, -15.2)),
-		color = COLORS.board,
-		material = Enum.Material.SmoothPlastic,
+		size = Vector3.new(16, 6, 0.4),
+		cframe = CFrame.new(center + Vector3.new(0, 8, -14.2)),
+		color = C.board,
 	})
-	surfaceText(board, title, Enum.NormalId.Back, 42, Color3.fromRGB(240, 255, 230))
+	faceText(board, title, Enum.NormalId.Back, 40)
 
-	local teacherDesk = part({
+	local teacher = part({
 		name = "TeacherDesk",
 		parent = folder,
 		size = Vector3.new(8, 2, 3),
-		cframe = CFrame.new(center + Vector3.new(0, 2, -10)),
-		color = COLORS.wood,
+		cframe = CFrame.new(center + Vector3.new(0, 3, -9)),
+		color = C.wood,
 		material = Enum.Material.Wood,
 	})
-	tagInteract(teacherDesk, {
-		Interact = "AttendClass",
-		Subject = subject,
-		RoomId = roomId,
-	})
-	addPrompt(teacherDesk, "수업 듣기")
+	interact(teacher, "Class", { Subject = subject, Room = id }, "Join class")
+	tag(teacher, title)
 
-	local doorZ = if doorSide == "negZ" then -16.7 else 16.7
-	local sign = part({
-		name = "DoorSign",
-		parent = folder,
-		size = Vector3.new(10, 3, 0.4),
-		cframe = CFrame.new(center + Vector3.new(0, 12, doorZ)),
-		color = COLORS.sign,
-	})
-	surfaceText(sign, title, if doorSide == "negZ" then Enum.NormalId.Back else Enum.NormalId.Front, 28)
-
-	local startX = center.X - 12
-	local startZ = center.Z + 2
 	for row = 0, 2 do
 		for col = 0, 3 do
-			makeDesk(
-				folder,
-				Vector3.new(startX + col * 8, FLOOR_Y + 1.4, startZ + row * 6),
-				subject,
-				roomId
-			)
+			local pos = center + Vector3.new(-12 + col * 8, 1.4, -2 + row * 6)
+			part({
+				name = "Desk",
+				parent = folder,
+				size = Vector3.new(4, 1.4, 2.4),
+				cframe = CFrame.new(pos + Vector3.new(0, 1.6, 0)),
+				color = C.wood,
+				material = Enum.Material.Wood,
+			})
+			local seat = part({
+				name = "Seat",
+				parent = folder,
+				size = Vector3.new(2, 1, 2),
+				cframe = CFrame.new(pos + Vector3.new(0, 1.4, 2.6)),
+				color = C.seat,
+			})
+			interact(seat, "Class", { Subject = subject, Room = id }, "Join class")
 		end
 	end
 
-	billboard(folder:FindFirstChild("Floor") :: BasePart, title)
-	return folder
-end
-
-local function makeCafeteria(campus: Instance, center: Vector3)
-	local folder = roomBox(campus, center, Vector3.new(48, WALL_HEIGHT, 36), COLORS.brick, Color3.fromRGB(232, 214, 186), "Cafeteria", "posX")
-
-	local counter = part({
-		name = "LunchCounter",
-		parent = folder,
-		size = Vector3.new(22, 3, 4),
-		cframe = CFrame.new(center + Vector3.new(0, 2.5, -12)),
-		color = COLORS.food,
-		material = Enum.Material.SmoothPlastic,
-	})
-	tagInteract(counter, { Interact = "EatLunch", RoomId = "Cafeteria" })
-	addPrompt(counter, "급식 먹기")
-	billboard(counter, "급식실")
-
-	for i = -1, 1 do
-		local tablePart = part({
-			name = "Table",
-			parent = folder,
-			size = Vector3.new(10, 1.2, 4),
-			cframe = CFrame.new(center + Vector3.new(i * 14, 1.8, 4)),
-			color = COLORS.wood,
-			material = Enum.Material.Wood,
-		})
-		tagInteract(tablePart, { Interact = "EatLunch", RoomId = "Cafeteria" })
-		addPrompt(tablePart, "급식 먹기")
-	end
-
-	local sign = part({
+	local signZ = if door == "negZ" then -15.6 else 15.6
+	local signFace = if door == "negZ" then Enum.NormalId.Back else Enum.NormalId.Front
+	local doorSign = part({
 		name = "Sign",
 		parent = folder,
 		size = Vector3.new(12, 3, 0.4),
-		cframe = CFrame.new(center + Vector3.new(0, 12, 18.7)),
-		color = COLORS.sign,
+		cframe = CFrame.new(center + Vector3.new(0, 12, signZ)),
+		color = C.sign,
 	})
-	surfaceText(sign, "급식실", Enum.NormalId.Front, 30)
+	faceText(doorSign, title, signFace, 26)
+
 	return folder
-end
-
-local function makeOffice(campus: Instance, center: Vector3)
-	local folder = roomBox(campus, center, Vector3.new(28, WALL_HEIGHT, 24), COLORS.brick, COLORS.hallway, "Office", "negX")
-
-	local desk = part({
-		name = "PrincipalDesk",
-		parent = folder,
-		size = Vector3.new(8, 2, 4),
-		cframe = CFrame.new(center + Vector3.new(0, 2, -4)),
-		color = COLORS.wood,
-		material = Enum.Material.Wood,
-	})
-	tagInteract(desk, { Interact = "Talk", NpcName = "교장선생님", RoomId = "Office" })
-	addPrompt(desk, "대화하기")
-	billboard(desk, "교무실")
-	return folder
-end
-
-local function makeLibrary(campus: Instance, center: Vector3)
-	local folder = roomBox(campus, center, Vector3.new(32, WALL_HEIGHT, 28), COLORS.brick, Color3.fromRGB(210, 186, 150), "Library", "negX")
-
-	for i = -1, 1 do
-		local shelf = part({
-			name = "Shelf",
-			parent = folder,
-			size = Vector3.new(8, 10, 2),
-			cframe = CFrame.new(center + Vector3.new(i * 10, 6, -10)),
-			color = COLORS.wood,
-			material = Enum.Material.Wood,
-		})
-		tagInteract(shelf, { Interact = "Study", RoomId = "Library" })
-		addPrompt(shelf, "자습하기")
-	end
-
-	billboard(folder:FindFirstChild("Floor") :: BasePart, "도서관")
-	return folder
-end
-
-local function makeShop(campus: Instance, center: Vector3)
-	local stall = part({
-		name = "ShopStall",
-		parent = campus,
-		size = Vector3.new(14, 8, 8),
-		cframe = CFrame.new(center + Vector3.new(0, 5, 0)),
-		color = COLORS.shop,
-		material = Enum.Material.SmoothPlastic,
-	})
-	tagInteract(stall, { Interact = "OpenShop", RoomId = "Shop" })
-	addPrompt(stall, "상점 열기", 0.2)
-	billboard(stall, "매점")
-
-	part({
-		name = "ShopRoof",
-		parent = campus,
-		size = Vector3.new(18, 1.2, 12),
-		cframe = CFrame.new(center + Vector3.new(0, 9.6, 0)),
-		color = Color3.fromRGB(250, 214, 92),
-	})
-	return stall
-end
-
-local function makePlayground(campus: Instance, center: Vector3)
-	local field = part({
-		name = "Playground",
-		parent = campus,
-		size = Vector3.new(90, 1, 56),
-		cframe = CFrame.new(center + Vector3.new(0, 0.6, 0)),
-		color = COLORS.field,
-		material = Enum.Material.Grass,
-	})
-	tagInteract(field, { Interact = "Play", RoomId = "Playground", Subject = "pe" })
-	addPrompt(field, "운동하기")
-	billboard(field, "운동장")
-
-	part({
-		name = "CenterLine",
-		parent = campus,
-		size = Vector3.new(1, 0.2, 56),
-		cframe = CFrame.new(center + Vector3.new(0, 1.15, 0)),
-		color = COLORS.line,
-		canCollide = false,
-	})
-
-	for _, side in { -44, 44 } do
-		part({
-			name = "Goal",
-			parent = campus,
-			size = Vector3.new(2, 8, 16),
-			cframe = CFrame.new(center + Vector3.new(side, 5, 0)),
-			color = COLORS.line,
-			material = Enum.Material.Metal,
-			canCollide = false,
-			transparency = 0.15,
-		})
-	end
-
-	local bench = part({
-		name = "Bench",
-		parent = campus,
-		size = Vector3.new(10, 1.4, 2.4),
-		cframe = CFrame.new(center + Vector3.new(0, 1.8, 26)),
-		color = COLORS.wood,
-		material = Enum.Material.Wood,
-	})
-	tagInteract(bench, { Interact = "Play", RoomId = "Playground", Subject = "pe" })
-	addPrompt(bench, "운동하기")
-	return field
-end
-
-local function makeLockers(campus: Instance, origin: Vector3)
-	for i = 0, 7 do
-		local locker = part({
-			name = "Locker",
-			parent = campus,
-			size = Vector3.new(2.2, 8, 1.6),
-			cframe = CFrame.new(origin + Vector3.new(i * 2.6, 5, 0)),
-			color = if i % 2 == 0 then COLORS.locker else Color3.fromRGB(210, 92, 92),
-			material = Enum.Material.Metal,
-		})
-		tagInteract(locker, { Interact = "Locker" })
-		addPrompt(locker, "사물함 열기")
-	end
-end
-
-local function makeNpcWaypoints(campus: Instance)
-	local points = {
-		Vector3.new(0, 4, 20),
-		Vector3.new(-40, 4, -8),
-		Vector3.new(40, 4, -8),
-		Vector3.new(0, 4, -70),
-		Vector3.new(90, 4, 10),
-		Vector3.new(-90, 4, -20),
-	}
-
-	local folder = Instance.new("Folder")
-	folder.Name = "NpcWaypoints"
-	folder.Parent = campus
-
-	for index, position in points do
-		local marker = part({
-			name = "Waypoint" .. index,
-			parent = folder,
-			size = Vector3.new(1, 1, 1),
-			cframe = CFrame.new(position),
-			transparency = 1,
-			canCollide = false,
-		})
-		marker.CanQuery = false
-	end
 end
 
 function SchoolBuilder.build()
-	local existing = workspace:FindFirstChild("SchoolCampus")
-	if existing then
-		existing:Destroy()
+	local old = workspace:FindFirstChild("SchoolCampus")
+	if old then
+		old:Destroy()
 	end
 
 	local campus = Instance.new("Folder")
@@ -477,161 +256,227 @@ function SchoolBuilder.build()
 	campus.Parent = workspace
 
 	part({
-		name = "Grass",
+		name = "Ground",
 		parent = campus,
-		size = Vector3.new(420, 4, 360),
-		cframe = CFrame.new(0, 0, -10),
-		color = COLORS.grass,
+		size = Vector3.new(520, 4, 420),
+		cframe = CFrame.new(0, 0, -20),
+		color = C.grass,
 		material = Enum.Material.Grass,
-	})
-
-	part({
-		name = "Path",
-		parent = campus,
-		size = Vector3.new(28, 0.6, 90),
-		cframe = CFrame.new(0, 2.2, 28),
-		color = COLORS.path,
-		material = Enum.Material.Concrete,
 	})
 
 	part({
 		name = "Plaza",
 		parent = campus,
-		size = Vector3.new(70, 0.6, 40),
-		cframe = CFrame.new(0, 2.2, 58),
-		color = COLORS.path,
+		size = Vector3.new(90, 0.6, 46),
+		cframe = CFrame.new(0, 2.2, 56),
+		color = C.path,
 		material = Enum.Material.Concrete,
 	})
 
-	local schoolSign = part({
-		name = "SchoolSign",
-		parent = campus,
-		size = Vector3.new(28, 8, 1.2),
-		cframe = CFrame.new(0, 8, 72),
-		color = COLORS.sign,
-	})
-	surfaceText(schoolSign, "우리학교", Enum.NormalId.Front, 48)
-	surfaceText(schoolSign, "우리학교", Enum.NormalId.Back, 48)
-
-	local flagPole = part({
-		name = "FlagPole",
-		parent = campus,
-		size = Vector3.new(0.6, 24, 0.6),
-		cframe = CFrame.new(18, 14, 68),
-		color = Color3.fromRGB(200, 200, 210),
-		material = Enum.Material.Metal,
-	})
 	part({
-		name = "Flag",
+		name = "Walkway",
 		parent = campus,
-		size = Vector3.new(8, 4, 0.3),
-		cframe = CFrame.new(22.4, 23, 68),
-		color = Color3.fromRGB(232, 72, 78),
-	})
-
-	-- Hallway connecting classrooms
-	part({
-		name = "HallwayFloor",
-		parent = campus,
-		size = Vector3.new(150, 1, 18),
-		cframe = CFrame.new(0, FLOOR_Y + 0.5, -8),
-		color = COLORS.hallway,
+		size = Vector3.new(24, 0.6, 100),
+		cframe = CFrame.new(0, 2.2, 16),
+		color = C.path,
 		material = Enum.Material.Concrete,
 	})
 
-	makeClassroom(campus, "Korean", "korean", "국어 교실", Vector3.new(-52, 0, -36), "posZ")
-	makeClassroom(campus, "Math", "math", "수학 교실", Vector3.new(0, 0, -36), "posZ")
-	makeClassroom(campus, "English", "english", "영어 교실", Vector3.new(52, 0, -36), "posZ")
-	makeClassroom(campus, "Science", "science", "과학실", Vector3.new(-52, 0, 20), "negZ")
-	makeClassroom(campus, "Art", "art", "미술실", Vector3.new(52, 0, 20), "negZ")
+	part({
+		name = "Hallway",
+		parent = campus,
+		size = Vector3.new(160, 1, 20),
+		cframe = CFrame.new(0, FLOOR_Y + 0.5, -6),
+		color = C.hall,
+		material = Enum.Material.Concrete,
+	})
 
-	makeCafeteria(campus, Vector3.new(-110, 0, -8))
-	makeOffice(campus, Vector3.new(110, 0, -28))
-	makeLibrary(campus, Vector3.new(110, 0, 12))
-	makeShop(campus, Vector3.new(28, 0, 58))
-	makePlayground(campus, Vector3.new(0, 0, -92))
-	makeLockers(campus, Vector3.new(-10, 0, -1))
-	makeNpcWaypoints(campus)
+	local gate = part({
+		name = "Gate",
+		parent = campus,
+		size = Vector3.new(30, 8, 1.4),
+		cframe = CFrame.new(0, 8, 76),
+		color = C.sign,
+	})
+	faceText(gate, "WELCOME TO SCHOOL", Enum.NormalId.Front, 34)
+	faceText(gate, "WELCOME TO SCHOOL", Enum.NormalId.Back, 34)
 
-	local nurse = roomBox(campus, Vector3.new(-42, 0, 72), Vector3.new(24, WALL_HEIGHT, 20), COLORS.brick, Color3.fromRGB(240, 236, 230), "Nurse", "negZ")
+	classroom(campus, "Reading", "reading", "Reading Room", Vector3.new(-56, 0, -34), "posZ")
+	classroom(campus, "Math", "math", "Math Room", Vector3.new(0, 0, -34), "posZ")
+	classroom(campus, "Science", "science", "Science Room", Vector3.new(56, 0, -34), "posZ")
+	classroom(campus, "Art", "art", "Art Room", Vector3.new(56, 0, 22), "negZ")
+
+	-- Cafeteria
+	local cafe = room(campus, "Cafeteria", Vector3.new(-96, 0, -6), Vector3.new(44, WALL_H, 34), Color3.fromRGB(232, 214, 186), "posX")
+	local counter = part({
+		name = "Counter",
+		parent = cafe,
+		size = Vector3.new(20, 3, 4),
+		cframe = CFrame.new(-96, 4, -18),
+		color = C.food,
+	})
+	interact(counter, "Lunch", nil, "Eat lunch")
+	tag(counter, "Cafeteria")
+	for i = -1, 1 do
+		local table1 = part({
+			name = "Table",
+			parent = cafe,
+			size = Vector3.new(10, 1.4, 4),
+			cframe = CFrame.new(-96 + i * 13, 3.4, 2),
+			color = C.wood,
+			material = Enum.Material.Wood,
+		})
+		interact(table1, "Lunch", nil, "Eat lunch")
+	end
+
+	-- Nurse office (safe room)
+	local nurse = room(campus, "Nurse", Vector3.new(-48, 0, 60), Vector3.new(24, WALL_H, 20), Color3.fromRGB(238, 238, 244), "posX")
 	local bed = part({
-		name = "NurseBed",
+		name = "Bed",
 		parent = nurse,
-		size = Vector3.new(8, 1.4, 4),
-		cframe = CFrame.new(-42, 3, 72),
+		size = Vector3.new(8, 1.6, 4),
+		cframe = CFrame.new(-50, 3.4, 60),
 		color = Color3.fromRGB(240, 240, 250),
 	})
-	billboard(bed, "보건실")
+	interact(bed, "Rest", nil, "Rest here")
+	tag(bed, "Nurse Office")
 
-	local hideSpots = {
-		{ Vector3.new(-12, 3, 6), Vector3.new(6, 4, 3), "사물함 뒤" },
-		{ Vector3.new(36, 3, -92), Vector3.new(7, 4, 5), "덤불" },
-		{ Vector3.new(-36, 3, -92), Vector3.new(7, 4, 5), "덤불" },
-		{ Vector3.new(16, 3, 72), Vector3.new(5, 4, 4), "깃대 뒤" },
-	}
-	for index, spot in hideSpots do
-		local bush = part({
-			name = "HideSpot" .. index,
+	-- Library
+	local library = room(campus, "Library", Vector3.new(104, 0, 10), Vector3.new(30, WALL_H, 26), Color3.fromRGB(214, 190, 152), "negX")
+	for i = -1, 1 do
+		local shelf = part({
+			name = "Shelf",
+			parent = library,
+			size = Vector3.new(7, 9, 2),
+			cframe = CFrame.new(104 + i * 9, 7, 2),
+			color = C.wood,
+			material = Enum.Material.Wood,
+		})
+		interact(shelf, "Study", nil, "Study")
+	end
+	tag(library:FindFirstChild("Floor") :: BasePart, "Library")
+
+	-- Shop
+	local shop = part({
+		name = "Shop",
+		parent = campus,
+		size = Vector3.new(16, 9, 10),
+		cframe = CFrame.new(30, 7, 52),
+		color = C.shop,
+	})
+	interact(shop, "Shop", nil, "Open shop")
+	tag(shop, "School Shop")
+	part({
+		name = "ShopRoof",
+		parent = campus,
+		size = Vector3.new(20, 1.2, 14),
+		cframe = CFrame.new(30, 12, 52),
+		color = Color3.fromRGB(250, 214, 92),
+	})
+
+	-- Playground
+	local field = part({
+		name = "Playground",
+		parent = campus,
+		size = Vector3.new(100, 1, 64),
+		cframe = CFrame.new(0, 2.6, -92),
+		color = C.field,
+		material = Enum.Material.Grass,
+	})
+	interact(field, "Play", { Subject = "gym", Room = "Playground" }, "Play / Gym class")
+	tag(field, "Playground")
+	part({
+		name = "FieldLine",
+		parent = campus,
+		size = Vector3.new(1, 0.2, 64),
+		cframe = CFrame.new(0, 3.2, -92),
+		color = C.white,
+		collide = false,
+	})
+
+	-- Lockers
+	for i = 0, 7 do
+		local locker = part({
+			name = "Locker",
 			parent = campus,
-			size = spot[2],
+			size = Vector3.new(2.4, 8, 1.8),
+			cframe = CFrame.new(-14 + i * 2.8, FLOOR_Y + 4.5, 1),
+			color = if i % 2 == 0 then C.metal else Color3.fromRGB(206, 96, 96),
+			material = Enum.Material.Metal,
+		})
+		interact(locker, "Locker", nil, "Open locker")
+	end
+
+	-- Hiding spots
+	local hides = {
+		{ Vector3.new(-20, 5, 4), "Behind Lockers" },
+		{ Vector3.new(34, 5, -88), "Bushes" },
+		{ Vector3.new(-34, 5, -88), "Bushes" },
+		{ Vector3.new(20, 5, 68), "Bushes" },
+		{ Vector3.new(-74, 5, 6), "Bushes" },
+	}
+	for index, spot in hides do
+		local bush = part({
+			name = "Hide" .. index,
+			parent = campus,
+			size = Vector3.new(8, 5, 5),
 			cframe = CFrame.new(spot[1]),
-			color = Color3.fromRGB(48, 120, 62),
+			color = C.bush,
 			material = Enum.Material.Grass,
 		})
 		CollectionService:AddTag(bush, "HideSpot")
-		billboard(bush, "숨기: " .. spot[3], Color3.fromRGB(180, 255, 190))
+		tag(bush, "Hide: " .. spot[2], Color3.fromRGB(190, 255, 200))
 	end
 
+	-- Free pickups
 	local pickups = {
-		{ "chocolate", Vector3.new(8, 3.4, 4), Color3.fromRGB(120, 72, 40) },
-		{ "juice", Vector3.new(-92, 3.4, 8), Color3.fromRGB(255, 140, 80) },
+		{ "candy", Vector3.new(12, 4, 8), Color3.fromRGB(130, 78, 44), "Candy Bar" },
+		{ "juice", Vector3.new(-70, 4, -6), Color3.fromRGB(255, 148, 88), "Brave Juice" },
 	}
-	for _, pickup in pickups do
+	for _, entry in pickups do
 		local box = part({
-			name = "Pickup_" .. pickup[1],
+			name = "Pickup",
 			parent = campus,
-			size = Vector3.new(2.4, 2.4, 2.4),
-			cframe = CFrame.new(pickup[2]),
-			color = pickup[3],
+			size = Vector3.new(2.6, 2.6, 2.6),
+			cframe = CFrame.new(entry[2]),
+			color = entry[3],
 		})
-		tagInteract(box, { Interact = "Pickup", ItemId = pickup[1] })
-		addPrompt(box, "줍기", 0.1)
-		billboard(box, if pickup[1] == "chocolate" then "초콜릿" else "용기 주스")
+		interact(box, "Pickup", { Item = entry[1] }, "Pick up")
+		tag(box, entry[4])
 	end
 
-	local storyBoard = part({
+	local board = part({
 		name = "StoryBoard",
 		parent = campus,
-		size = Vector3.new(16, 8, 0.6),
-		cframe = CFrame.new(-22, 8, 58),
-		color = COLORS.sign,
+		size = Vector3.new(18, 8, 0.6),
+		cframe = CFrame.new(-28, 8, 56),
+		color = C.sign,
 	})
-	surfaceText(storyBoard, "우리학교 대모험\n불리를 피하거나 이겨라", Enum.NormalId.Front, 28)
+	faceText(board, "BRAVE KID\nRun, hide, or stand up", Enum.NormalId.Front, 26)
 
-	local spawn = Instance.new("SpawnLocation")
-	spawn.Name = "SchoolSpawn"
-	spawn.Anchored = true
-	spawn.Duration = 0
-	spawn.Size = Vector3.new(12, 1, 12)
-	spawn.CFrame = CFrame.new(0, 3, 58)
-	spawn.Color = Color3.fromRGB(92, 168, 220)
-	spawn.Material = Enum.Material.SmoothPlastic
-	spawn.Neutral = true
-	spawn.Parent = campus
-	billboard(spawn, "등교")
+	local spawnPad = Instance.new("SpawnLocation")
+	spawnPad.Name = "SchoolSpawn"
+	spawnPad.Anchored = true
+	spawnPad.Duration = 0
+	spawnPad.Neutral = true
+	spawnPad.Size = Vector3.new(16, 1, 16)
+	spawnPad.CFrame = CFrame.new(0, 3.2, 60)
+	spawnPad.Color = Color3.fromRGB(92, 168, 220)
+	spawnPad.Material = Enum.Material.SmoothPlastic
+	spawnPad.Parent = campus
+	tag(spawnPad, "Start Here")
 
-	-- Soft invisible walls so players stay on campus
-	for _, wall in {
-		{ Vector3.new(420, 40, 4), Vector3.new(0, 20, 168) },
-		{ Vector3.new(420, 40, 4), Vector3.new(0, 20, -188) },
-		{ Vector3.new(4, 40, 360), Vector3.new(210, 20, -10) },
-		{ Vector3.new(4, 40, 360), Vector3.new(-210, 20, -10) },
+	for _, edge in {
+		{ Vector3.new(520, 60, 4), Vector3.new(0, 30, 190) },
+		{ Vector3.new(520, 60, 4), Vector3.new(0, 30, -230) },
+		{ Vector3.new(4, 60, 420), Vector3.new(260, 30, -20) },
+		{ Vector3.new(4, 60, 420), Vector3.new(-260, 30, -20) },
 	} do
 		part({
-			name = "Boundary",
+			name = "Edge",
 			parent = campus,
-			size = wall[1],
-			cframe = CFrame.new(wall[2]),
+			size = edge[1],
+			cframe = CFrame.new(edge[2]),
 			transparency = 1,
 		})
 	end

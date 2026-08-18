@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
 local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
 local Util = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"))
@@ -9,422 +10,356 @@ local Hud = {}
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-local profile
-local period
-local story
-local shopOpen = false
-local bagOpen = false
+local DARK = Color3.fromRGB(24, 32, 48)
+local GOLD = Color3.fromRGB(255, 214, 120)
+local WHITE = Color3.new(1, 1, 1)
 
-local function corner(parent: Instance, radius: number)
-	local ui = Instance.new("UICorner")
-	ui.CornerRadius = UDim.new(0, radius)
-	ui.Parent = parent
+local function round(instance: Instance, radius: number)
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, radius)
+	corner.Parent = instance
 end
 
-local function pad(parent: Instance, pixels: number)
-	local ui = Instance.new("UIPadding")
-	ui.PaddingTop = UDim.new(0, pixels)
-	ui.PaddingBottom = UDim.new(0, pixels)
-	ui.PaddingLeft = UDim.new(0, pixels)
-	ui.PaddingRight = UDim.new(0, pixels)
-	ui.Parent = parent
+local function padding(instance: Instance, amount: number)
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop = UDim.new(0, amount)
+	pad.PaddingBottom = UDim.new(0, amount)
+	pad.PaddingLeft = UDim.new(0, amount)
+	pad.PaddingRight = UDim.new(0, amount)
+	pad.Parent = instance
 end
 
-local function textButton(parent: Instance, caption: string, color: Color3, size: UDim2): TextButton
-	local button = Instance.new("TextButton")
-	button.Size = size
-	button.BackgroundColor3 = color
-	button.Font = Enum.Font.GothamBold
-	button.TextSize = 16
-	button.TextColor3 = Color3.new(1, 1, 1)
-	button.Text = caption
-	button.AutoButtonColor = true
-	button.Parent = parent
-	corner(button, 10)
-	return button
+local function panel(parent: Instance, position: UDim2, size: UDim2, color: Color3): Frame
+	local frame = Instance.new("Frame")
+	frame.Position = position
+	frame.Size = size
+	frame.BackgroundColor3 = color
+	frame.BackgroundTransparency = 0.05
+	frame.Parent = parent
+	round(frame, 14)
+	padding(frame, 12)
+	return frame
+end
+
+local function text(parent: Instance, content: string, size: number, color: Color3, bold: boolean?): TextLabel
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Size = UDim2.new(1, 0, 0, size + 6)
+	label.Font = if bold then Enum.Font.GothamBold else Enum.Font.Gotham
+	label.TextSize = size
+	label.TextColor3 = color
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Text = content
+	label.Parent = parent
+	return label
+end
+
+local function button(parent: Instance, caption: string, color: Color3, height: number): TextButton
+	local item = Instance.new("TextButton")
+	item.Size = UDim2.new(1, 0, 0, height)
+	item.BackgroundColor3 = color
+	item.Font = Enum.Font.GothamBold
+	item.TextSize = 15
+	item.TextColor3 = WHITE
+	item.Text = caption
+	item.TextWrapped = true
+	item.Parent = parent
+	round(item, 10)
+	return item
 end
 
 function Hud.mount()
 	local gui = Instance.new("ScreenGui")
-	gui.Name = "SchoolHud"
+	gui.Name = "BraveKidHud"
 	gui.ResetOnSpawn = false
 	gui.IgnoreGuiInset = true
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	gui.Parent = playerGui
 
+	local profile
+	local period
+
+	-- Top bar: current period
 	local top = Instance.new("Frame")
 	top.AnchorPoint = Vector2.new(0.5, 0)
-	top.Position = UDim2.new(0.5, 0, 0, 14)
-	top.Size = UDim2.fromOffset(460, 78)
-	top.BackgroundColor3 = Color3.fromRGB(24, 36, 58)
+	top.Position = UDim2.new(0.5, 0, 0, 12)
+	top.Size = UDim2.fromOffset(470, 72)
+	top.BackgroundColor3 = Color3.fromRGB(22, 34, 56)
 	top.Parent = gui
-	corner(top, 16)
+	round(top, 16)
+	padding(top, 12)
 
-	local periodTitle = Instance.new("TextLabel")
-	periodTitle.BackgroundTransparency = 1
-	periodTitle.Position = UDim2.fromOffset(16, 8)
-	periodTitle.Size = UDim2.new(1, -32, 0, 28)
-	periodTitle.Font = Enum.Font.GothamBold
-	periodTitle.TextSize = 20
-	periodTitle.TextColor3 = Color3.fromRGB(255, 224, 140)
-	periodTitle.TextXAlignment = Enum.TextXAlignment.Left
-	periodTitle.Text = "우리학교 대모험"
-	periodTitle.Parent = top
-
-	local periodHint = Instance.new("TextLabel")
-	periodHint.BackgroundTransparency = 1
-	periodHint.Position = UDim2.fromOffset(16, 38)
-	periodHint.Size = UDim2.new(1, -32, 0, 28)
-	periodHint.Font = Enum.Font.Gotham
-	periodHint.TextSize = 14
-	periodHint.TextColor3 = Color3.fromRGB(220, 228, 240)
-	periodHint.TextXAlignment = Enum.TextXAlignment.Left
+	local periodName = text(top, "Brave Kid: School Story", 19, GOLD, true)
+	local periodHint = text(top, "Find Mr. Park at the front gate", 14, Color3.fromRGB(214, 224, 238))
+	periodHint.Position = UDim2.fromOffset(0, 28)
+	periodHint.Size = UDim2.new(1, 0, 0, 34)
 	periodHint.TextWrapped = true
-	periodHint.Text = "정문에서 김선생님을 만나세요"
-	periodHint.Parent = top
 
-	local left = Instance.new("Frame")
-	left.Position = UDim2.fromOffset(16, 104)
-	left.Size = UDim2.fromOffset(250, 210)
-	left.BackgroundColor3 = Color3.fromRGB(24, 32, 48)
-	left.BackgroundTransparency = 0.08
-	left.Parent = gui
-	corner(left, 14)
-	pad(left, 12)
+	-- Left: player card
+	local card = panel(gui, UDim2.fromOffset(14, 96), UDim2.fromOffset(248, 200), DARK)
+	local cardList = Instance.new("UIListLayout")
+	cardList.Padding = UDim.new(0, 5)
+	cardList.Parent = card
 
-	local leftLayout = Instance.new("UIListLayout")
-	leftLayout.Padding = UDim.new(0, 5)
-	leftLayout.Parent = left
+	local nameLabel = text(card, "Level 1 New Kid", 16, WHITE, true)
 
-	local nameLabel = Instance.new("TextLabel")
-	nameLabel.BackgroundTransparency = 1
-	nameLabel.Size = UDim2.new(1, 0, 0, 22)
-	nameLabel.Font = Enum.Font.GothamBold
-	nameLabel.TextSize = 16
-	nameLabel.TextColor3 = Color3.new(1, 1, 1)
-	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-	nameLabel.Text = "1레벨 신입생"
-	nameLabel.Parent = left
-
-	local xpBack = Instance.new("Frame")
-	xpBack.Size = UDim2.new(1, 0, 0, 12)
-	xpBack.BackgroundColor3 = Color3.fromRGB(40, 52, 72)
-	xpBack.Parent = left
-	corner(xpBack, 6)
+	local xpTrack = Instance.new("Frame")
+	xpTrack.Size = UDim2.new(1, 0, 0, 12)
+	xpTrack.BackgroundColor3 = Color3.fromRGB(42, 54, 76)
+	xpTrack.Parent = card
+	round(xpTrack, 6)
 	local xpFill = Instance.new("Frame")
 	xpFill.Size = UDim2.fromScale(0, 1)
 	xpFill.BackgroundColor3 = Color3.fromRGB(255, 196, 72)
-	xpFill.Parent = xpBack
-	corner(xpFill, 6)
+	xpFill.BorderSizePixel = 0
+	xpFill.Parent = xpTrack
+	round(xpFill, 6)
 
-	local statEnergy = Instance.new("TextLabel")
-	statEnergy.BackgroundTransparency = 1
-	statEnergy.Size = UDim2.new(1, 0, 0, 18)
-	statEnergy.Font = Enum.Font.Gotham
-	statEnergy.TextSize = 14
-	statEnergy.TextColor3 = Color3.fromRGB(140, 220, 170)
-	statEnergy.TextXAlignment = Enum.TextXAlignment.Left
-	statEnergy.Parent = left
+	local energyLabel = text(card, "Energy 100 / 100", 14, Color3.fromRGB(140, 220, 170))
+	local courageLabel = text(card, "Courage 80 / 80", 14, Color3.fromRGB(255, 150, 150))
+	local coinLabel = text(card, "Coins 40", 14, GOLD)
+	local powerLabel = text(card, "Stand-up power 1", 14, Color3.fromRGB(180, 200, 255))
+	local bagButton = button(card, "Open Bag", Color3.fromRGB(64, 96, 150), 30)
 
-	local statCourage = Instance.new("TextLabel")
-	statCourage.BackgroundTransparency = 1
-	statCourage.Size = UDim2.new(1, 0, 0, 18)
-	statCourage.Font = Enum.Font.Gotham
-	statCourage.TextSize = 14
-	statCourage.TextColor3 = Color3.fromRGB(255, 150, 150)
-	statCourage.TextXAlignment = Enum.TextXAlignment.Left
-	statCourage.Parent = left
-
-	local statCoin = Instance.new("TextLabel")
-	statCoin.BackgroundTransparency = 1
-	statCoin.Size = UDim2.new(1, 0, 0, 18)
-	statCoin.Font = Enum.Font.Gotham
-	statCoin.TextSize = 14
-	statCoin.TextColor3 = Color3.fromRGB(255, 214, 120)
-	statCoin.TextXAlignment = Enum.TextXAlignment.Left
-	statCoin.Parent = left
-
-	local statPower = Instance.new("TextLabel")
-	statPower.BackgroundTransparency = 1
-	statPower.Size = UDim2.new(1, 0, 0, 18)
-	statPower.Font = Enum.Font.Gotham
-	statPower.TextSize = 14
-	statPower.TextColor3 = Color3.fromRGB(180, 200, 255)
-	statPower.TextXAlignment = Enum.TextXAlignment.Left
-	statPower.Parent = left
-
-	local bagBtn = textButton(left, "가방 열기", Color3.fromRGB(64, 96, 150), UDim2.new(1, 0, 0, 32))
-
-	local storyBox = Instance.new("Frame")
-	storyBox.Position = UDim2.fromOffset(16, 326)
-	storyBox.Size = UDim2.fromOffset(250, 120)
-	storyBox.BackgroundColor3 = Color3.fromRGB(48, 32, 28)
-	storyBox.Parent = gui
-	corner(storyBox, 14)
-	pad(storyBox, 12)
-
-	local storyTitle = Instance.new("TextLabel")
-	storyTitle.BackgroundTransparency = 1
-	storyTitle.Size = UDim2.new(1, 0, 0, 22)
-	storyTitle.Font = Enum.Font.GothamBold
-	storyTitle.TextSize = 16
-	storyTitle.TextColor3 = Color3.fromRGB(255, 200, 140)
-	storyTitle.TextXAlignment = Enum.TextXAlignment.Left
-	storyTitle.Text = "첫 등교"
-	storyTitle.Parent = storyBox
-
-	local storyGoal = Instance.new("TextLabel")
-	storyGoal.BackgroundTransparency = 1
-	storyGoal.Position = UDim2.fromOffset(0, 28)
-	storyGoal.Size = UDim2.new(1, 0, 1, -28)
-	storyGoal.Font = Enum.Font.Gotham
-	storyGoal.TextSize = 14
-	storyGoal.TextColor3 = Color3.new(1, 1, 1)
-	storyGoal.TextXAlignment = Enum.TextXAlignment.Left
-	storyGoal.TextYAlignment = Enum.TextYAlignment.Top
+	-- Left: story goal
+	local storyPanel = panel(gui, UDim2.fromOffset(14, 306), UDim2.fromOffset(248, 116), Color3.fromRGB(52, 34, 30))
+	local storyTitle = text(storyPanel, "First Day", 16, Color3.fromRGB(255, 200, 140), true)
+	local storyGoal = text(storyPanel, "Talk to Mr. Park at the front gate", 14, WHITE)
+	storyGoal.Position = UDim2.fromOffset(0, 26)
+	storyGoal.Size = UDim2.new(1, 0, 0, 64)
 	storyGoal.TextWrapped = true
-	storyGoal.Text = "정문 앞 김선생님과 대화하세요"
-	storyGoal.Parent = storyBox
+	storyGoal.TextYAlignment = Enum.TextYAlignment.Top
 
-	local warning = Instance.new("TextLabel")
-	warning.AnchorPoint = Vector2.new(0.5, 0)
-	warning.Position = UDim2.new(0.5, 0, 0, 100)
-	warning.Size = UDim2.fromOffset(380, 36)
-	warning.BackgroundColor3 = Color3.fromRGB(150, 40, 40)
-	warning.Font = Enum.Font.GothamBold
-	warning.TextSize = 16
-	warning.TextColor3 = Color3.new(1, 1, 1)
-	warning.Visible = false
-	warning.Parent = gui
-	corner(warning, 10)
+	-- Left: tasks
+	local taskPanel = panel(gui, UDim2.fromOffset(14, 432), UDim2.fromOffset(248, 190), DARK)
+	local taskList = Instance.new("UIListLayout")
+	taskList.Padding = UDim.new(0, 5)
+	taskList.Parent = taskPanel
+	text(taskPanel, "Tasks", 16, GOLD, true)
 
-	local toast = Instance.new("TextLabel")
-	toast.AnchorPoint = Vector2.new(0.5, 1)
-	toast.Position = UDim2.new(0.5, 0, 1, -24)
-	toast.Size = UDim2.fromOffset(540, 46)
-	toast.BackgroundColor3 = Color3.fromRGB(28, 40, 62)
-	toast.Font = Enum.Font.GothamBold
-	toast.TextSize = 16
-	toast.TextColor3 = Color3.new(1, 1, 1)
-	toast.Visible = false
-	toast.Parent = gui
-	corner(toast, 12)
-
-	local dialogue = Instance.new("Frame")
-	dialogue.AnchorPoint = Vector2.new(0.5, 1)
-	dialogue.Position = UDim2.new(0.5, 0, 1, -80)
-	dialogue.Size = UDim2.fromOffset(620, 150)
-	dialogue.BackgroundColor3 = Color3.fromRGB(20, 24, 40)
-	dialogue.Visible = false
-	dialogue.Parent = gui
-	corner(dialogue, 16)
-	pad(dialogue, 16)
-
-	local speaker = Instance.new("TextLabel")
-	speaker.BackgroundTransparency = 1
-	speaker.Size = UDim2.new(1, 0, 0, 24)
-	speaker.Font = Enum.Font.GothamBold
-	speaker.TextSize = 18
-	speaker.TextColor3 = Color3.fromRGB(255, 220, 140)
-	speaker.TextXAlignment = Enum.TextXAlignment.Left
-	speaker.Parent = dialogue
-
-	local lineLabel = Instance.new("TextLabel")
-	lineLabel.BackgroundTransparency = 1
-	lineLabel.Position = UDim2.fromOffset(0, 28)
-	lineLabel.Size = UDim2.new(1, 0, 1, -70)
-	lineLabel.Font = Enum.Font.Gotham
-	lineLabel.TextSize = 18
-	lineLabel.TextColor3 = Color3.new(1, 1, 1)
-	lineLabel.TextXAlignment = Enum.TextXAlignment.Left
-	lineLabel.TextYAlignment = Enum.TextYAlignment.Top
-	lineLabel.TextWrapped = true
-	lineLabel.Parent = dialogue
-
-	local nextLine = textButton(dialogue, "다음", Color3.fromRGB(70, 110, 180), UDim2.new(0, 120, 0, 36))
-	nextLine.Position = UDim2.new(1, -120, 1, -36)
-
-	local encounter = Instance.new("Frame")
-	encounter.AnchorPoint = Vector2.new(0.5, 0.5)
-	encounter.Position = UDim2.fromScale(0.5, 0.5)
-	encounter.Size = UDim2.fromOffset(420, 340)
-	encounter.BackgroundColor3 = Color3.fromRGB(48, 24, 28)
-	encounter.Visible = false
-	encounter.Parent = gui
-	corner(encounter, 18)
-	pad(encounter, 16)
-
-	local encTitle = Instance.new("TextLabel")
-	encTitle.BackgroundTransparency = 1
-	encTitle.Size = UDim2.new(1, 0, 0, 50)
-	encTitle.Font = Enum.Font.GothamBold
-	encTitle.TextSize = 20
-	encTitle.TextColor3 = Color3.fromRGB(255, 200, 200)
-	encTitle.TextWrapped = true
-	encTitle.Parent = encounter
-
-	local encLayout = Instance.new("UIListLayout")
-	encLayout.Padding = UDim.new(0, 8)
-	encLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	encLayout.Parent = encounter
-	encTitle.LayoutOrder = 0
-
-	local runBtn = textButton(encounter, "도망가기", Color3.fromRGB(70, 120, 80), UDim2.new(1, 0, 0, 42))
-	local hideBtn = textButton(encounter, "숨기", Color3.fromRGB(70, 90, 130), UDim2.new(1, 0, 0, 42))
-	local fightBtn = textButton(encounter, "맞서기", Color3.fromRGB(160, 70, 70), UDim2.new(1, 0, 0, 42))
-	local noteBtn = textButton(encounter, "친구의 쪽지 쓰기", Color3.fromRGB(120, 90, 160), UDim2.new(1, 0, 0, 42))
-	local whistleBtn = textButton(encounter, "호루라기 불기", Color3.fromRGB(160, 110, 50), UDim2.new(1, 0, 0, 42))
-	runBtn.LayoutOrder = 1
-	hideBtn.LayoutOrder = 2
-	fightBtn.LayoutOrder = 3
-	noteBtn.LayoutOrder = 4
-	whistleBtn.LayoutOrder = 5
-
-	local shop = Instance.new("Frame")
-	shop.AnchorPoint = Vector2.new(0.5, 0.5)
-	shop.Position = UDim2.fromScale(0.5, 0.5)
-	shop.Size = UDim2.fromOffset(430, 460)
-	shop.BackgroundColor3 = Color3.fromRGB(28, 34, 52)
-	shop.Visible = false
-	shop.Parent = gui
-	corner(shop, 18)
-	pad(shop, 16)
-	local shopLayout = Instance.new("UIListLayout")
-	shopLayout.Padding = UDim.new(0, 7)
-	shopLayout.Parent = shop
-	local shopHead = Instance.new("TextLabel")
-	shopHead.BackgroundTransparency = 1
-	shopHead.Size = UDim2.new(1, 0, 0, 28)
-	shopHead.Font = Enum.Font.GothamBold
-	shopHead.TextSize = 22
-	shopHead.TextColor3 = Color3.fromRGB(255, 224, 140)
-	shopHead.TextXAlignment = Enum.TextXAlignment.Left
-	shopHead.Text = "매점"
-	shopHead.Parent = shop
-
-	for _, itemId in Config.ShopOrder do
-		local item = Config.Items[itemId]
-		local button = textButton(shop, string.format("%s  ·  %d코인\n%s", item.name, item.price, item.desc), Color3.fromRGB(48, 64, 96), UDim2.new(1, 0, 0, 52))
-		button.TextSize = 14
-		button.MouseButton1Click:Connect(function()
-			Remotes.get("BuyItem"):FireServer(itemId)
+	local taskButtons = {}
+	for _, task in Config.Tasks do
+		local row = button(taskPanel, task.name, Color3.fromRGB(44, 58, 84), 32)
+		row.TextSize = 13
+		row.MouseButton1Click:Connect(function()
+			Remotes.get("ClaimTask"):FireServer(task.id)
 		end)
+		taskButtons[task.id] = row
 	end
-	local closeShop = textButton(shop, "닫기", Color3.fromRGB(160, 70, 70), UDim2.new(1, 0, 0, 38))
-	closeShop.MouseButton1Click:Connect(function()
-		shop.Visible = false
-		shopOpen = false
-	end)
 
-	local bag = Instance.new("Frame")
-	bag.AnchorPoint = Vector2.new(0, 0)
-	bag.Position = UDim2.fromOffset(276, 104)
-	bag.Size = UDim2.fromOffset(260, 280)
-	bag.BackgroundColor3 = Color3.fromRGB(28, 34, 52)
+	-- Bag
+	local bag = panel(gui, UDim2.fromOffset(272, 96), UDim2.fromOffset(250, 300), Color3.fromRGB(28, 34, 52))
 	bag.Visible = false
-	bag.Parent = gui
-	corner(bag, 14)
-	pad(bag, 12)
-	local bagLayout = Instance.new("UIListLayout")
-	bagLayout.Padding = UDim.new(0, 6)
-	bagLayout.Parent = bag
-	local bagHead = Instance.new("TextLabel")
-	bagHead.BackgroundTransparency = 1
-	bagHead.Size = UDim2.new(1, 0, 0, 24)
-	bagHead.Font = Enum.Font.GothamBold
-	bagHead.TextSize = 18
-	bagHead.TextColor3 = Color3.fromRGB(255, 224, 140)
-	bagHead.TextXAlignment = Enum.TextXAlignment.Left
-	bagHead.Text = "가방"
-	bagHead.Parent = bag
-	local bagRows: { [string]: TextButton } = {}
+	local bagList = Instance.new("UIListLayout")
+	bagList.Padding = UDim.new(0, 5)
+	bagList.Parent = bag
+	local bagTitle = text(bag, "Bag", 17, GOLD, true)
 
 	local function refreshBag()
 		for _, child in bag:GetChildren() do
-			if child:IsA("TextButton") then
+			if child:IsA("TextButton") or (child:IsA("TextLabel") and child ~= bagTitle) then
 				child:Destroy()
 			end
 		end
-		bagRows = {}
 		if not profile then
 			return
 		end
-		for itemId, count in profile.inventory do
-			if count > 0 and Config.Items[itemId] then
-				local item = Config.Items[itemId]
-				local row = textButton(bag, string.format("%s x%d  (클릭해서 사용)", item.name, count), Color3.fromRGB(50, 70, 100), UDim2.new(1, 0, 0, 36))
-				row.TextSize = 13
+		local empty = true
+		for itemId, count in profile.bag do
+			local item = Config.Items[itemId]
+			if item and count > 0 then
+				empty = false
+				local row = button(bag, string.format("%s x%d - %s", item.name, count, item.info), Color3.fromRGB(50, 70, 100), 46)
+				row.TextSize = 12
 				row.MouseButton1Click:Connect(function()
 					Remotes.get("UseItem"):FireServer(itemId)
 				end)
-				bagRows[itemId] = row
 			end
 		end
-		if profile.owned.sneakers then
-			textButton(bag, "운동화 착용 중", Color3.fromRGB(50, 90, 70), UDim2.new(1, 0, 0, 32)).Active = false
+		for itemId in profile.gear do
+			local item = Config.Items[itemId]
+			if item then
+				empty = false
+				local worn = text(bag, "Wearing: " .. item.name, 13, Color3.fromRGB(150, 230, 170))
+				worn.LayoutOrder = 50
+			end
 		end
-		if profile.owned.courage_badge then
-			textButton(bag, "용기 배지 착용 중", Color3.fromRGB(90, 70, 50), UDim2.new(1, 0, 0, 32)).Active = false
+		if empty then
+			text(bag, "Your bag is empty. Buy items at the school shop.", 13, Color3.fromRGB(200, 208, 220)).TextWrapped = true
 		end
 	end
 
-	bagBtn.MouseButton1Click:Connect(function()
-		bagOpen = not bagOpen
-		bag.Visible = bagOpen
-		bagBtn.Text = if bagOpen then "가방 닫기" else "가방 열기"
+	bagButton.MouseButton1Click:Connect(function()
+		bag.Visible = not bag.Visible
+		bagButton.Text = if bag.Visible then "Close Bag" else "Open Bag"
 		refreshBag()
 	end)
 
-	local help = Instance.new("TextLabel")
-	help.AnchorPoint = Vector2.new(1, 1)
-	help.Position = UDim2.new(1, -16, 1, -16)
-	help.Size = UDim2.fromOffset(300, 96)
-	help.BackgroundColor3 = Color3.fromRGB(24, 32, 48)
-	help.Font = Enum.Font.Gotham
-	help.TextSize = 13
-	help.TextColor3 = Color3.fromRGB(230, 234, 244)
-	help.TextXAlignment = Enum.TextXAlignment.Left
-	help.TextYAlignment = Enum.TextYAlignment.Top
-	help.TextWrapped = true
-	help.Text = "스토리를 따라 이동하세요\n불리에게 잡히면 도망/숨기/맞서기\n수업 = 레벨, 매점 = 아이템"
-	help.Parent = gui
-	corner(help, 12)
-	pad(help, 10)
+	-- Shop
+	local shop = Instance.new("Frame")
+	shop.AnchorPoint = Vector2.new(0.5, 0.5)
+	shop.Position = UDim2.fromScale(0.5, 0.5)
+	shop.Size = UDim2.fromOffset(430, 470)
+	shop.BackgroundColor3 = Color3.fromRGB(28, 34, 52)
+	shop.Visible = false
+	shop.Parent = gui
+	round(shop, 18)
+	padding(shop, 14)
+	local shopList = Instance.new("UIListLayout")
+	shopList.Padding = UDim.new(0, 6)
+	shopList.Parent = shop
+	text(shop, "School Shop", 20, GOLD, true)
 
-	local dialogueLines = {}
-	local dialogueIndex = 1
-
-	local function showDialogue(speakerName: string, lines)
-		dialogueLines = lines
-		dialogueIndex = 1
-		speaker.Text = speakerName
-		lineLabel.Text = lines[1] or ""
-		dialogue.Visible = true
+	for _, itemId in Config.ShopItems do
+		local item = Config.Items[itemId]
+		local row = button(shop, string.format("%s - %d coins\n%s", item.name, item.price, item.info), Color3.fromRGB(48, 64, 96), 52)
+		row.TextSize = 13
+		row.MouseButton1Click:Connect(function()
+			Remotes.get("BuyItem"):FireServer(itemId)
+		end)
 	end
+	local shopClose = button(shop, "Close", Color3.fromRGB(160, 70, 70), 36)
+	shopClose.MouseButton1Click:Connect(function()
+		shop.Visible = false
+	end)
 
-	nextLine.MouseButton1Click:Connect(function()
-		dialogueIndex += 1
-		if dialogueIndex > #dialogueLines then
+	-- Encounter
+	local encounter = Instance.new("Frame")
+	encounter.AnchorPoint = Vector2.new(0.5, 0.5)
+	encounter.Position = UDim2.fromScale(0.5, 0.5)
+	encounter.Size = UDim2.fromOffset(400, 350)
+	encounter.BackgroundColor3 = Color3.fromRGB(56, 26, 30)
+	encounter.Visible = false
+	encounter.Parent = gui
+	round(encounter, 18)
+	padding(encounter, 14)
+	local encounterList = Instance.new("UIListLayout")
+	encounterList.Padding = UDim.new(0, 8)
+	encounterList.SortOrder = Enum.SortOrder.LayoutOrder
+	encounterList.Parent = encounter
+
+	local encounterTitle = Instance.new("TextLabel")
+	encounterTitle.BackgroundTransparency = 1
+	encounterTitle.Size = UDim2.new(1, 0, 0, 56)
+	encounterTitle.Font = Enum.Font.GothamBold
+	encounterTitle.TextSize = 18
+	encounterTitle.TextColor3 = Color3.fromRGB(255, 200, 200)
+	encounterTitle.TextWrapped = true
+	encounterTitle.LayoutOrder = 0
+	encounterTitle.Parent = encounter
+
+	local runButton = button(encounter, "Run away", Color3.fromRGB(66, 122, 78), 44)
+	local hideButton = button(encounter, "Hide", Color3.fromRGB(66, 92, 136), 44)
+	local standButton = button(encounter, "Stand up", Color3.fromRGB(164, 70, 70), 44)
+	local noteButton = button(encounter, "Use Friend's Note", Color3.fromRGB(120, 90, 160), 40)
+	local whistleButton = button(encounter, "Use Whistle", Color3.fromRGB(160, 112, 52), 40)
+	runButton.LayoutOrder = 1
+	hideButton.LayoutOrder = 2
+	standButton.LayoutOrder = 3
+	noteButton.LayoutOrder = 4
+	whistleButton.LayoutOrder = 5
+
+	runButton.MouseButton1Click:Connect(function()
+		Remotes.get("EncounterAction"):FireServer("run")
+	end)
+	hideButton.MouseButton1Click:Connect(function()
+		Remotes.get("EncounterAction"):FireServer("hide")
+	end)
+	standButton.MouseButton1Click:Connect(function()
+		Remotes.get("EncounterAction"):FireServer("stand")
+	end)
+	noteButton.MouseButton1Click:Connect(function()
+		Remotes.get("EncounterAction"):FireServer("item", "note")
+	end)
+	whistleButton.MouseButton1Click:Connect(function()
+		Remotes.get("EncounterAction"):FireServer("item", "whistle")
+	end)
+
+	-- Dialogue
+	local dialogue = Instance.new("Frame")
+	dialogue.AnchorPoint = Vector2.new(0.5, 1)
+	dialogue.Position = UDim2.new(0.5, 0, 1, -70)
+	dialogue.Size = UDim2.fromOffset(620, 150)
+	dialogue.BackgroundColor3 = Color3.fromRGB(18, 24, 40)
+	dialogue.Visible = false
+	dialogue.Parent = gui
+	round(dialogue, 16)
+	padding(dialogue, 16)
+
+	local speakerLabel = text(dialogue, "", 18, GOLD, true)
+	local lineLabel = text(dialogue, "", 17, WHITE)
+	lineLabel.Position = UDim2.fromOffset(0, 28)
+	lineLabel.Size = UDim2.new(1, 0, 0, 70)
+	lineLabel.TextWrapped = true
+	lineLabel.TextYAlignment = Enum.TextYAlignment.Top
+
+	local nextButton = button(dialogue, "Next", Color3.fromRGB(70, 110, 180), 34)
+	nextButton.Size = UDim2.fromOffset(120, 34)
+	nextButton.Position = UDim2.new(1, -120, 1, -34)
+
+	local lines = {}
+	local lineIndex = 1
+	nextButton.MouseButton1Click:Connect(function()
+		lineIndex += 1
+		if lineIndex > #lines then
 			dialogue.Visible = false
 		else
-			lineLabel.Text = dialogueLines[dialogueIndex]
+			lineLabel.Text = lines[lineIndex]
 		end
 	end)
 
-	local function showToast(text: string, tone: string)
-		if tone == "shop" then
-			shopOpen = not shopOpen
-			shop.Visible = shopOpen
-			return
-		end
-		toast.Text = text
+	-- Alerts
+	local warningLabel = Instance.new("TextLabel")
+	warningLabel.AnchorPoint = Vector2.new(0.5, 0)
+	warningLabel.Position = UDim2.new(0.5, 0, 0, 92)
+	warningLabel.Size = UDim2.fromOffset(380, 34)
+	warningLabel.BackgroundColor3 = Color3.fromRGB(150, 46, 46)
+	warningLabel.Font = Enum.Font.GothamBold
+	warningLabel.TextSize = 15
+	warningLabel.TextColor3 = WHITE
+	warningLabel.Visible = false
+	warningLabel.Parent = gui
+	round(warningLabel, 10)
+
+	local toast = Instance.new("TextLabel")
+	toast.AnchorPoint = Vector2.new(0.5, 1)
+	toast.Position = UDim2.new(0.5, 0, 1, -20)
+	toast.Size = UDim2.fromOffset(560, 44)
+	toast.BackgroundColor3 = Color3.fromRGB(28, 40, 62)
+	toast.Font = Enum.Font.GothamBold
+	toast.TextSize = 15
+	toast.TextColor3 = WHITE
+	toast.TextWrapped = true
+	toast.Visible = false
+	toast.Parent = gui
+	round(toast, 12)
+
+	local help = Instance.new("TextLabel")
+	help.AnchorPoint = Vector2.new(1, 1)
+	help.Position = UDim2.new(1, -14, 1, -14)
+	help.Size = UDim2.fromOffset(290, 92)
+	help.BackgroundColor3 = DARK
+	help.BackgroundTransparency = 0.1
+	help.Font = Enum.Font.Gotham
+	help.TextSize = 13
+	help.TextColor3 = Color3.fromRGB(228, 234, 244)
+	help.TextXAlignment = Enum.TextXAlignment.Left
+	help.TextYAlignment = Enum.TextYAlignment.Top
+	help.TextWrapped = true
+	help.Text = "Move: W A S D\nInteract: press E near a person or object\nClass = XP  Shop = items  Bushes = hiding"
+	help.Parent = gui
+	round(help, 12)
+	padding(help, 10)
+
+	local function showToast(message: string, tone: string?)
+		toast.Text = message
 		toast.BackgroundColor3 = if tone == "good"
-			then Color3.fromRGB(36, 110, 78)
-			elseif tone == "warn" then Color3.fromRGB(150, 78, 48)
+			then Color3.fromRGB(38, 112, 80)
+			elseif tone == "warn" then Color3.fromRGB(152, 80, 48)
 			else Color3.fromRGB(28, 40, 62)
 		toast.Visible = true
-		task.delay(3, function()
-			if toast.Text == text then
+		task.delay(3.2, function()
+			if toast.Text == message then
 				toast.Visible = false
 			end
 		end)
@@ -434,77 +369,100 @@ function Hud.mount()
 		if not profile then
 			return
 		end
-		nameLabel.Text = string.format("%d레벨 %s", profile.level, profile.title)
-		statEnergy.Text = string.format("에너지 %d / %d", profile.energy, profile.maxEnergy)
-		statCourage.Text = string.format("용기 %d / %d", profile.courage, profile.maxCourage)
-		statCoin.Text = string.format("코인 %d", profile.coins)
-		statPower.Text = string.format("맞서기 힘 %d   평균성적 %.0f", profile.power, profile.gpa)
-		local needed = profile.xpNeeded or 100
-		xpFill.Size = UDim2.fromScale(Util.clamp(profile.xp / needed, 0, 1), 1)
-		refreshBag()
-	end
+		nameLabel.Text = string.format("Level %d %s", profile.level, profile.title)
+		energyLabel.Text = string.format("Energy %d / %d", profile.energy, profile.maxEnergy)
+		courageLabel.Text = string.format("Courage %d / %d", profile.courage, profile.maxCourage)
+		coinLabel.Text = string.format("Coins %d", profile.coins)
+		powerLabel.Text = string.format("Stand-up power %d   Grades %d", profile.power, profile.gpa)
+		xpFill.Size = UDim2.fromScale(Util.clamp(profile.xp / math.max(1, profile.xpNeeded), 0, 1), 1)
 
-	runBtn.MouseButton1Click:Connect(function()
-		Remotes.get("EncounterAction"):FireServer("run")
-	end)
-	hideBtn.MouseButton1Click:Connect(function()
-		Remotes.get("EncounterAction"):FireServer("hide")
-	end)
-	fightBtn.MouseButton1Click:Connect(function()
-		Remotes.get("EncounterAction"):FireServer("fight")
-	end)
-	noteBtn.MouseButton1Click:Connect(function()
-		Remotes.get("EncounterAction"):FireServer("item", "friend_note")
-	end)
-	whistleBtn.MouseButton1Click:Connect(function()
-		Remotes.get("EncounterAction"):FireServer("item", "whistle")
-	end)
+		for _, task in Config.Tasks do
+			local state = profile.tasks[task.id]
+			local row = taskButtons[task.id]
+			if state and row then
+				if state.claimed then
+					row.Text = task.name .. " - done"
+					row.BackgroundColor3 = Color3.fromRGB(46, 96, 70)
+				elseif state.progress >= task.goal then
+					row.Text = string.format("%s - CLAIM REWARD", task.name)
+					row.BackgroundColor3 = Color3.fromRGB(120, 96, 40)
+				else
+					row.Text = string.format("%s  %d/%d", task.name, state.progress or 0, task.goal)
+					row.BackgroundColor3 = Color3.fromRGB(44, 58, 84)
+				end
+			end
+		end
+
+		if bag.Visible then
+			refreshBag()
+		end
+	end
 
 	Remotes.get("ProfileUpdated").OnClientEvent:Connect(function(data)
 		profile = data
 		refreshProfile()
 	end)
+
 	Remotes.get("PeriodChanged").OnClientEvent:Connect(function(data)
 		period = data
-		periodTitle.Text = string.format("%s  ·  %s", data.name, Util.formatTime(data.remaining or 0))
 		periodHint.Text = data.hint or ""
-		showToast(data.name .. " 시작!", "info")
+		showToast(data.name .. " started!", "info")
 	end)
+
 	Remotes.get("StoryUpdated").OnClientEvent:Connect(function(data)
-		story = data
-		storyTitle.Text = data.title
+		storyTitle.Text = string.format("%s (%d/%d)", data.title, data.step, data.total)
 		storyGoal.Text = data.goal
 	end)
+
 	Remotes.get("Dialogue").OnClientEvent:Connect(function(data)
-		if typeof(data) == "table" and data.lines then
-			showDialogue(data.speaker or "이야기", data.lines)
+		if typeof(data) ~= "table" or typeof(data.lines) ~= "table" or #data.lines == 0 then
+			return
+		end
+		lines = data.lines
+		lineIndex = 1
+		speakerLabel.Text = data.speaker or "Story"
+		lineLabel.Text = lines[1]
+		dialogue.Visible = true
+	end)
+
+	Remotes.get("Notify").OnClientEvent:Connect(function(data)
+		if typeof(data) == "table" and typeof(data.text) == "string" then
+			showToast(data.text, data.tone)
 		end
 	end)
-	Remotes.get("Notify").OnClientEvent:Connect(function(payload)
-		if typeof(payload) == "table" then
-			showToast(payload.text, payload.tone)
-		end
+
+	Remotes.get("OpenShop").OnClientEvent:Connect(function()
+		shop.Visible = not shop.Visible
 	end)
+
 	Remotes.get("EncounterStart").OnClientEvent:Connect(function(data)
-		encTitle.Text = string.format("%s (%s)\n상대 힘 %d  /  내 힘 %d", data.name, data.title, data.power, data.playerPower)
+		encounterTitle.Text = string.format(
+			"%s (%s)\nTheir power: %d      Your power: %d",
+			data.name,
+			data.role or "Bully",
+			data.power or 0,
+			data.myPower or 0
+		)
 		encounter.Visible = true
 	end)
+
 	Remotes.get("EncounterEnd").OnClientEvent:Connect(function()
 		encounter.Visible = false
 	end)
+
 	Remotes.get("BullyWarning").OnClientEvent:Connect(function(data)
-		warning.Text = string.format("%s 가 가까이 온다! (거리 %d)", data.name, math.floor(data.distance or 0))
-		warning.Visible = true
+		warningLabel.Text = string.format("%s is nearby! (%d studs)", data.name, math.floor(data.distance or 0))
+		warningLabel.Visible = true
 		task.delay(1.2, function()
-			warning.Visible = false
+			warningLabel.Visible = false
 		end)
 	end)
 
 	task.spawn(function()
 		while gui.Parent do
 			if period then
-				period.remaining = math.max(0, (period.endsAt or 0) - workspace:GetServerTimeNow())
-				periodTitle.Text = string.format("%s  ·  %s", period.name, Util.formatTime(period.remaining))
+				local left = math.max(0, (period.endsAt or 0) - workspace:GetServerTimeNow())
+				periodName.Text = string.format("%s   %s", period.name, Util.formatTime(left))
 			end
 			task.wait(0.25)
 		end

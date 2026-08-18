@@ -3,49 +3,50 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = {}
 
 local FOLDER_NAME = "SchoolRemotes"
-local REMOTE_NAMES = {
+local NAMES = {
 	"GetProfile",
 	"ProfileUpdated",
 	"PeriodChanged",
-	"Notify",
 	"StoryUpdated",
 	"Dialogue",
+	"Notify",
+	"OpenShop",
 	"BuyItem",
 	"UseItem",
-	"ClaimQuest",
+	"ClaimTask",
 	"EncounterStart",
 	"EncounterEnd",
 	"EncounterAction",
 	"BullyWarning",
 }
 
-local function getFolder(): Folder
-	local folder = ReplicatedStorage:FindFirstChild(FOLDER_NAME)
-	if folder and folder:IsA("Folder") then
-		return folder
+local function folder(): Folder
+	local existing = ReplicatedStorage:FindFirstChild(FOLDER_NAME)
+	if existing and existing:IsA("Folder") then
+		return existing
 	end
-
-	folder = Instance.new("Folder")
-	folder.Name = FOLDER_NAME
-	folder.Parent = ReplicatedStorage
-	return folder
+	local created = Instance.new("Folder")
+	created.Name = FOLDER_NAME
+	created.Parent = ReplicatedStorage
+	return created
 end
 
 function Remotes.ensure(): Folder
-	local folder = getFolder()
-	for _, name in REMOTE_NAMES do
-		if not folder:FindFirstChild(name) then
+	local parent = folder()
+	for _, name in NAMES do
+		if not parent:FindFirstChild(name) then
 			local remote = Instance.new("RemoteEvent")
 			remote.Name = name
-			remote.Parent = folder
+			remote.Parent = parent
 		end
 	end
-	return folder
+	return parent
 end
 
 function Remotes.get(name: string): RemoteEvent
-	local folder = Remotes.ensure()
-	local remote = folder:WaitForChild(name, 10)
+	local parent = ReplicatedStorage:WaitForChild(FOLDER_NAME, 20)
+	assert(parent, "Remote folder missing")
+	local remote = parent:WaitForChild(name, 20)
 	assert(remote and remote:IsA("RemoteEvent"), "Missing remote: " .. name)
 	return remote
 end

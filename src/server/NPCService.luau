@@ -1,58 +1,53 @@
-local CharacterFactory = require(script.Parent.CharacterFactory)
+local ActorFactory = require(script.Parent.ActorFactory)
 
 local NPCService = {}
 
 local NPCS = {
 	{
-		name = "김선생님",
-		title = "담임선생님",
+		name = "Mr. Park",
+		role = "Teacher",
 		color = Color3.fromRGB(72, 96, 168),
-		start = Vector3.new(-6, 4, 50),
-		interact = "Talk",
-		actionText = "선생님과 대화",
-		wander = false,
+		position = Vector3.new(-10, 6, 62),
 	},
 	{
-		name = "민지",
-		title = "같은 반 친구",
+		name = "Mia",
+		role = "Classmate",
 		color = Color3.fromRGB(232, 132, 168),
-		start = Vector3.new(-12, 4, 2),
-		interact = "Talk",
-		actionText = "민지와 대화",
-		wander = false,
+		position = Vector3.new(-18, 6, 6),
 	},
 	{
-		name = "하늘",
-		title = "운동장 친구",
+		name = "Sky",
+		role = "Playground Friend",
 		color = Color3.fromRGB(88, 176, 214),
-		start = Vector3.new(-16, 4, -86),
-		interact = "Talk",
-		actionText = "하늘 도와주기",
-		wander = false,
+		position = Vector3.new(-20, 6, -84),
 	},
 	{
-		name = "교장선생님",
-		title = "교장",
-		color = Color3.fromRGB(96, 84, 72),
-		start = Vector3.new(108, 4, -28),
-		interact = "Talk",
-		actionText = "대화하기",
-		wander = false,
+		name = "Shop Keeper",
+		role = "School Shop",
+		color = Color3.fromRGB(214, 148, 76),
+		position = Vector3.new(20, 6, 52),
 	},
 	{
-		name = "매점아저씨",
-		title = "매점",
-		color = Color3.fromRGB(210, 140, 72),
-		start = Vector3.new(22, 4, 52),
-		interact = "Talk",
-		actionText = "대화하기",
-		wander = false,
+		name = "Principal",
+		role = "Principal",
+		color = Color3.fromRGB(104, 88, 76),
+		position = Vector3.new(96, 6, 26),
 	},
 }
 
 function NPCService.start()
+	local campus = workspace:FindFirstChild("SchoolCampus") or workspace
 	for _, info in NPCS do
-		CharacterFactory.create(info)
+		ActorFactory.create({
+			name = info.name,
+			role = info.role,
+			color = info.color,
+			position = info.position,
+			action = "Talk",
+			prompt = "Talk to " .. info.name,
+			labelColor = Color3.fromRGB(190, 235, 255),
+			parent = campus,
+		})
 	end
 end
 

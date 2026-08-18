@@ -1,43 +1,45 @@
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
 local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
 local Util = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"))
-local CharacterFactory = require(script.Parent.CharacterFactory)
+local ActorFactory = require(script.Parent.ActorFactory)
 local DataService = require(script.Parent.DataService)
 local Progress = require(script.Parent.Progress)
 local StoryService = require(script.Parent.StoryService)
 
 local BullyService = {}
 
+local NURSE = CFrame.new(-50, 7, 60)
+local CHASE_TIME = 8
+
 local models: { [string]: Model } = {}
-local stunnedUntil: { [string]: number } = {}
+local calmUntil: { [string]: number } = {}
+local wanderTarget: { [string]: Vector3 } = {}
 local encounters: { [number]: any } = {}
-local runningAway: { [number]: boolean } = {}
-
-local NURSE_CF = CFrame.new(-42, 6, 62)
-
-local function rootPart(model: Model): BasePart?
-	return model.PrimaryPart
-end
 
 local function playerRoot(player: Player): BasePart?
 	local character = player.Character
 	if not character then
 		return nil
 	end
-	return character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local root = character:FindFirstChild("HumanoidRootPart")
+	if root and root:IsA("BasePart") then
+		return root
+	end
+	return nil
 end
 
-local function nearHide(player: Player): boolean
+local function nearHideSpot(player: Player): boolean
 	local root = playerRoot(player)
 	if not root then
 		return false
 	end
 	for _, spot in CollectionService:GetTagged("HideSpot") do
-		if spot:IsA("BasePart") and (spot.Position - root.Position).Magnitude <= 10 then
+		if spot:IsA("BasePart") and (spot.Position - root.Position).Magnitude <= 12 then
 			return true
 		end
 	end
@@ -45,214 +47,217 @@ local function nearHide(player: Player): boolean
 end
 
 local function sendToNurse(player: Player)
-	local character = player.Character
-	if character and character:FindFirstChild("HumanoidRootPart") then
-		character.HumanoidRootPart.CFrame = NURSE_CF
+	local root = playerRoot(player)
+	if root then
+		root.CFrame = NURSE
 	end
-	Progress.notify(player, "보건실로 이동했어요. 잠시 쉬며 용기를 회복합니다.", "warn")
 end
 
-local function endEncounter(player: Player)
+local function closeEncounter(player: Player)
 	encounters[player.UserId] = nil
-	runningAway[player.UserId] = nil
 	Remotes.get("EncounterEnd"):FireClient(player)
 end
 
-function BullyService.resolve(player: Player, action: string, itemId: string?)
+local function win(player: Player, profile, bully, message: string, statName: string, xp: number)
+	Progress.stat(profile, statName)
+	Progress.addXp(player, profile, xp)
+	Progress.notify(player, message, "good")
+	StoryService.onBully(player, bully.id)
+	calmUntil[bully.id] = os.clock() + 20
+	closeEncounter(player)
+	Progress.push(player)
+end
+
+local function lose(player: Player, profile, message: string)
+	profile.courage = Util.clamp(profile.courage - 20, 0, profile.maxCourage)
+	Progress.notify(player, message, "warn")
+	sendToNurse(player)
+	profile.courage = Util.clamp(profile.courage + 25, 0, profile.maxCourage)
+	closeEncounter(player)
+	Progress.push(player)
+end
+
+function BullyService.act(player: Player, action: string, itemId: string?)
 	local encounter = encounters[player.UserId]
-	if not encounter then
-		return
-	end
 	local profile = DataService.get(player)
-	local bully = encounter.info
-	if not profile then
+	if not encounter or not profile then
 		return
 	end
+	local bully = encounter.bully
 
-	local model = models[bully.id]
-	local bullyRoot = model and rootPart(model)
-
-	if action == "item" then
-		local item = itemId and Config.Items[itemId]
-		local count = itemId and (profile.inventory[itemId] or 0) or 0
+	if action == "item" and itemId then
+		local item = Config.Items[itemId]
+		local count = profile.bag[itemId] or 0
 		if not item or count < 1 then
-			Progress.notify(player, "쓸 수 있는 아이템이 없어요.", "warn")
+			Progress.notify(player, "You do not have that item.", "warn")
 			return
 		end
-		profile.inventory[itemId] -= 1
+		profile.bag[itemId] = count - 1
 		if item.escape then
-			Progress.bump(profile, "bulliesDodged")
-			Progress.addXp(player, profile, 18)
-			Progress.notify(player, "친구의 쪽지로 빠져나왔어요!", "good")
-			StoryService.onBullyResolved(player, bully.id)
-			endEncounter(player)
+			win(player, profile, bully, "You used the note and slipped away safely!", "escapes", 20)
+			return
+		end
+		if item.power then
+			encounter.bonus = (encounter.bonus or 0) + item.power
+			Progress.notify(player, "You blew the whistle! Stand-up power went up.", "info")
+			Remotes.get("EncounterStart"):FireClient(player, {
+				name = bully.name,
+				role = bully.role,
+				power = bully.power,
+				myPower = Util.standUpPower(profile) + encounter.bonus,
+			})
 			Progress.push(player)
 			return
 		end
-		if item.scare then
-			action = "fight"
-			encounter.bonus = item.powerBonus or 5
-			Progress.notify(player, "호루라기를 불었어요! 맞서기 힘이 올라갑니다.", "info")
-		elseif item.courage or item.energy then
-			profile.courage = Util.clamp(profile.courage + (item.courage or 0), 0, profile.maxCourage)
-			profile.energy = Util.clamp(profile.energy + (item.energy or 0), 0, profile.maxEnergy)
-			Progress.notify(player, item.name .. " 을(를) 썼어요. 다시 선택하세요!", "info")
-			Progress.push(player)
-			return
-		end
+		profile.energy = Util.clamp(profile.energy + (item.energy or 0), 0, profile.maxEnergy)
+		profile.courage = Util.clamp(profile.courage + (item.courage or 0), 0, profile.maxCourage)
+		Progress.notify(player, "You used " .. item.name .. ".", "info")
+		Progress.push(player)
+		return
 	end
 
 	if action == "hide" then
-		if nearHide(player) then
-			Progress.bump(profile, "bulliesDodged")
-			Progress.addXp(player, profile, 22)
-			Progress.notify(player, "숨어서 왕딱... 아니, 불리를 피했어요!", "good")
-			StoryService.onBullyResolved(player, bully.id)
-			endEncounter(player)
-			Progress.push(player)
-			return
+		if nearHideSpot(player) then
+			win(player, profile, bully, "You hid and the bully walked right past you!", "escapes", 22)
+		else
+			Progress.notify(player, "No hiding spot nearby. Look for green bushes or lockers.", "warn")
 		end
-		Progress.notify(player, "근처에 숨을 곳이 없어요. 사물함이나 덤불 뒤로 가세요!", "warn")
 		return
 	end
 
 	if action == "run" then
-		if runningAway[player.UserId] then
+		if encounter.running then
 			return
 		end
-		runningAway[player.UserId] = true
+		encounter.running = true
+		encounter.runUntil = os.clock() + CHASE_TIME
 		local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 		if humanoid then
-			humanoid.WalkSpeed = 28
+			humanoid.WalkSpeed = Config.WalkSpeed + 14
 		end
-		Progress.notify(player, "도망치세요! 멀리 떨어지면 성공입니다.", "info")
-		task.delay(6.5, function()
-			if not encounters[player.UserId] then
-				Progress.applySpeed(player)
-				return
-			end
-			local still = playerRoot(player)
-			local other = bullyRoot
-			local far = still and other and (still.Position - other.Position).Magnitude or 0
-			Progress.applySpeed(player)
-			if far >= 28 then
-				Progress.bump(profile, "bulliesDodged")
-				Progress.addXp(player, profile, 26)
-				Progress.notify(player, "멀리 도망쳐서 피했어요!", "good")
-				StoryService.onBullyResolved(player, bully.id)
-			else
-				profile.courage = Util.clamp(profile.courage - 18, 0, profile.maxCourage)
-				Progress.notify(player, "따라잡혀서 용기가 떨어졌어요. 보건실로 가요.", "warn")
-				sendToNurse(player)
-				profile.courage = Util.clamp(profile.courage + 25, 0, profile.maxCourage)
-			end
-			endEncounter(player)
-			Progress.push(player)
-		end)
+		Progress.notify(player, "Run! Get far away before the bully catches up.", "info")
 		return
 	end
 
-	if action == "fight" then
-		local power = Util.confrontPower(profile, Config) + (encounter.bonus or 0)
-		if power >= bully.power then
-			stunnedUntil[bully.id] = os.clock() + 22
-			Progress.bump(profile, "bulliesDefeated")
-			Progress.addXp(player, profile, bully.xp)
+	if action == "stand" then
+		local myPower = Util.standUpPower(profile) + (encounter.bonus or 0)
+		if myPower >= bully.power then
 			profile.coins += bully.coins
-			profile.courage = Util.clamp(profile.courage + 8, 0, profile.maxCourage)
-			Progress.notify(player, string.format("%s 에게 맞서서 이겼어요! (힘 %d vs %d)", bully.name, power, bully.power), "good")
-			StoryService.onBullyResolved(player, bully.id)
-		else
-			profile.courage = Util.clamp(profile.courage - 22, 0, profile.maxCourage)
-			Progress.notify(
+			profile.courage = Util.clamp(profile.courage + 10, 0, profile.maxCourage)
+			win(
 				player,
-				string.format("아직 힘이 부족해요. (내 힘 %d / 상대 %d) 수업과 아이템으로 더 강해지세요.", power, bully.power),
-				"warn"
+				profile,
+				bully,
+				string.format("You stood up to %s and won! (%d vs %d)", bully.name, myPower, bully.power),
+				"standups",
+				bully.xp
 			)
-			sendToNurse(player)
-			profile.courage = Util.clamp(profile.courage + 20, 0, profile.maxCourage)
+		else
+			lose(
+				player,
+				profile,
+				string.format("Not strong enough yet (%d vs %d). Go to class and get gear.", myPower, bully.power)
+			)
 		end
-		endEncounter(player)
-		Progress.push(player)
 	end
 end
 
-local function tryEncounter(player: Player, info)
+local function startEncounter(player: Player, bully)
 	local profile = DataService.get(player)
-	if not profile then
+	if not profile or encounters[player.UserId] then
 		return
 	end
-	if profile.storyStep < info.storyMin then
-		return
-	end
-	if encounters[player.UserId] then
-		return
-	end
-	if stunnedUntil[info.id] and os.clock() < stunnedUntil[info.id] then
-		return
-	end
-	encounters[player.UserId] = { info = info }
+	encounters[player.UserId] = { bully = bully, bonus = 0 }
 	Remotes.get("EncounterStart"):FireClient(player, {
-		id = info.id,
-		name = info.name,
-		title = info.title,
-		power = info.power,
-		playerPower = Util.confrontPower(profile, Config),
-		boss = info.boss == true,
+		name = bully.name,
+		role = bully.role,
+		power = bully.power,
+		myPower = Util.standUpPower(profile),
+		boss = bully.boss == true,
 	})
-	Progress.notify(player, string.format("%s 가 다가온다! 피하거나 맞서세요.", info.name), "warn")
+	Progress.notify(player, bully.name .. " found you! Run, hide, or stand up.", "warn")
 end
 
-local function tickBully(info, model: Model)
-	local humanoid = model:FindFirstChildOfClass("Humanoid")
-	local root = rootPart(model)
-	if not humanoid or not root then
+local function updateRunning(bully, model: Model)
+	for userId, encounter in encounters do
+		if encounter.bully.id == bully.id and encounter.running then
+			local player = Players:GetPlayerByUserId(userId)
+			local profile = player and DataService.get(player)
+			if not player or not profile then
+				encounters[userId] = nil
+				continue
+			end
+			local root = playerRoot(player)
+			local distance = if root then (root.Position - model:GetPivot().Position).Magnitude else 0
+			if distance >= 45 then
+				Progress.applySpeed(player)
+				win(player, profile, bully, "You got away safely!", "escapes", 24)
+			elseif os.clock() >= (encounter.runUntil or 0) then
+				Progress.applySpeed(player)
+				lose(player, profile, "The bully kept up with you. Try hiding or buy the sneakers.")
+			end
+		end
+	end
+end
+
+local function step(bully, model: Model, dt: number)
+	updateRunning(bully, model)
+
+	local origin = model:GetPivot().Position
+	if calmUntil[bully.id] and os.clock() < calmUntil[bully.id] then
 		return
 	end
 
-	if stunnedUntil[info.id] and os.clock() < stunnedUntil[info.id] then
-		return
-	end
-
-	local targetPlayer = nil
-	local targetDist = math.huge
+	local target: Player? = nil
+	local best = math.huge
 	for _, player in Players:GetPlayers() do
 		local profile = DataService.get(player)
-		local pr = playerRoot(player)
-		if profile and pr and profile.storyStep >= info.storyMin and not encounters[player.UserId] then
-			local dist = (pr.Position - root.Position).Magnitude
-			if dist < info.detect and dist < targetDist then
-				targetPlayer = player
-				targetDist = dist
+		local root = playerRoot(player)
+		if profile and root and profile.story >= bully.unlock then
+			local encounter = encounters[player.UserId]
+			if not encounter or (encounter.bully.id == bully.id and encounter.running) then
+				local distance = (root.Position - origin).Magnitude
+				if distance < bully.sight and distance < best then
+					target = player
+					best = distance
+				end
 			end
 		end
 	end
 
-	if targetPlayer then
-		Remotes.get("BullyWarning"):FireClient(targetPlayer, { name = info.name, distance = targetDist })
-		if targetDist <= info.catch then
-			tryEncounter(targetPlayer, info)
-		else
-			humanoid:MoveTo(playerRoot(targetPlayer).Position)
+	if target then
+		local root = playerRoot(target)
+		if root then
+			ActorFactory.moveTowards(model, root.Position, bully.speed, dt)
+			if best <= bully.catch and not encounters[target.UserId] then
+				startEncounter(target, bully)
+			elseif best < bully.sight then
+				Remotes.get("BullyWarning"):FireClient(target, { name = bully.name, distance = best })
+			end
 		end
-	else
-		local wander = info.start + Vector3.new(math.random(-18, 18), 0, math.random(-18, 18))
-		humanoid:MoveTo(wander)
+		return
 	end
+
+	local spot = wanderTarget[bully.id]
+	if not spot or (origin - spot).Magnitude < 3 then
+		spot = bully.home + Vector3.new(math.random(-bully.range, bully.range), 0, math.random(-bully.range, bully.range))
+		wanderTarget[bully.id] = spot
+	end
+	ActorFactory.moveTowards(model, spot, bully.speed * 0.55, dt)
 end
 
 function BullyService.start()
-	for _, info in Config.Bullies do
-		local model = CharacterFactory.create({
-			name = info.name,
-			title = info.title,
-			color = info.color,
-			start = info.start,
-			walkSpeed = 13,
+	local campus = workspace:FindFirstChild("SchoolCampus") or workspace
+
+	for _, bully in Config.Bullies do
+		models[bully.id] = ActorFactory.create({
+			name = bully.name,
+			role = bully.role,
+			color = bully.color,
+			position = bully.home,
 			labelColor = Color3.fromRGB(255, 170, 170),
-			attributes = { BullyId = info.id },
+			parent = campus,
 		})
-		models[info.id] = model
 	end
 
 	Remotes.get("EncounterAction").OnServerEvent:Connect(function(player, action, itemId)
@@ -262,16 +267,20 @@ function BullyService.start()
 		if itemId ~= nil and typeof(itemId) ~= "string" then
 			return
 		end
-		BullyService.resolve(player, action, itemId)
+		BullyService.act(player, action, itemId)
 	end)
 
-	task.spawn(function()
-		while true do
-			task.wait(0.35)
-			for _, info in Config.Bullies do
-				local model = models[info.id]
-				if model and model.Parent then
-					pcall(tickBully, info, model)
+	Players.PlayerRemoving:Connect(function(player)
+		encounters[player.UserId] = nil
+	end)
+
+	RunService.Heartbeat:Connect(function(dt)
+		for _, bully in Config.Bullies do
+			local model = models[bully.id]
+			if model and model.Parent then
+				local ok, err = pcall(step, bully, model, dt)
+				if not ok then
+					warn("[BraveKid] bully error:", err)
 				end
 			end
 		end

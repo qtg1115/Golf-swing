@@ -1,7 +1,7 @@
 local Util = {}
 
-function Util.clamp(value: number, minValue: number, maxValue: number): number
-	return math.clamp(value, minValue, maxValue)
+function Util.clamp(value: number, low: number, high: number): number
+	return math.clamp(value, low, high)
 end
 
 function Util.round(value: number, digits: number): number
@@ -9,7 +9,7 @@ function Util.round(value: number, digits: number): number
 	return math.floor(value * factor + 0.5) / factor
 end
 
-function Util.average(values: { [string]: number }): number
+function Util.average(values): number
 	local total = 0
 	local count = 0
 	for _, value in values do
@@ -22,31 +22,23 @@ function Util.average(values: { [string]: number }): number
 	return total / count
 end
 
-function Util.deepCopy(value)
+function Util.copy(value)
 	if typeof(value) ~= "table" then
 		return value
 	end
-
-	local copy = {}
+	local out = {}
 	for key, child in value do
-		copy[key] = Util.deepCopy(child)
+		out[key] = Util.copy(child)
 	end
-	return copy
+	return out
 end
 
 function Util.xpForLevel(level: number): number
 	return 70 + (level - 1) * 40
 end
 
-function Util.formatTime(seconds: number): string
-	seconds = math.max(0, math.floor(seconds))
-	local minutes = math.floor(seconds / 60)
-	local remain = seconds % 60
-	return string.format("%d:%02d", minutes, remain)
-end
-
 function Util.titleForLevel(level: number, titles): string
-	local current = "신입생"
+	local current = titles[1].title
 	for _, entry in titles do
 		if level >= entry.min then
 			current = entry.title
@@ -55,12 +47,17 @@ function Util.titleForLevel(level: number, titles): string
 	return current
 end
 
-function Util.confrontPower(profile, config): number
+function Util.formatTime(seconds: number): string
+	seconds = math.max(0, math.floor(seconds))
+	return string.format("%d:%02d", math.floor(seconds / 60), seconds % 60)
+end
+
+function Util.standUpPower(profile): number
 	local power = profile.level
-	if profile.owned.courage_badge then
-		power += config.Items.courage_badge.power or 3
+	if profile.gear.badge then
+		power += 3
 	end
-	power += (profile.stats.friendsHelped or 0)
+	power += profile.stats.friendsHelped or 0
 	return power
 end
 

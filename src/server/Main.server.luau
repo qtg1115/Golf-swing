@@ -1,57 +1,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
--- 맵이 생기기 전에 캐릭터가 보이드로 떨어지지 않게 합니다.
-Players.CharacterAutoLoads = false
-
-local function ensureSafeGround()
-	if not workspace:FindFirstChild("SafeGround") then
-		local ground = Instance.new("Part")
-		ground.Name = "SafeGround"
-		ground.Anchored = true
-		ground.Size = Vector3.new(520, 4, 400)
-		ground.CFrame = CFrame.new(0, 0, -10)
-		ground.Color = Color3.fromRGB(92, 168, 96)
-		ground.Material = Enum.Material.Grass
-		ground.Parent = workspace
-	end
-
-	if not workspace:FindFirstChild("SafeSpawn") then
-		local spawn = Instance.new("SpawnLocation")
-		spawn.Name = "SafeSpawn"
-		spawn.Anchored = true
-		spawn.Duration = 0
-		spawn.Neutral = true
-		spawn.Size = Vector3.new(16, 1, 16)
-		spawn.CFrame = CFrame.new(0, 3.5, 58)
-		spawn.Color = Color3.fromRGB(92, 168, 220)
-		spawn.Material = Enum.Material.SmoothPlastic
-		spawn.Parent = workspace
-	end
-end
-
-local function spawnCFrame(): CFrame
-	local school = workspace:FindFirstChild("SchoolCampus")
-	local schoolSpawn = school and school:FindFirstChild("SchoolSpawn")
-	if schoolSpawn and schoolSpawn:IsA("BasePart") then
-		return schoolSpawn.CFrame + Vector3.new(0, 4, 0)
-	end
-	local safe = workspace:FindFirstChild("SafeSpawn")
-	if safe and safe:IsA("BasePart") then
-		return safe.CFrame + Vector3.new(0, 4, 0)
-	end
-	return CFrame.new(0, 8, 58)
-end
-
-local function putOnCampus(character: Model)
-	local root = character:FindFirstChild("HumanoidRootPart")
-	if root and root:IsA("BasePart") then
-		root.AssemblyLinearVelocity = Vector3.zero
-		root.CFrame = spawnCFrame()
-	end
-end
-
-ensureSafeGround()
+local RunService = game:GetService("RunService")
 
 local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
 local SchoolBuilder = require(script.Parent.SchoolBuilder)
@@ -63,32 +12,81 @@ local NPCService = require(script.Parent.NPCService)
 local BullyService = require(script.Parent.BullyService)
 local StoryService = require(script.Parent.StoryService)
 
+local START_POSITION = Vector3.new(0, 8, 60)
+
 Remotes.ensure()
 
-local built, buildError = pcall(function()
-	SchoolBuilder.build()
-end)
-if not built then
-	warn("[우리학교 대모험] 맵 생성 실패: ", buildError)
-	ensureSafeGround()
+local built = false
+do
+	local ok, err = pcall(SchoolBuilder.build)
+	built = ok
+	if not ok then
+		warn("[BraveKid] Map build failed, using the backup ground:", err)
+	end
 end
 
-DataService.bind()
-GameService.bind()
-ScheduleService.start()
-NPCService.start()
-BullyService.start()
+-- The place file ships with a plain ground and spawn so nobody ever falls into
+-- the void while the campus is still being created. Once the campus exists the
+-- placeholders are no longer needed.
+if built then
+	for _, name in { "SafeGround", "SafeSpawn" } do
+		local placeholder = workspace:FindFirstChild(name)
+		if placeholder then
+			placeholder:Destroy()
+		end
+	end
+end
+
+local function startSpot(): CFrame
+	local campus = workspace:FindFirstChild("SchoolCampus")
+	local pad = campus and campus:FindFirstChild("SchoolSpawn")
+	if pad and pad:IsA("BasePart") then
+		return pad.CFrame + Vector3.new(0, 5, 0)
+	end
+	return CFrame.new(START_POSITION)
+end
+
+local function startSystem(name: string, callback)
+	local ok, err = pcall(callback)
+	if not ok then
+		warn("[BraveKid] " .. name .. " failed to start:", err)
+	end
+end
+
+startSystem("DataService", DataService.bind)
+startSystem("GameService", GameService.bind)
+startSystem("ScheduleService", ScheduleService.start)
+startSystem("NPCService", NPCService.start)
+startSystem("BullyService", BullyService.start)
+
+local function onCharacter(player: Player, character: Model)
+	local root = character:WaitForChild("HumanoidRootPart", 10)
+	if root and root:IsA("BasePart") then
+		root.CFrame = startSpot()
+	end
+	Progress.applySpeed(player)
+end
 
 local function setupPlayer(player: Player)
-	DataService.load(player)
-	player.CharacterAdded:Connect(function(character)
-		task.wait(0.1)
-		putOnCampus(character)
-		Progress.applySpeed(player)
+	local ok, err = pcall(function()
+		DataService.load(player)
 	end)
-	StoryService.intro(player)
-	Remotes.get("PeriodChanged"):FireClient(player, ScheduleService.snapshot())
-	player:LoadCharacter()
+	if not ok then
+		warn("[BraveKid] Could not load profile:", err)
+		return
+	end
+
+	player.CharacterAdded:Connect(function(character)
+		task.spawn(onCharacter, player, character)
+	end)
+	if player.Character then
+		task.spawn(onCharacter, player, player.Character)
+	end
+
+	task.spawn(function()
+		StoryService.intro(player)
+		Remotes.get("PeriodChanged"):FireClient(player, ScheduleService.snapshot())
+	end)
 end
 
 Players.PlayerAdded:Connect(setupPlayer)
@@ -96,4 +94,19 @@ for _, player in Players:GetPlayers() do
 	task.spawn(setupPlayer, player)
 end
 
-print("[우리학교 대모험] 서버가 시작되었습니다. 정문 스폰에서 시작하세요.")
+-- Safety net: anyone who ends up under the map is put back at the gate.
+task.spawn(function()
+	while true do
+		task.wait(1)
+		for _, player in Players:GetPlayers() do
+			local character = player.Character
+			local root = character and character:FindFirstChild("HumanoidRootPart")
+			if root and root:IsA("BasePart") and root.Position.Y < -30 then
+				root.AssemblyLinearVelocity = Vector3.zero
+				root.CFrame = startSpot()
+			end
+		end
+	end
+end)
+
+print("[BraveKid] School is ready. Walk to Mr. Park at the front gate.")

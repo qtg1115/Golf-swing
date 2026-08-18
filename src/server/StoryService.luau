@@ -7,47 +7,56 @@ local Progress = require(script.Parent.Progress)
 
 local StoryService = {}
 
-function StoryService.chapter(step: number)
-	return Config.Story[step + 1]
+function StoryService.current(profile)
+	return Config.Story[profile.story + 1]
 end
 
-function StoryService.sendDialogue(player: Player, speaker: string, lines)
-	Remotes.get("Dialogue"):FireClient(player, {
-		speaker = speaker,
-		lines = lines,
-	})
+function StoryService.say(player: Player, speaker: string, lines)
+	Remotes.get("Dialogue"):FireClient(player, { speaker = speaker, lines = lines })
 end
 
-function StoryService.advance(player: Player, reason: string?)
+function StoryService.advance(player: Player)
 	local profile = DataService.get(player)
 	if not profile then
 		return
 	end
-	local current = StoryService.chapter(profile.storyStep)
-	if not current or current.done then
+	local chapter = StoryService.current(profile)
+	if not chapter or chapter.final then
 		return
 	end
 
-	if current.give then
-		Progress.giveItem(player, profile, current.give, 1)
+	if chapter.grant then
+		Progress.give(player, profile, chapter.grant)
 	end
 
-	profile.storyStep += 1
-	profile.stats.storyStep = profile.storyStep
-	profile.classesThisStory = 0
-	Progress.bump(profile, "storyStep", 0)
-	if profile.quests.story then
-		profile.quests.story.progress = math.min(8, profile.storyStep)
-	end
-	Progress.addXp(player, profile, 35)
-	Progress.notify(player, string.format("스토리 진행: %s", current.title), "good")
+	profile.story += 1
+	profile.stats.story = profile.story
+	profile.storyClasses = 0
+	Progress.syncTasks(profile)
+	Progress.addXp(player, profile, 40)
+	StoryService.say(player, chapter.speaker or "Story", chapter.lines or {})
 
-	local nextChapter = StoryService.chapter(profile.storyStep)
-	if nextChapter and current.lines then
-		StoryService.sendDialogue(player, reason or "이야기", current.lines)
+	local nextChapter = StoryService.current(profile)
+	if nextChapter then
+		Progress.notify(player, "New goal: " .. nextChapter.goal, "good")
 	end
 	Progress.push(player)
-	StoryService.syncOwned(player)
+	StoryService.checkPassive(player)
+end
+
+-- Handles chapters that are already satisfied (e.g. the player already owns the item).
+function StoryService.checkPassive(player: Player)
+	local profile = DataService.get(player)
+	if not profile then
+		return
+	end
+	local chapter = StoryService.current(profile)
+	if not chapter then
+		return
+	end
+	if chapter.item and (profile.gear[chapter.item] or (profile.bag[chapter.item] or 0) > 0) then
+		StoryService.advance(player)
+	end
 end
 
 function StoryService.onTalk(player: Player, npcName: string): boolean
@@ -55,25 +64,25 @@ function StoryService.onTalk(player: Player, npcName: string): boolean
 	if not profile then
 		return false
 	end
-	local chapter = StoryService.chapter(profile.storyStep)
+	local chapter = StoryService.current(profile)
 	if chapter and chapter.npc == npcName then
-		if npcName == "하늘" then
-			Progress.bump(profile, "friendsHelped")
+		if npcName == "Sky" then
+			Progress.stat(profile, "friendsHelped")
 		end
-		StoryService.advance(player, npcName)
+		StoryService.advance(player)
 		return true
 	end
 	return false
 end
 
-function StoryService.onBullyResolved(player: Player, bullyId: string)
+function StoryService.onBully(player: Player, bullyId: string)
 	local profile = DataService.get(player)
 	if not profile then
 		return
 	end
-	local chapter = StoryService.chapter(profile.storyStep)
+	local chapter = StoryService.current(profile)
 	if chapter and chapter.bully == bullyId then
-		StoryService.advance(player, "이야기")
+		StoryService.advance(player)
 	end
 end
 
@@ -82,18 +91,19 @@ function StoryService.onClass(player: Player)
 	if not profile then
 		return
 	end
-	local chapter = StoryService.chapter(profile.storyStep)
-	if chapter and chapter.needClasses then
-		profile.classesThisStory += 1
-		if profile.classesThisStory >= chapter.needClasses then
-			StoryService.advance(player, "김선생님")
-		else
-			Progress.notify(
-				player,
-				string.format("수업 %d/%d 완료. 한 번 더 들으면 다음 이야기로!", profile.classesThisStory, chapter.needClasses),
-				"info"
-			)
-		end
+	local chapter = StoryService.current(profile)
+	if not chapter or not chapter.classes then
+		return
+	end
+	profile.storyClasses += 1
+	if profile.storyClasses >= chapter.classes then
+		StoryService.advance(player)
+	else
+		Progress.notify(
+			player,
+			string.format("Class %d of %d done. One more to continue the story!", profile.storyClasses, chapter.classes),
+			"info"
+		)
 	end
 end
 
@@ -102,20 +112,9 @@ function StoryService.onBuy(player: Player, itemId: string)
 	if not profile then
 		return
 	end
-	local chapter = StoryService.chapter(profile.storyStep)
-	if chapter and chapter.needItem == itemId then
-		StoryService.advance(player, "매점아저씨")
-	end
-end
-
-function StoryService.syncOwned(player: Player)
-	local profile = DataService.get(player)
-	if not profile then
-		return
-	end
-	local chapter = StoryService.chapter(profile.storyStep)
-	if chapter and chapter.needItem and (profile.owned[chapter.needItem] or (profile.inventory[chapter.needItem] or 0) > 0) then
-		StoryService.advance(player, "매점아저씨")
+	local chapter = StoryService.current(profile)
+	if chapter and chapter.item == itemId then
+		StoryService.advance(player)
 	end
 end
 
@@ -124,15 +123,16 @@ function StoryService.intro(player: Player)
 	if not profile then
 		return
 	end
-	if profile.storyStep == 0 then
-		StoryService.sendDialogue(player, "나", {
-			"오늘은 우리학교 첫날이야.",
-			"수업을 들으면서 레벨을 올리고, 나쁜 아이들(불리)을 피하거나 이겨야 해.",
-			"정문 쪽 김선생님께 가 보자.",
+	if profile.story == 0 then
+		StoryService.say(player, "You", {
+			"Today is my first day at this school.",
+			"Go to class to level up, and watch out for the bullies.",
+			"You can run away, hide, or stand up to them.",
+			"Let's find Mr. Park at the front gate.",
 		})
 	end
 	Progress.push(player)
-	StoryService.syncOwned(player)
+	StoryService.checkPassive(player)
 end
 
 return StoryService
