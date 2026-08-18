@@ -51,6 +51,18 @@ blockquote {
 }
 blockquote p:last-child { margin-bottom: 0; }
 
+/* The line directly under a chapter heading is that chapter's subtitle. */
+section.chapter > h2 + p {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.95em;
+  color: var(--muted);
+  text-align: left;
+  margin-top: -0.4em;
+  margin-bottom: 1.4em;
+}
+
+section.chapter > h2 + p em { font-style: normal; }
+
 hr {
   border: 0;
   border-top: 1px solid var(--rule);

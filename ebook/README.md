@@ -64,19 +64,19 @@ other Substack URL reaches the EPUB or the PDF.
 
 | Chapter | Videos | Placement |
 |---|---|---|
-| 1부 · 골프를 배워도 잘 안되는 이유 | 1 | chapter end |
-| 3부 · 챕터 1 어드레스 — 6시 | 2 | chapter end |
-| 3부 · 챕터 2 테이크어웨이 — 7시 | 8 | chapter end |
-| 3부 · 챕터 3 백스윙 하프웨이 — 9시 | 8 | chapter end |
-| 3부 · 챕터 4 탑 오브 백스윙 — 12시 | 5 | chapter end |
-| 3부 · 챕터 5 다운스윙 전환 — 10시 | 6 | chapter end |
-| 3부 · 챕터 6 임팩트 직전 — 8시 | 6 | **inline, original positions** |
-| 3부 · 챕터 7 임팩트 — 다시 6시 | 5 | chapter end |
-| 3부 · 챕터 8 팔로우스루 — 3시 | 4 | chapter end |
-| 3부 · 챕터 9 두 번째 팔로우스루 — 1시 | 6 | chapter end |
-| 4부 · 테크닉 챕터 1 드로우 샷 | 2 | chapter end |
-| 4부 · 테크닉 챕터 2 페이드 샷 | 1 | chapter end |
-| **Total** | **54** | 6 inline, 48 at chapter end |
+| 1부 · 골프를 배워도 잘 안되는 이유 | 1 | inline |
+| 3부 · 챕터 1 어드레스 — 6시 | 2 | inline |
+| 3부 · 챕터 2 테이크어웨이 — 7시 | 8 | inline |
+| 3부 · 챕터 3 백스윙 하프웨이 — 9시 | 8 | inline |
+| 3부 · 챕터 4 탑 오브 백스윙 — 12시 | 5 | inline |
+| 3부 · 챕터 5 다운스윙 전환 — 10시 | 6 | inline |
+| 3부 · 챕터 6 임팩트 직전 — 8시 | 6 | inline |
+| 3부 · 챕터 7 임팩트 — 다시 6시 | 5 | inline |
+| 3부 · 챕터 8 팔로우스루 — 3시 | 4 | inline |
+| 3부 · 챕터 9 두 번째 팔로우스루 — 1시 | 6 | inline |
+| 4부 · 테크닉 챕터 1 드로우 샷 | 2 | inline |
+| 4부 · 테크닉 챕터 2 페이드 샷 | 1 | inline |
+| **Total** | **54** | all 54 inline at their authored positions |
 
 Chapter 6 is the one chapter whose body is public, so its six clips are placed at
 the exact paragraphs they appear in. For the other chapters the URLs and their
@@ -105,9 +105,13 @@ python3 scripts/build_media.py && python3 scripts/make_qr.py && python3 scripts/
 
 ## Photo inventory
 
-- **23 photos embedded** — downloaded from the source CDN into `images/photos/`,
-  flattened onto white, capped at 1600 px on the long edge, stored as JPEG q92.
+- **5 photos embedded** — the author's own diagrams and course photos, downloaded
+  into `images/photos/`, flattened onto white, capped at 1600 px, JPEG q92.
   Images are embedded locally; nothing hotlinks a gated host.
+- **18 filler graphics removed.** Every source post carried the same stock
+  "Golf + club/ball" clipart as its header image, so the same picture was landing
+  in 18 chapters. All 18 files and their `<figure>` blocks are deleted; nothing
+  generic replaced them.
 - **7 photo placeholders**, all deliberate:
   - the both-feet swing photo for the release section — drop the file at exactly
     `images/photos/01-swing-both-feet.png` and rerun `make book`; the build picks
@@ -131,8 +135,8 @@ Structure lives in `book.yaml`. Text is Markdown in `manuscript/` and
 - 이 책을 읽는 법 — 세 저자, 왜 느낌을 몸으로 번역하는가
 - **1부. 느낌은 있는데 스윙이 안 되는 이유**
 - **2부. 내 스윙의 문제를 찾는 법**
-- **3부. 스윙 시계 — 느낌이 지나가는 자리** (챕터 1–10; the release/foot material is a
-  section of 챕터 7 임팩트, not a part of its own)
+- **3부. 스윙 시계 — 느낌이 지나가는 자리** (챕터 1–10; 릴리즈 타이밍은 발바닥에서
+  달라진다 is a section inside 챕터 7 임팩트 — there is no release part)
 - **4부. 샷에 실리는 느낌**
 - **부록. 프로와 같은 말로 말하기**
 
@@ -143,25 +147,25 @@ belongs. **No chapter body has been written, paraphrased, or padded out.**
 | Chapter | Part | Source | Text | Photos | Videos |
 |---|---|---|---|---|---|
 | 골프 트레이닝에 대한 생각 | 1부 | `womakers` | full | 0 | 0 |
-| 골프를 배워도 잘 안되는 이유 | 1부 | `05f` | teaser | 1 | 0 |
+| 골프를 배워도 잘 안되는 이유 | 1부 | `05f` | full | 1 | 0 |
 | 나의 스윙 문제를 찾는 어세스먼트 로드맵 | 2부 | `434` | full | 5 | 0 |
-| 챕터 1 · 어드레스 — 6시 | 3부 | `1-6` | teaser | 1 | 0 |
-| 챕터 2 · 테이크어웨이 — 7시 | 3부 | `chapter-2-takeaway-7` | teaser | 1 | 0 |
-| 챕터 3 · 백스윙 하프웨이 — 9시 | 3부 | `chapter-3-9` | teaser | 1 | 0 |
-| 챕터 4 · 탑 오브 백스윙 — 12시 | 3부 | `chapter-4-12` | teaser | 1 | 0 |
-| 챕터 5 · 다운스윙 전환 — 10시 | 3부 | `chapter-5-10` | teaser | 1 | 0 |
+| 챕터 1 · 어드레스 — 6시 | 3부 | `1-6` | full | 1 | 0 |
+| 챕터 2 · 테이크어웨이 — 7시 | 3부 | `chapter-2-takeaway-7` | full | 1 | 0 |
+| 챕터 3 · 백스윙 하프웨이 — 9시 | 3부 | `chapter-3-9` | full | 1 | 0 |
+| 챕터 4 · 탑 오브 백스윙 — 12시 | 3부 | `chapter-4-12` | full | 1 | 0 |
+| 챕터 5 · 다운스윙 전환 — 10시 | 3부 | `chapter-5-10` | full | 1 | 0 |
 | 챕터 6 · 임팩트 직전 — 8시 | 3부 | `chapter-6-8` | full | 1 | 6 |
-| 챕터 7 · 임팩트 — 다시 6시 | 3부 | `chapter-7-6` | teaser | 1 | 0 |
-| ↳ 릴리즈 타이밍은 발바닥에서 달라진다 | 3부 | unpublished draft | pending | 1 pending | 0 |
-| 챕터 8 · 팔로우스루 — 3시 | 3부 | `chapter-8-3` | teaser | 1 | 0 |
-| 챕터 9 · 두 번째 팔로우스루 — 1시 | 3부 | `chapter-9-1` | teaser | 1 | 0 |
+| 챕터 7 · 임팩트 — 다시 6시 | 3부 | `chapter-7-6` | full | 1 | 0 |
+| ↳ 릴리즈 타이밍은 발바닥에서 달라진다 (section of 챕터 7) | 3부 | unpublished draft | full | 1 | 5 pending |
+| 챕터 8 · 팔로우스루 — 3시 | 3부 | `chapter-8-3` | full | 1 | 0 |
+| 챕터 9 · 두 번째 팔로우스루 — 1시 | 3부 | `chapter-9-1` | full | 1 | 0 |
 | 챕터 10 · 피니시 | 3부 | `chapter-10` | full | 1 | 0 |
-| 테크닉 챕터 1 · 드로우 샷 | 4부 | `1` | teaser | 1 | 0 |
-| 테크닉 챕터 2 · 페이드 샷 | 4부 | `2` | teaser | 1 | 0 |
-| 테크닉 챕터 3 · 하이 런치 샷 | 4부 | `3` | teaser | 2 | 0 |
-| 테크닉 챕터 4 · 스팅어 샷 | 4부 | `4` | teaser | 1 | 0 |
-| 테크닉 챕터 5 · 스트레이트 샷 | 4부 | `5` | teaser | 1 | 0 |
-| 부록 · 프로와 같은 말로 말하기 | 부록 | `golf-a` | teaser | 1 | 0 |
+| 테크닉 챕터 1 · 드로우 샷 | 4부 | `1` | full | 1 | 0 |
+| 테크닉 챕터 2 · 페이드 샷 | 4부 | `2` | full | 1 | 0 |
+| 테크닉 챕터 3 · 하이 런치 샷 | 4부 | `3` | full | 2 | 0 |
+| 테크닉 챕터 4 · 스팅어 샷 | 4부 | `4` | full | 1 | 0 |
+| 테크닉 챕터 5 · 스트레이트 샷 | 4부 | `5` | full | 1 | 0 |
+| 부록 · 프로와 같은 말로 말하기 | 부록 | `golf-a` | full | 1 | 0 |
 
 4 of 19 source posts are public; 15 return a short teaser. Front matter and the
 part introductions are editorial copy written for this build and need author
@@ -244,9 +248,9 @@ Three markers keep unfinished material explicit instead of invented:
 
 | Item | State |
 |---|---|
-| EPUB | builds, 78 images packaged (23 photos + 54 QR + cover), Korean metadata, hierarchical navigation |
-| PDF | builds, 197 pages, A5, Korean fonts render, running heads, folios, contents with page numbers |
-| Photos | 23 embedded, 37 labelled 사진 자리 placeholders awaiting files |
+| EPUB | builds, 60 images packaged (5 photos + 54 QR + cover), Korean metadata, hierarchical navigation |
+| PDF | builds, 185 pages, A5, Korean fonts render, running heads, folios, contents with page numbers |
+| Photos | 6 embedded (author diagrams only), 36 labelled 사진 자리 placeholders awaiting files |
 | Videos | **54 of 54 with a QR code and a printed URL, all inline at their authored positions** |
 | Chapter text | **complete** — all 19 chapters + the 챕터 7 release section, no pending markers |
 | Front matter | draft copy, needs author sign-off |

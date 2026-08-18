@@ -8,27 +8,6 @@
       "status": "missing"
     },
     {
-      "file": "appendix-a-01-5c1ed773-e727-4fb1-b315-90d0be364ebf-1024x1024.jpg",
-      "chapter": "appendix-a",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/5c1ed773-e727-4fb1-b315-90d0be364ebf_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p1-c2-01-2f74904f-ac0d-4356-895a-b30209279e5a-1024x1024.jpg",
-      "chapter": "p1-c2",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/2f74904f-ac0d-4356-895a-b30209279e5a_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p2-c1-01-d1716ac1-64c3-47f8-86c4-eb8015d546f0-1024x1024.jpg",
-      "chapter": "p2-c1",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/d1716ac1-64c3-47f8-86c4-eb8015d546f0_1024x1024.png",
-      "status": "present"
-    },
-    {
       "file": "p2-c1-02-d833a5e8-00a9-49ef-901a-d43ab57ed685-1672x941.jpg",
       "chapter": "p2-c1",
       "caption": "",
@@ -57,115 +36,10 @@
       "status": "present"
     },
     {
-      "file": "p3-c1-01-8df76124-6127-4c78-92d6-abf8d487f1bc-1024x1024.jpg",
-      "chapter": "p3-c1",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/8df76124-6127-4c78-92d6-abf8d487f1bc_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c10-01-1b27da84-aae5-4bfd-a285-ddc50da67bc5-1024x1024.jpg",
-      "chapter": "p3-c10",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/1b27da84-aae5-4bfd-a285-ddc50da67bc5_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c2-01-82848db8-9764-418a-a15a-f22d2f401937-1024x1024.jpg",
-      "chapter": "p3-c2",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/82848db8-9764-418a-a15a-f22d2f401937_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c3-01-9fccb9ee-2394-46d4-ab37-7f74a615fc27-1024x1024.jpg",
-      "chapter": "p3-c3",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/9fccb9ee-2394-46d4-ab37-7f74a615fc27_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c4-01-5ef97121-7018-49e1-a2f0-b7e8810e4144-1024x1024.jpg",
-      "chapter": "p3-c4",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/5ef97121-7018-49e1-a2f0-b7e8810e4144_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c5-01-ef7f971d-48e2-4147-88e6-bfc453ef18c4-1024x1024.jpg",
-      "chapter": "p3-c5",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/ef7f971d-48e2-4147-88e6-bfc453ef18c4_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c6-01-88edd767-a3c7-459a-a472-6156816ab092-1024x1024.jpg",
-      "chapter": "p3-c6",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/88edd767-a3c7-459a-a472-6156816ab092_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c7-01-24593e2e-2e3a-4380-9af1-13ffdb36f46f-1024x1024.jpg",
-      "chapter": "p3-c7",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/24593e2e-2e3a-4380-9af1-13ffdb36f46f_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c8-01-ad427863-864a-4748-aa85-94213b812502-1024x1024.jpg",
-      "chapter": "p3-c8",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/ad427863-864a-4748-aa85-94213b812502_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p3-c9-01-a08fa882-2a89-4fa3-9988-009ee8ce904e-1024x1024.jpg",
-      "chapter": "p3-c9",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/a08fa882-2a89-4fa3-9988-009ee8ce904e_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p4-c1-01-53ba3193-ac27-4098-b3d3-cda9a954ba07-1024x1024.jpg",
-      "chapter": "p4-c1",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/53ba3193-ac27-4098-b3d3-cda9a954ba07_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p4-c2-01-2f45a5ba-6479-423b-b328-1a18410dbf45-1024x1024.jpg",
-      "chapter": "p4-c2",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/2f45a5ba-6479-423b-b328-1a18410dbf45_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p4-c3-01-cd00abc3-ca7d-43a1-9c3b-58bb76251e84-1024x1024.jpg",
-      "chapter": "p4-c3",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/cd00abc3-ca7d-43a1-9c3b-58bb76251e84_1024x1024.png",
-      "status": "present"
-    },
-    {
       "file": "p4-c3-02-395d8339-9aa0-4389-b88c-7be1bd8be3bc-1448x1086.jpg",
       "chapter": "p4-c3",
       "caption": "",
       "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/395d8339-9aa0-4389-b88c-7be1bd8be3bc_1448x1086.png",
-      "status": "present"
-    },
-    {
-      "file": "p4-c4-01-892cc66b-26dc-4247-b379-719662ff4fba-1024x1024.jpg",
-      "chapter": "p4-c4",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/892cc66b-26dc-4247-b379-719662ff4fba_1024x1024.png",
-      "status": "present"
-    },
-    {
-      "file": "p4-c5-01-7cc5f355-d7d4-4cff-b1ef-9e303d826bff-1024x1024.jpg",
-      "chapter": "p4-c5",
-      "caption": "",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/7cc5f355-d7d4-4cff-b1ef-9e303d826bff_1024x1024.png",
       "status": "present"
     }
   ],
