@@ -97,12 +97,9 @@ parts:
       - id: p3-c7
         slug: chapter-7-6
         title: 챕터 7 · 임팩트 — 다시 6시
-        # The release/foot material was too short to stand as its own part, so it
-        # lives here as a section of the impact chapter.
-        sections:
-          - id: p3-c7-release
-            title: 릴리즈 타이밍은 발바닥에서 달라진다
-            file: manuscript/p3-c7-release.md
+        # The release/foot material was too short to stand as its own part. It is
+        # now merged directly into this chapter's manuscript as the section
+        # "릴리즈 타이밍은 발바닥에서 달라진다".
       - id: p3-c8
         slug: chapter-8-3
         title: 챕터 8 · 팔로우스루 — 3시
