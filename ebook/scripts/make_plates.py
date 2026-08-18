@@ -54,6 +54,7 @@ class Plate:
     ) -> None:
         self.w, self.h = size
         self.rng = np.random.default_rng(seed)
+        self.opaque = paper
         if paper:
             self.rgb = self._paper(vignette)
             self.alpha = np.ones((self.h, self.w), dtype=np.float32)
@@ -135,9 +136,16 @@ class Plate:
         # Thin ink reads slightly lighter than a full lay-down.
         ink = ink + np.clip(0.62 - pressure, 0, 1)[:, :, None] * 26.0
 
-        a = alpha[:, :, None]
-        self.rgb = self.rgb * (1 - a) + np.clip(ink, 0, 255) * a
-        self.alpha = np.clip(self.alpha + alpha, 0.0, 1.0)
+        ink = np.clip(ink, 0, 255)
+        if self.opaque:
+            a = alpha[:, :, None]
+            self.rgb = self.rgb * (1 - a) + ink * a
+        else:
+            # Straight alpha, so the ink colour has to be stored unmultiplied or
+            # the soft edges wash out wherever the plate is laid over a page.
+            fresh = (alpha > self.alpha)[:, :, None]
+            self.rgb = np.where(fresh, ink, self.rgb)
+        self.alpha = np.maximum(self.alpha, alpha)
 
     def save(self, name: str) -> None:
         """Write the plate.
@@ -437,8 +445,12 @@ def part4_arcs() -> None:
 
 
 def appendix_mark() -> None:
-    """부록 — a small index mark, nothing figurative."""
-    plate = Plate(MARK, seed=6601)
+    """부록 — a small index mark, nothing figurative.
+
+    Ink on transparency rather than on stock: the appendix runs on white text
+    pages, so the mark has to sit on whatever the page is.
+    """
+    plate = Plate(MARK, seed=6601, paper=False)
     w, h = plate.w * SS, plate.h * SS
 
     img, draw = plate.canvas()
@@ -447,7 +459,7 @@ def appendix_mark() -> None:
     bar(draw, w * 0.30, h * 0.76, w * 0.52, h * 0.76, w * 0.022)
     dot(draw, w * 0.68, h * 0.50, w * 0.055)
     plate.press(img, PINE, bite=0.26, soften=5)
-    plate.save("appendix-mark.jpg")
+    plate.save("appendix-mark.png")
 
 
 def main() -> int:

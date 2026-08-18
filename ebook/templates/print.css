@@ -8,10 +8,6 @@
 @page {
   size: 148mm 210mm;          /* A5 */
   margin: 17mm 15mm 20mm 15mm;
-  /* The book prints on cream stock. Declared on the page rather than on the
-     root element so it covers the margins too, which is what lets the drawn
-     plates sit on the page without showing a panel edge. */
-  background: #f6f3ea;
 }
 
 /* Mirrored inner margin for binding. */
@@ -53,8 +49,14 @@
   }
 }
 
-/* Cover, title page, contents and part openers stay clean. */
+/* Cover, title page and contents stay clean. */
 @page plain { }
+
+/* Part openers print on the cream stock the plates are drawn on. Declared on the
+   page, not on a block, so the colour reaches the margins and the plate sits on
+   it without showing a panel edge. Text pages stay white, because the author's
+   own diagrams are white-backed and would show a panel of their own on cream. */
+@page opener { background: #f6f3ea; }
 
 @page cover { margin: 0; }
 
@@ -175,7 +177,7 @@ p, li { orphans: 2; widows: 2; }
 }
 
 section.part-title {
-  page: plain;
+  page: opener;
   padding-top: 20mm;
 }
 

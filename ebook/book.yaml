@@ -152,7 +152,7 @@ back_matter:
     slug: golf-a
     title: 부록 · 프로와 같은 말로 말하기
     # Typography only, apart from a small index mark: no clipart in the appendix.
-    plate: images/plates/appendix-mark.jpg
+    plate: images/plates/appendix-mark.png
     plate_alt: 색인 표시
     plate_size: mark
   - id: colophon
