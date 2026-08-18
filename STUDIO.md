@@ -68,6 +68,20 @@ Explorer에 `ReplicatedStorage/Shared`, `ServerScriptService/Server` 가 보이�
 
 Rojo CLI가 아직 없다면 [설치 문서](https://rojo.space/docs/v7/getting-started/installation/)를 보거나, 우선 `SchoolSimulator.rbxlx` 를 **File → Open from File** 로 열어도 게임을 바로 테스트할 수 있습니다.
 
+## 스튜디오에서 HTTP 403 이 뜰 때
+
+`We could not open the place [...]. HTTP 403` 은 클라우드에 있는 게임을 열 권한이 없다는 뜻입니다. 이 저장소 코드가 깨진 것이 아닙니다.
+
+1. **Close** 를 누릅니다. Retry 를 여러 번 누르지 마세요.
+2. 홈 화면의 **School simulator** 최근 항목은 다시 누르지 마세요. 그 카드는 로블록스 클라우드 플레이스이고, 지금 권한이 막혀 있습니다.
+3. 대신 이렇게 엽니다.
+   - 위쪽 메뉴 **File → New** 로 빈 플레이스를 만들거나
+   - **File → Open from File** 로 이 저장소의 `SchoolSimulator.rbxlx` 를 엽니다.
+4. 클라우드 게임을 꼭 열어야 하면 스튜디오에서 로그아웃한 뒤 같은 계정으로 다시 로그인합니다.
+5. VPN을 켜 두었다면 끄고 다시 시도합니다.
+
+빈 플레이스나 `.rbxlx` 가 열리면 **PLUGINS** 탭에서 Rojo를 설치하고 연결하면 됩니다.
+
 ## 주의
 
 - 스크립트는 가급적 이 저장소의 `src/` 에서 수정하세요.
