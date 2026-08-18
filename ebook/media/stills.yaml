@@ -14,33 +14,40 @@ stills:
     dest: 01-swing-both-feet.jpg
     caption: 두 발이 지면과 닿아 있는 방식이 릴리즈의 시점을 결정한다.
     alt: 두 발이 지면을 딛고 있는 스윙 자세
+  # Incoming 02–06 are phone portraits stored landscape with EXIF stripped.
+  # rotate_cw: 90 stands them back up (same turn as EXIF orientation 6).
   - id: short-arch
     chapter: p3-c7
     index: 1
     dest: p3-c7-01-short-arch.jpg
     caption: 짧은 아치
     alt: 짧은 아치
+    rotate_cw: 90
   - id: long-arch
     chapter: p3-c7
     index: 2
     dest: p3-c7-02-long-arch.jpg
     caption: 긴 아치
     alt: 긴 아치
+    rotate_cw: 90
   - id: test-1
     chapter: p3-c7
     index: 3
     dest: p3-c7-03-test-1.jpg
     caption: 테스트 1
     alt: 테스트 1
+    rotate_cw: 90
   - id: test-2
     chapter: p3-c7
     index: 4
     dest: p3-c7-04-test-2.jpg
     caption: 테스트 2
     alt: 테스트 2
+    rotate_cw: 90
   - id: test-3
     chapter: p3-c7
     index: 5
     dest: p3-c7-05-test-3.jpg
     caption: 테스트 3
     alt: 테스트 3
+    rotate_cw: 90

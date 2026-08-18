@@ -252,14 +252,28 @@ section.chapter {
 
 figure.photo img { max-height: 105mm; }
 
+figure.photo img.portrait {
+  max-width: 68mm;
+  max-height: 118mm;
+  width: auto;
+  height: auto;
+}
+
+figure.photo img.landscape {
+  max-width: 100%;
+  max-height: 88mm;
+}
+
 /* Print is a designed QR block: caption + scannable code. No click, no
-   poster — the preview lives only in the EPUB. */
+   poster, no printed URL — the preview lives only in the EPUB. */
 figure.video-slot {
   margin: 1.1em 0;
   padding: 0.7em 0.8em;
 }
 
-a.video-preview { display: none; }
+a.video-poster,
+a.video-preview,
+.video-url { display: none; }
 
 .video-qr { width: 22mm; height: 22mm; }
 

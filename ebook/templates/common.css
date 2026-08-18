@@ -122,6 +122,14 @@ figure.photo img {
   height: auto;
 }
 
+/* Portrait stills stay upright. Stretching them to the full text width is
+   what laid the 챕터 7 gym shots on their side. */
+figure.photo img.portrait {
+  width: auto;
+  max-width: 72%;
+  height: auto;
+}
+
 figure.photo figcaption {
   margin-top: 0.5em;
   font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
@@ -325,9 +333,9 @@ figure.diagram.plate img {
 figure.diagram.plate .diagram-title { text-align: center; }
 
 /* ---------- video slot ----------
-   EPUB: a clickable ink preview next to the QR, linking the playable src.
-   Print: the QR block only — no click, no poster. Substack /p/ pages stay
-   out of both. */
+   EPUB: a button-style poster (first frame + play control) the reader taps.
+   Print: the designed QR only — no poster, no printed https://…/src string.
+   Substack /p/ pages stay out of both. */
 
 figure.video-slot {
   margin: 1.7em 0;
@@ -339,18 +347,29 @@ figure.video-slot {
   break-inside: avoid;
 }
 
-a.video-preview {
-  flex: 0 0 auto;
+a.video-poster {
   display: block;
-  width: 26mm;
+  position: relative;
+  margin: 0 0 0.75em;
   text-decoration: none;
   color: inherit;
 }
 
-a.video-preview img {
+a.video-poster img {
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 4px;
+}
+
+a.video-poster.portrait {
+  max-width: 58%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a.video-preview {
+  display: none;
 }
 
 .video-row {
@@ -405,17 +424,7 @@ a.video-preview img {
 }
 
 .video-url {
-  font-family: "NanumGothicCoding", monospace;
-  font-size: 0.76em;
-  color: #4a5250;
-  word-break: break-all;
-  margin: 0;
-}
-
-.video-url.pending {
-  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
-  color: var(--muted);
-  font-style: normal;
+  display: none;
 }
 
 .video-slot-id {

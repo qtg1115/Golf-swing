@@ -10,8 +10,7 @@ h1 {
   page-break-before: always;
 }
 
-/* Preview and QR sit side by side when the reader can do flex; they stack
-   cleanly if not. The preview is the clickable first-frame / play-mark. */
+/* Poster is the tap target. QR sits under it with the caption. */
 .video-row {
   display: flex;
   flex-wrap: wrap;
@@ -19,9 +18,13 @@ h1 {
   gap: 0.8em;
 }
 
-a.video-preview {
-  width: 28%;
-  max-width: 140px;
+a.video-poster {
+  width: 100%;
+  max-width: 100%;
+}
+
+a.video-poster.portrait {
+  max-width: 62%;
 }
 
 .video-qr {

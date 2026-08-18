@@ -13,6 +13,7 @@ To rebuild:
 cd ebook && make
 ```
 
-All 54 videos carry a QR code and a printed URL, each verified reachable without a
-login, and are credited to the 골프느낌원리 channel (unlisted). See
-[`ebook/README.md`](ebook/README.md) for the inventory and current status.
+All 54 videos carry a QR code (print) and a tappable first-frame poster (EPUB),
+each verified reachable without a login, and are credited to the 골프느낌원리
+channel (unlisted). See [`ebook/README.md`](ebook/README.md) for the inventory
+and current status.

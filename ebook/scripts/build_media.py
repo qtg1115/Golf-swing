@@ -22,9 +22,9 @@ import urllib.request
 from pathlib import Path
 
 import yaml
-from PIL import Image, ImageOps
+from PIL import Image
 
-from stills import incoming_files, load_stills, resolve_photo_path
+from stills import incoming_files, load_stills, resolve_photo_path, upright
 from paths import (
     MANUSCRIPT_DIR,
     MEDIA_DIR,
@@ -74,10 +74,10 @@ MAX_EDGE = 1600
 JPEG_QUALITY = 92
 
 
-def optimise(data: bytes, dest) -> None:
-    """Flatten onto white, honour EXIF rotation, cap the long edge, JPEG."""
+def optimise(data: bytes, dest, rotate_cw: int = 0) -> None:
+    """Flatten onto white, honour EXIF (+ authored) rotation, cap the long edge."""
     with Image.open(io.BytesIO(data)) as image:
-        image = ImageOps.exif_transpose(image)
+        image = upright(image, rotate_cw)
         if image.mode in ("RGBA", "LA", "P"):
             image = image.convert("RGBA")
             flattened = Image.new("RGB", image.size, (255, 255, 255))
@@ -238,8 +238,11 @@ def ingest_incoming() -> int:
         for src, still in pairs:
             dest = PHOTOS_DIR / still["dest"]
             dest.parent.mkdir(parents=True, exist_ok=True)
-            optimise(src.read_bytes(), dest)
-            print(f"  ingested {src.name} -> {dest.relative_to(REPO_ROOT)}")
+            optimise(src.read_bytes(), dest, rotate_cw=still.get("rotate_cw") or 0)
+            print(
+                f"  ingested {src.name} -> {dest.relative_to(REPO_ROOT)}"
+                f" rotate_cw={still.get('rotate_cw') or 0}"
+            )
             written += 1
     # Re-optimise dest files that were dropped in place as png/webp.
     for still in stills:
@@ -248,7 +251,7 @@ def ingest_incoming() -> int:
             continue
         found = resolve_photo_path(still["dest"])
         if found and found.suffix.lower() != ".jpg":
-            optimise(found.read_bytes(), dest)
+            optimise(found.read_bytes(), dest, rotate_cw=still.get("rotate_cw") or 0)
             if found != dest:
                 found.unlink()
             print(f"  flattened {found.name} -> {dest.relative_to(REPO_ROOT)}")

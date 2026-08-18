@@ -32,8 +32,8 @@ those reappear in the cover copy.
 
 ## Videos — 54 playable URLs with QR codes
 
-All **54 videos are live in the book**: each one has a QR code and the URL
-printed underneath 영상 보기.
+All **54 videos are live in the book**: each one has a QR code. The print PDF
+does not print the raw URL next to 영상 보기.
 
 The reader-facing target is the author-supplied endpoint
 
@@ -47,10 +47,11 @@ them: every one answers `206 video/mp4` with no login and no cookie, and lands o
 the manifest — 54 of 54 match.
 
 The EPUB and the print PDF treat the same 54 URLs differently. In the EPUB each
-slot is a clickable preview (the drawn play-mark: cover open-circle + triangle)
-sitting next to its QR, and the preview links the `src` URL. In the A5 PDF the
-slot is a designed QR block — caption plus a scannable code — with no click and
-no poster. Neither format uses a photoreal golfer as a poster.
+slot is a **button-style poster**: the clip's own first frame with a play control
+on it. Tapping the poster opens the playable `src` URL. In the A5 PDF the slot
+is a designed QR block — caption plus a scannable code — with no click, no
+poster, and **no printed https://…/src string**. Neither format uses a photoreal
+golfer as a poster, and a portrait clip stays portrait.
 
 Worth knowing: the QR resolves to a bare mp4 file rather than a player page, so a
 phone opens it in the browser's video view with no player chrome. Substack mints
@@ -176,9 +177,13 @@ author put one.
 - **챕터 7 release stills** live in `media/stills.yaml`. Drop the six originals
   into `images/incoming/` as `01`…`06` (any suffix) or under the dest names in
   `images/photos/`, then `make media && make book`. They flatten onto white,
-  honour EXIF rotation, and cap at 1600 px. The stock Golf+club/ball header is
-  skipped; Logic Fitness arch mp4s are not imported. `https://logicfitko.substack.com/p/golf`
-  is this same section of 챕터 7, not a new chapter.
+  honour EXIF rotation, apply any `rotate_cw` in the yaml (the five gym stills
+  are phone portraits whose EXIF was stripped), and cap at 1600 px. A portrait
+  still is printed portrait — it is not stretched to full text width. The stock
+  Golf+club/ball header (byte-identical 1024² / 1,023,209 bytes) is skipped;
+  Logic Fitness arch mp4s are not imported. `https://logicfitko.substack.com/p/golf`
+  is this same section of 챕터 7, not a new chapter. The matching public stills
+  on `/p/a90` carry EXIF orientation 6 and confirm the gym shots stand upright.
 - Other marked stills stay labelled empty frames until a real file is dropped
   into `images/photos/`. Nothing is generated or substituted.
 - The compiled manuscript inventory counts **64 photos**. The rest sit inside post
@@ -251,6 +256,7 @@ Individual steps:
 | `python3 scripts/convert_sources.py` | cached HTML → `manuscript/*.md` (`--force` to overwrite) |
 | `python3 scripts/build_media.py` | download and optimise photos, write both manifests |
 | `python3 scripts/make_qr.py` | QR PNGs for slots that have a playable URL |
+| `python3 scripts/make_posters.py` | EPUB first-frame posters with a play control |
 | `python3 scripts/make_plates.py` | draw the cover art and the part-opener plates |
 | `python3 scripts/make_cover.py` | compose `images/cover.jpg` for the EPUB |
 | `python3 scripts/build.py` | assemble the EPUB and the A5 PDF |
@@ -285,6 +291,7 @@ ebook/
     plates/              drawn cover art and part openers, no lettering baked in
     photos/              the author's own photos and diagrams, never redrawn
     qr/                  54 QR PNGs, one per video slot
+    posters/             54 EPUB tap posters (first frame + play control)
   media/
     photos.json          photo manifest with download status
     video-urls.yaml      input: chapter id -> ordered upload ids
@@ -312,10 +319,10 @@ Three markers keep unfinished material explicit instead of invented:
 
 | Item | State |
 |---|---|
-| EPUB | builds, 62 images packaged (54 QR + play-mark + plates + cover), clickable video previews |
-| PDF | builds, **163 pages**, A5, Korean fonts render, running heads, folios |
-| Photos | 0 embedded stills; 6 챕터 7 slots wait in `media/stills.yaml`; other marked frames stay empty |
-| Videos | **54 of 54** — EPUB: play-mark + QR + src link; print: QR block. All inline |
+| EPUB | builds, video posters + QR + plates + cover, tappable first-frame play buttons |
+| PDF | builds, A5, Korean fonts render, running heads, folios |
+| Photos | 6 챕터 7 stills upright; other marked frames stay empty when the post is paywalled |
+| Videos | **54 of 54** — EPUB: poster button → src; print: QR, no raw URL. All inline |
 | Chapter text | **complete** — all 19 chapters + the 챕터 7 release section, no pending markers |
 | Front matter | draft copy, needs author sign-off |
 

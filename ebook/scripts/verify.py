@@ -24,6 +24,7 @@ from paths import (
     EBOOK_DIR,
     MANUSCRIPT_DIR,
     PHOTOS_DIR,
+    POSTERS_DIR,
     QR_DIR,
     load_book,
     load_videos,
@@ -107,33 +108,27 @@ def check_epub(epub: zipfile.ZipFile, book: dict, report: Report) -> None:
     report.note(f"{len(images)} image file(s) packaged")
 
     previews = 0
-    preview_srcs: list[str] = []
     for name in names:
         if not name.endswith(".xhtml"):
             continue
         page = epub.read(name)
-        previews += page.count(b'class="video-preview"')
-        preview_srcs.extend(
-            src.decode()
-            for src in IMG_SRC.findall(page)
-            if b"video-preview" in page
-        )
+        previews += page.count(b"video-poster")
     report.check(
         previews == 54,
-        "EPUB has a clickable preview next to every video QR",
+        "EPUB has a tappable poster button for every video",
         f"{previews} of 54",
     )
-    # Pandoc renames plates/play-mark.png to media/fileN.png, so match by bytes.
-    mark = EBOOK_DIR / "images/plates/play-mark.png"
-    packaged = {n.split("/")[-1] for n in names}
-    mark_packaged = False
-    if mark.exists():
-        mark_bytes = mark.read_bytes()
-        for name in names:
-            if name.endswith(".png") and epub.read(name) == mark_bytes:
-                mark_packaged = True
-                break
-    report.check(mark_packaged, "ink play-mark packaged for EPUB posters")
+    on_disk = sorted(p for p in POSTERS_DIR.glob("*.jpg") if p.is_file())
+    report.check(
+        len(on_disk) == 54,
+        "54 video poster files on disk",
+        f"{len(on_disk)} of 54",
+    )
+    tiny = [p.name for p in on_disk if p.stat().st_size < 8000]
+    report.check(not tiny, "posters are real preview frames, not a tiny mark", ", ".join(tiny[:5]))
+    packaged_names = {n.split("/")[-1] for n in names}
+    missing_posters = [p.name for p in on_disk if p.name not in packaged_names]
+    report.check(not missing_posters, "video posters are packaged in the EPUB", ", ".join(missing_posters[:5]))
 
 
 def check_no_substack(epub: zipfile.ZipFile, pdf_bytes: bytes, report: Report) -> None:
@@ -165,9 +160,15 @@ def check_no_substack(epub: zipfile.ZipFile, pdf_bytes: bytes, report: Report) -
             continue
         joined = "".join(re.findall(r"\((.*?)\)\s*Tj", raw, re.S)).replace("\\", "")
         for match in SUBSTACK.findall(joined):
-            if not ALLOWED_SUBSTACK.match(match):
+            if ALLOWED_SUBSTACK.match(match):
+                pdf_hits.append(f"printed src {match}")
+            else:
                 pdf_hits.append(match)
-    report.check(not pdf_hits, "no gated Substack URL in the PDF", "; ".join(pdf_hits[:2]))
+    report.check(
+        not pdf_hits,
+        "print PDF has QR only — no raw URL string",
+        "; ".join(pdf_hits[:2]),
+    )
 
 
 def check_videos(report: Report) -> None:
@@ -322,11 +323,19 @@ def check_art(book: dict, epub: zipfile.ZipFile, report: Report) -> None:
     kept = sorted(p.name for p in PHOTOS_DIR.glob("*") if p.is_file())
     report.note(f"{len(kept)} author photo/diagram file(s) kept in images/photos")
 
-    from stills import load_stills, resolve_photo_path
+    from stills import load_stills, photo_layout_class, resolve_photo_path
 
     stills = load_stills()
     present = [s["id"] for s in stills if resolve_photo_path(s["dest"])]
     report.note(f"{len(present)} of {len(stills)} 챕터 7 release stills on disk")
+    sideways = [
+        s["dest"]
+        for s in stills
+        if s.get("rotate_cw")
+        and resolve_photo_path(s["dest"])
+        and photo_layout_class(resolve_photo_path(s["dest"])) != "portrait"
+    ]
+    report.check(not sideways, "챕터 7 gym stills are portrait on disk", ", ".join(sideways))
     report.check(
         (EBOOK_DIR / "images/plates/play-mark.png").exists(),
         "play-mark plate drawn",

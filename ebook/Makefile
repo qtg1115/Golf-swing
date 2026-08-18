@@ -10,9 +10,9 @@
 PY := python3
 S  := scripts
 
-.PHONY: book all fetch convert media videos plates cover verify clean
+.PHONY: book all fetch convert media videos posters plates cover verify clean
 
-book: plates cover media videos
+book: plates cover media videos posters
 	$(PY) $(S)/build.py
 	$(PY) $(S)/verify.py
 
@@ -27,9 +27,13 @@ convert:
 media:
 	$(PY) $(S)/build_media.py
 
-# QR codes are written only for slots that already carry a YouTube unlisted URL.
+# QR codes are written only for slots that already carry a playable URL.
 videos:
 	$(PY) $(S)/make_qr.py
+
+# EPUB tap targets: first-frame poster + play control, linking the src URL.
+posters: videos
+	$(PY) $(S)/make_posters.py
 
 # Cover art and part-opener plates. Drawn, not generated: no lettering is baked
 # into them, so every word on those pages comes from book.yaml.

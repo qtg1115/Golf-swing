@@ -9,6 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
+from PIL import Image, ImageOps
 
 from paths import EBOOK_DIR, IMAGES_DIR, MEDIA_DIR, PHOTOS_DIR
 
@@ -56,3 +57,24 @@ def incoming_files() -> list[Path]:
         if path.is_file() and path.suffix in IMAGE_SUFFIXES and not path.name.startswith(".")
     ]
     return sorted(files, key=lambda p: p.name.lower())
+
+
+def upright(image: Image.Image, rotate_cw: int = 0) -> Image.Image:
+    """Honour EXIF rotation, then any authored clockwise turn.
+
+    Phone portraits often arrive as landscape pixels (EXIF 6) or with EXIF
+    already stripped. ImageOps.exif_transpose stands the first case up; rotate_cw
+    stands the second up. A still that is portrait after this stays portrait —
+    it is never forced landscape.
+    """
+    image = ImageOps.exif_transpose(image) or image
+    turn = int(rotate_cw or 0) % 360
+    if turn:
+        image = image.rotate(-turn, expand=True)
+    return image
+
+
+def photo_layout_class(path: Path) -> str:
+    """CSS class from the pixels on disk (rotation already baked in)."""
+    with Image.open(path) as image:
+        return "portrait" if image.height > image.width else "landscape"

@@ -31,13 +31,14 @@ from paths import (
     IMAGES_DIR,
     MANUSCRIPT_DIR,
     PHOTOS_DIR,
+    POSTERS_DIR,
     QR_DIR,
     REPO_ROOT,
     TEMPLATES_DIR,
     load_book,
     load_videos,
 )
-from stills import resolve_photo_path, still_for_pending
+from stills import photo_layout_class, resolve_photo_path, still_for_pending
 
 FIGURE_MARKER = re.compile(r"\[\[FIGURE:\s*([a-z0-9-]+)\s*\]\](?!\])")
 VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/\s*(.*?)\s*\]\](?!\])")
@@ -88,6 +89,15 @@ def demote(markdown: str, levels: int = 1) -> str:
 PLAY_MARK = "images/plates/play-mark.png"
 
 
+def poster_href(slot_id: str) -> str | None:
+    poster = POSTERS_DIR / f"{slot_id}.jpg"
+    if poster.is_file():
+        return f"images/posters/{slot_id}.jpg"
+    if (EBOOK_DIR / PLAY_MARK).exists():
+        return PLAY_MARK
+    return None
+
+
 def video_block(
     chapter: str,
     index: int,
@@ -103,37 +113,40 @@ def video_block(
     qr_path = QR_DIR / f"{slot_id}.png"
     stats.placed.add(slot_id)
 
-    preview = ""
+    poster = ""
     if url and qr_path.exists():
         stats.videos_with_url += 1
         qr = f'<div class="video-qr"><img src="images/qr/{slot_id}.png" alt="영상 QR 코드" /></div>'
-        target = f'<p class="video-url">{html.escape(url)}</p>'
         label = "영상 보기"
-        # EPUB only: a tap target next to the QR. The poster is the drawn
-        # play-mark (cover open-circle + triangle), never a photoreal golfer.
-        if fmt == "epub" and (EBOOK_DIR / PLAY_MARK).exists():
-            preview = (
-                f'<a class="video-preview" href="{html.escape(url, quote=True)}">'
-                f'<img src="{PLAY_MARK}" alt="영상 재생" />'
-                "</a>\n"
-            )
+        # Print: designed QR only. The src string is not printed.
+        # EPUB: a button-style poster the reader taps; href is the playable src.
+        if fmt == "epub":
+            src = poster_href(slot_id)
+            if src:
+                layout = ""
+                poster_file = POSTERS_DIR / f"{slot_id}.jpg"
+                if poster_file.is_file():
+                    layout = f" {photo_layout_class(poster_file)}"
+                poster = (
+                    f'<a class="video-poster{layout}" href="{html.escape(url, quote=True)}">'
+                    f'<img src="{src}" alt="영상 재생 — {html.escape(caption)}" />'
+                    "</a>\n"
+                )
     else:
         stats.videos_pending += 1
         qr = '<div class="video-qr empty"></div>'
-        target = f'<p class="video-url pending">{PENDING_VIDEO_LABEL}</p>'
         label = "영상 보기"
 
     # Raw HTML is emitted flush left: an indented line inside a markdown raw
     # block would be read back as an indented code block.
     return (
         f'<figure class="video-slot video-{fmt}">\n'
+        f"{poster}"
         '<div class="video-row">\n'
-        f"{preview}"
         f"{qr}\n"
         '<div class="video-body">\n'
         f'<p class="video-label">{label}</p>\n'
         f'<p class="video-caption">{html.escape(caption)}</p>\n'
-        f"{target}\n"
         f'<p class="video-slot-id">{slot_id}</p>\n'
         "</div>\n"
         "</div>\n"
@@ -224,9 +237,10 @@ def figure_block(filename: str, caption: str, stats: Stats) -> str:
         )
     stats.photos_embedded += 1
     alt = html.escape(caption) or "본문 사진"
+    layout = photo_layout_class(path)
     parts = [
-        '<figure class="photo">',
-        f'<img src="images/photos/{path.name}" alt="{alt}" />',
+        f'<figure class="photo {layout}">',
+        f'<img class="{layout}" src="images/photos/{path.name}" alt="{alt}" />',
     ]
     if caption:
         parts.append(f"<figcaption>{caption}</figcaption>")
@@ -406,7 +420,8 @@ def colophon(book: dict, stats: Stats) -> str:
     ]
     if channel and total_videos:
         notes.append(
-            f"본문의 영상 {total_videos}편은 QR 코드와 주소로 바로 볼 수 있으며, "
+            f"본문의 영상 {total_videos}편은 전자책에서 미리보기를 눌러, "
+            f"인쇄본에서는 QR 코드로 바로 볼 수 있으며, "
             f"{channel} 채널에 비공개(unlisted)로도 함께 올라갑니다."
         )
     if stats.videos_pending:
