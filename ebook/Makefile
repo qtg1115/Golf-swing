@@ -1,4 +1,4 @@
-# Build 「골프 느낌의 실체」.
+# Build 「골프 느낌의 실제 원리」.
 #
 #   make            fetch nothing, rebuild the book from what is in the repo
 #   make all        full pipeline including a Substack refetch
