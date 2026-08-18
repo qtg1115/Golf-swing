@@ -47,6 +47,12 @@ FIGURE_BLOCK = re.compile(
 )
 ATX_HEADING = re.compile(r"^(#{1,6})(\s+)", re.M)
 
+# The manuscript marks media inline with the author's own shorthand on its own
+# line. Anchored so it never matches the note inside a [[PHOTO-PENDING: … ]].
+BARE_PHOTO = re.compile(r"^\[\s*사진\s*\]$", re.M)
+BARE_VIDEO = re.compile(r"^\[\s*영상\s*\]$", re.M)
+FIGURE_SRC = re.compile(r'<img[^>]+src="images/photos/([^"]+)"')
+
 PENDING_VIDEO_LABEL = "공개 영상 주소 예정"
 
 
@@ -58,6 +64,7 @@ class Stats:
         self.photos_pending = 0
         self.chapters_pending_text = 0
         self.videos_appended = 0
+        self.photos_auto_placed = 0
         # Slot ids already laid out, so a chapter appendix does not repeat them.
         self.placed: set[str] = set()
 
@@ -135,12 +142,20 @@ def chapter_video_appendix(chapter_id: str, slots: dict, placed: set[str], stats
     return "\n\n".join(blocks)
 
 
+# A note that only repeats "사진" adds nothing to the printed frame.
+GENERIC_PHOTO_NOTE = re.compile(r"^[\[\(]?\s*사진\s*(?:첨부)?\s*[\]\)]?$")
+
+
 def photo_pending_block(note: str, stats: Stats) -> str:
     stats.photos_pending += 1
-    detail = html.escape(note) if note else "사진"
+    note = (note or "").strip()
+    if not note or GENERIC_PHOTO_NOTE.match(note):
+        detail = ""
+    else:
+        detail = f" — {html.escape(note)}"
     return (
         '<div class="photo-pending">\n'
-        f"<p>사진 자리 — {detail}</p>\n"
+        f"<p>사진 자리{detail}</p>\n"
         "<p>원본 사진 준비 중</p>\n"
         "</div>"
     )
@@ -176,7 +191,68 @@ def figure_block(filename: str, caption: str, stats: Stats) -> str:
     return "\n".join(parts)
 
 
-def expand(markdown: str, slots: dict, stats: Stats) -> str:
+def chapter_photo_files(chapter_id: str, already_used: set[str]) -> list[str]:
+    """Photos downloaded for this chapter, in source order, still unreferenced.
+
+    Filenames are '<chapter>-<nn>-<stem>.jpg', so sorting gives the order the
+    images appear in the source post.
+    """
+    return [
+        path.name
+        for path in sorted(PHOTOS_DIR.glob(f"{chapter_id}-[0-9][0-9]-*"))
+        if path.name not in already_used
+    ]
+
+
+def expand_bare_markers(markdown: str, chapter_id: str, slots: dict, stats: Stats) -> str:
+    """Turn the author's [사진] / [영상] shorthand into real blocks.
+
+    The nth [영상] in a chapter takes the nth video slot for that chapter, which is
+    what moves the supplied videos inline instead of grouping them at chapter end.
+    The nth [사진] takes the nth downloaded photo for the chapter; once those run
+    out the rest render as labelled pending frames. Nothing is invented.
+    """
+    available = chapter_photo_files(chapter_id, set(FIGURE_SRC.findall(markdown)))
+    chapter_slots = sorted(
+        (slot for slot in slots.values() if slot.get("chapter") == chapter_id),
+        key=lambda slot: slot.get("index") or 0,
+    )
+    counters = {"photo": 0, "video": 0}
+
+    def photo(_match: re.Match) -> str:
+        counters["photo"] += 1
+        position = counters["photo"]
+        if position <= len(available):
+            stats.photos_auto_placed += 1
+            return figure_block(available[position - 1], "", stats)
+        return photo_pending_block("사진", stats)
+
+    def video(_match: re.Match) -> str:
+        counters["video"] += 1
+        position = counters["video"]
+        if position <= len(chapter_slots):
+            slot = chapter_slots[position - 1]
+            return video_block(chapter_id, slot["index"], slot.get("description", ""), slots, stats)
+        # More markers than supplied videos: leave an honest empty slot.
+        stats.videos_pending += 1
+        return (
+            '<figure class="video-slot">\n'
+            '<div class="video-row">\n'
+            '<div class="video-qr empty"></div>\n'
+            '<div class="video-body">\n'
+            '<p class="video-label">영상 보기</p>\n'
+            f'<p class="video-caption">영상 {position}</p>\n'
+            f'<p class="video-url pending">{PENDING_VIDEO_LABEL}</p>\n'
+            "</div>\n"
+            "</div>\n"
+            "</figure>"
+        )
+
+    markdown = BARE_VIDEO.sub(video, markdown)
+    return BARE_PHOTO.sub(photo, markdown)
+
+
+def expand(markdown: str, slots: dict, stats: Stats, chapter_id: str | None = None) -> str:
     markdown = FIGURE_BLOCK.sub(
         lambda m: figure_block(m.group(1), (m.group(2) or "").strip(), stats), markdown
     )
@@ -185,6 +261,8 @@ def expand(markdown: str, slots: dict, stats: Stats) -> str:
     )
     markdown = PHOTO_PENDING.sub(lambda m: photo_pending_block(m.group(3), stats), markdown)
     markdown = TEXT_PENDING.sub(lambda m: text_pending_block(stats), markdown)
+    if chapter_id:
+        markdown = expand_bare_markers(markdown, chapter_id, slots, stats)
     return markdown
 
 
@@ -304,7 +382,7 @@ def assemble(book: dict, stats: Stats) -> str:
                 continue
             title, body = strip_first_heading(read(path))
             title = title or chapter["title"]
-            body = expand(demote(body), slots, stats)
+            body = expand(demote(body), slots, stats, chapter["id"])
             # A merged section sits inside its chapter as a sibling of the
             # chapter's own headings.
             for section in chapter.get("sections", []):
@@ -313,7 +391,7 @@ def assemble(book: dict, stats: Stats) -> str:
                     print(f"! missing section {section['file']}", file=sys.stderr)
                     continue
                 section_title, section_body = strip_first_heading(read(section_path))
-                section_body = expand(demote(section_body, 2), slots, stats)
+                section_body = expand(demote(section_body, 2), slots, stats, section["id"])
                 body += (
                     f'\n\n### {section_title or section["title"]} '
                     f'{{#{section["id"]}}}\n\n{section_body}\n'
@@ -331,7 +409,7 @@ def assemble(book: dict, stats: Stats) -> str:
             if not path.exists():
                 continue
             title, body = strip_first_heading(read(path))
-            body = expand(demote(body), slots, stats)
+            body = expand(demote(body), slots, stats, item["id"])
             out.append(f'# {title or item["title"]} {{#{item["id"]} .front-section}}\n\n{body}\n')
         elif item["kind"] == "colophon":
             out.append(colophon(book, stats))
@@ -504,6 +582,7 @@ def main() -> int:
         f"with QR + URL: {stats.videos_with_url}   still placeholder: {stats.videos_pending}\n"
         f"  of those, {stats.videos_appended} collected at chapter end "
         f"(no marker position in the manuscript yet)\n"
+        f"photos auto-placed from a [사진] marker: {stats.photos_auto_placed}\n"
         f"chapters awaiting full text: {stats.chapters_pending_text}"
     )
     return 0
