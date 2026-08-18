@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
-"""Generate QR PNGs for video slots that have a YouTube unlisted URL.
+"""Generate QR PNGs for video slots that have a playable URL.
 
-A QR is written only for a slot whose youtube_url is set in media/videos.yaml.
+A QR is written only for a slot whose video_url is set in media/videos.yaml.
 Anything else is left without a QR so the build renders an empty placeholder box
 labelled "공개 영상 주소 예정".
 
-Two guardrails, both from author instruction:
-  * Only youtube.com / youtu.be watch URLs are accepted.
-  * Substack URLs are rejected outright. Those posts are paid/private, so a
-    reader scanning that QR would hit a paywall.
+Only URLs a reader can actually open are accepted. Two shapes pass:
+
+  * the author-verified Substack video endpoint,
+    https://logicfitko.substack.com/api/v1/video/upload/{id}/src, which
+    redirects to a signed Mux mp4 and needs no login
+  * a YouTube watch URL, for anything re-hosted later
+
+A Substack POST page is still rejected: those are paid/private, so a reader
+scanning that QR would hit a paywall.
 """
 from __future__ import annotations
 
@@ -21,11 +26,15 @@ from qrcode.constants import ERROR_CORRECT_M
 
 from paths import QR_DIR, REPO_ROOT, load_videos
 
-ALLOWED_HOSTS = {"youtube.com", "www.youtube.com", "youtu.be", "m.youtube.com"}
-BLOCKED_HOST_FRAGMENT = "substack"
+YOUTUBE_HOSTS = {"youtube.com", "www.youtube.com", "youtu.be", "m.youtube.com"}
 YOUTUBE_WATCH = re.compile(
     r"^https://(?:(?:www\.|m\.)?youtube\.com/(?:watch\?v=|live/|shorts/)[\w-]{6,}"
     r"|youtu\.be/[\w-]{6,})",
+)
+
+SUBSTACK_VIDEO = re.compile(
+    r"^https://[\w-]+\.substack\.com/api/v1/video/upload/"
+    r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/src$"
 )
 
 
@@ -35,13 +44,21 @@ def validate(url: str) -> str | None:
     if parsed.scheme != "https":
         return "must be https"
     host = (parsed.netloc or "").lower()
-    if BLOCKED_HOST_FRAGMENT in host:
-        return "Substack URLs are not allowed as a reader-facing video target"
-    if host not in ALLOWED_HOSTS:
-        return f"host {host!r} is not a YouTube host"
-    if not YOUTUBE_WATCH.match(url):
+
+    if "substack.com" in host:
+        if SUBSTACK_VIDEO.match(url):
+            return None
+        return (
+            "the only allowed Substack path is /api/v1/video/upload/{id}/src; "
+            "post pages are paywalled and must not be encoded"
+        )
+
+    if host in YOUTUBE_HOSTS:
+        if YOUTUBE_WATCH.match(url):
+            return None
         return "not a recognisable YouTube watch URL"
-    return None
+
+    return f"host {host!r} is not an allowed video host"
 
 
 def render(url: str, dest) -> None:
@@ -60,7 +77,7 @@ def main() -> int:
     keep: set[str] = set()
 
     for slot in slots:
-        url = (slot.get("youtube_url") or "").strip()
+        url = (slot.get("video_url") or "").strip()
         if not url:
             pending += 1
             continue
@@ -80,7 +97,7 @@ def main() -> int:
             print(f"- removed stale {stale.relative_to(REPO_ROOT)}")
 
     print(f"{written} QR code(s) written to {QR_DIR.relative_to(REPO_ROOT)}")
-    print(f"{pending} slot(s) still awaiting a YouTube unlisted URL")
+    print(f"{pending} slot(s) still without a playable URL")
     if errors:
         print("\nrejected:", file=sys.stderr)
         for error in errors:

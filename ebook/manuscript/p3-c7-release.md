@@ -10,3 +10,13 @@
 </figure>
 
 [[MANUSCRIPT-PENDING: release-timing-draft]]
+
+[[PHOTO-PENDING: p3-c7-release / 1 / [사진]]]
+
+[[PHOTO-PENDING: p3-c7-release / 2 / [사진]]]
+
+[[PHOTO-PENDING: p3-c7-release / 3 / [사진]]]
+
+[[PHOTO-PENDING: p3-c7-release / 4 / [사진]]]
+
+[[PHOTO-PENDING: p3-c7-release / 5 / [사진]]]

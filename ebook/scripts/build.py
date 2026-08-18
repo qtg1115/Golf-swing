@@ -57,6 +57,9 @@ class Stats:
         self.photos_embedded = 0
         self.photos_pending = 0
         self.chapters_pending_text = 0
+        self.videos_appended = 0
+        # Slot ids already laid out, so a chapter appendix does not repeat them.
+        self.placed: set[str] = set()
 
 
 def slot_lookup() -> dict[str, dict]:
@@ -71,9 +74,10 @@ def demote(markdown: str, levels: int = 1) -> str:
 def video_block(chapter: str, index: int, description: str, slots: dict, stats: Stats) -> str:
     slot_id = f"{chapter}-v{int(index):02d}"
     slot = slots.get(slot_id, {})
-    caption = slot.get("description") or description or "동작 시연"
-    url = (slot.get("youtube_url") or "").strip()
+    caption = slot.get("description") or description or f"영상 {int(index)}"
+    url = (slot.get("video_url") or "").strip()
     qr_path = QR_DIR / f"{slot_id}.png"
+    stats.placed.add(slot_id)
 
     if url and qr_path.exists():
         stats.videos_with_url += 1
@@ -101,6 +105,34 @@ def video_block(chapter: str, index: int, description: str, slots: dict, stats: 
         "</div>\n"
         "</figure>"
     )
+
+
+def chapter_video_appendix(chapter_id: str, slots: dict, placed: set[str], stats: Stats) -> str:
+    """Lay out a chapter's videos that no manuscript marker has positioned yet.
+
+    The URLs and their order within a chapter are known, but the exact paragraph
+    each clip belongs to is only known where the post body is public. Rather than
+    guess a position, the remaining clips are collected at the end of the chapter
+    and move inline as soon as the full manuscript supplies markers.
+    """
+    pending = [
+        slot
+        for slot_id, slot in sorted(slots.items(), key=lambda kv: kv[1].get("index") or 0)
+        if slot.get("chapter") == chapter_id and slot_id not in placed
+    ]
+    if not pending:
+        return ""
+    blocks = [
+        '<div class="video-appendix">',
+        '<p class="video-appendix-title">이 장의 영상</p>',
+        "</div>",
+    ]
+    for slot in pending:
+        stats.videos_appended += 1
+        blocks.append(
+            video_block(chapter_id, slot["index"], slot.get("description", ""), slots, stats)
+        )
+    return "\n\n".join(blocks)
 
 
 def photo_pending_block(note: str, stats: Stats) -> str:
@@ -268,6 +300,11 @@ def assemble(book: dict, stats: Stats) -> str:
                     f'\n\n### {section_title or section["title"]} '
                     f'{{#{section["id"]}}}\n\n{section_body}\n'
                 )
+            for still in chapter.get("pending_stills", []):
+                body += "\n\n" + photo_pending_block(still.get("note", ""), stats)
+            appendix = chapter_video_appendix(chapter["id"], slots, stats.placed, stats)
+            if appendix:
+                body += f"\n\n{appendix}\n"
             out.append(f'## {title} {{#{chapter["id"]} .chapter}}\n\n{body}\n')
 
     for item in book.get("back_matter", []):
@@ -445,8 +482,10 @@ def main() -> int:
 
     print(
         f"\nphotos embedded: {stats.photos_embedded}   photo slots pending: {stats.photos_pending}\n"
-        f"video slots: {stats.videos_with_url + stats.videos_pending}   "
-        f"with YouTube URL: {stats.videos_with_url}   awaiting URL: {stats.videos_pending}\n"
+        f"video slots laid out: {stats.videos_with_url + stats.videos_pending}   "
+        f"with QR + URL: {stats.videos_with_url}   still placeholder: {stats.videos_pending}\n"
+        f"  of those, {stats.videos_appended} collected at chapter end "
+        f"(no marker position in the manuscript yet)\n"
         f"chapters awaiting full text: {stats.chapters_pending_text}"
     )
     return 0

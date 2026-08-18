@@ -169,6 +169,22 @@ figure.video-slot {
   margin: 0.35em 0 0;
 }
 
+/* Videos whose in-text position is not known yet are grouped at chapter end. */
+
+.video-appendix {
+  margin: 2.2em 0 0.4em;
+  padding-top: 0.9em;
+  border-top: 1px solid var(--rule);
+}
+
+.video-appendix-title {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.95em;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0;
+}
+
 /* ---------- pending photo / pending text ---------- */
 
 .photo-pending {

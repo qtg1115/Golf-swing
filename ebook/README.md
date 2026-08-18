@@ -1,16 +1,16 @@
-# 골프 느낌의 실체 — ebook build
+# 골프 느낌의 실제 원리 — ebook build
 
-Korean ebook production for **「골프 느낌의 실체」**
+Korean ebook production for **「골프 느낌의 실제 원리」**
 (subtitle: 프로가 말하는 감각을 실제 현상으로 풀다).
 
 | | |
 |---|---|
-| Title | 골프 느낌의 실체 |
+| Title | 골프 느낌의 실제 원리 |
 | Subtitle | 프로가 말하는 감각을 실제 현상으로 풀다 |
 | Authors (equal billing) | 이충원 Logan Lee · 방승호 Bryan Bang · 박세인 Jason Park |
 | Language | Korean only |
-| Channel name (video hosting) | 골프 느낌의 실체 |
-| Outputs | `dist/golf-neukkimui-silche.epub`, `dist/golf-neukkimui-silche.pdf` |
+| Channel name | 골프 느낌의 실제 원리 |
+| Outputs | `dist/golf-neukkimui-siljae-wonri.epub`, `dist/golf-neukkimui-siljae-wonri.pdf` |
 | Trim size | A5 (148 × 210 mm) |
 
 The book turns the *feel* language that tour players and teaching pros use into
@@ -22,84 +22,79 @@ company mark — no Logic Performance, no Logic Fitness.
 
 **Former working titles**, kept here only so older drafts can be matched up:
 「내 발이 만드는 스윙 시간」, 「프로가 말하는 그 느낌」, 「느낌은 있는데 스윙이 안 된다」,
-「그 느낌의 실체」. None of these are the title; the title is 「골프 느낌의 실체」.
+「그 느낌의 실체」, 「골프 느낌의 실체」. None of these are the title; the title is
+「골프 느낌의 실제 원리」, which is locked.
 
 ---
 
-## Video hosting — what still needs a public URL
+## Videos — 54 playable URLs with QR codes
 
-**Every ebook video is to be hosted as YouTube UNLISTED on the golf channel
-(골프 느낌의 실체). QR generation waits for those URLs.**
+All **54 videos are live in the book**: each one has a QR code and the URL
+printed underneath 영상 보기.
 
-**54 videos are pending YouTube unlisted upload.** That is the count in the
-compiled manuscript inventory. No QR code has been generated, because no public
-URL exists yet.
-
-Substack is never used as the reader-facing target. Readers cannot open
-`logicfitko.substack.com` links — most of those posts are paid or private — so
-none of the following are encoded anywhere in the EPUB or PDF, and the build
-refuses to encode them:
-
-- `https://logicfitko.substack.com/p/…`
-- `https://logicfitko.substack.com/api/v1/video/upload/…/src`
-- any other Substack-gated URL
-
-`scripts/verify.py` scans the finished EPUB and the decompressed PDF streams for
-`substack` and fails the build if a match appears. `scripts/make_qr.py` rejects
-any URL that is not an `https` YouTube watch URL.
-
-### Video slots laid out in the current build
-
-Six slots are laid out in the manuscript so far, all in one chapter. They are the
-only clips visible in the public source; the rest sit inside posts whose body is
-not public yet (see the chapter table below).
-
-| Slot | Part / chapter | Description in the text | Public URL |
-|---|---|---|---|
-| `p3-c6-v01` | 3부 · 챕터 6 임팩트 직전 — 8시 | 2. 벤 호건의 느낌을 몸으로 하는 방법 | pending |
-| `p3-c6-v02` | 3부 · 챕터 6 임팩트 직전 — 8시 | 2. 벤 호건의 느낌을 몸으로 하는 방법 | pending |
-| `p3-c6-v03` | 3부 · 챕터 6 임팩트 직전 — 8시 | 2. 벤 호건의 느낌을 몸으로 하는 방법 | pending |
-| `p3-c6-v04` | 3부 · 챕터 6 임팩트 직전 — 8시 | 첫번째 운동 | pending |
-| `p3-c6-v05` | 3부 · 챕터 6 임팩트 직전 — 8시 | 두번째 운동 | pending |
-| `p3-c6-v06` | 3부 · 챕터 6 임팩트 직전 — 8시 | 세번째 운동 | pending |
-
-Remaining slots by chapter cannot be listed yet: the clips live inside the 15
-chapters whose body text is still paywalled. They appear in this table as soon as
-the full manuscript lands and `scripts/convert_sources.py` runs against it.
-
-### How a video slot renders today
-
-Caption, an empty dashed QR box, and the label 공개 영상 주소 예정. Nothing is
-invented and no URL is shown:
+The reader-facing target is the author-supplied endpoint
 
 ```
-┌──────┐  영상 보기
-│  QR  │  첫번째 운동
-└──────┘  공개 영상 주소 예정
-          p3-c6-v04
+https://logicfitko.substack.com/api/v1/video/upload/{id}/src
 ```
 
-### Filling in a URL
+which 302-redirects to a signed Mux mp4. I checked all 54 before encoding any of
+them: every one answers `206 video/mp4` with no login and no cookie, and lands on
+`stream.mux.com`. Each generated QR was then decoded back and compared against
+the manifest — 54 of 54 match.
 
-1. Upload the clip to the 골프 느낌의 실체 channel as **unlisted**.
-2. Put the watch URL in `media/videos.yaml` under the matching slot:
+Worth knowing: the QR resolves to a bare mp4 file rather than a player page, so a
+phone opens it in the browser's video view with no player chrome. Substack mints
+a fresh Mux token per request, so the expiry inside the redirect target does not
+affect the printed URL. If these are ever re-hosted on YouTube, put the watch URL
+in `media/videos.yaml` and rebuild; both URL shapes are accepted.
 
-```yaml
-  - id: p3-c6-v04
-    chapter: p3-c6
-    index: 4
-    description: "첫번째 운동"
-    substack_media_id: 814630e9-d484-4bdb-983d-32329e0de058
-    youtube_url: https://www.youtube.com/watch?v=XXXXXXXXXXX
+**Substack post pages are still refused.** `logicfitko.substack.com/p/…` is
+paid/private, so it is never linked or encoded. The split is enforced in code,
+not by care: `scripts/make_qr.py` accepts only the video endpoint above (with a
+full UUID) or a YouTube watch URL, and `scripts/verify.py` fails the build if any
+other Substack URL reaches the EPUB or the PDF.
+
+### Where the videos sit
+
+| Chapter | Videos | Placement |
+|---|---|---|
+| 1부 · 골프를 배워도 잘 안되는 이유 | 1 | chapter end |
+| 3부 · 챕터 1 어드레스 — 6시 | 2 | chapter end |
+| 3부 · 챕터 2 테이크어웨이 — 7시 | 8 | chapter end |
+| 3부 · 챕터 3 백스윙 하프웨이 — 9시 | 8 | chapter end |
+| 3부 · 챕터 4 탑 오브 백스윙 — 12시 | 5 | chapter end |
+| 3부 · 챕터 5 다운스윙 전환 — 10시 | 6 | chapter end |
+| 3부 · 챕터 6 임팩트 직전 — 8시 | 6 | **inline, original positions** |
+| 3부 · 챕터 7 임팩트 — 다시 6시 | 5 | chapter end |
+| 3부 · 챕터 8 팔로우스루 — 3시 | 4 | chapter end |
+| 3부 · 챕터 9 두 번째 팔로우스루 — 1시 | 6 | chapter end |
+| 4부 · 테크닉 챕터 1 드로우 샷 | 2 | chapter end |
+| 4부 · 테크닉 챕터 2 페이드 샷 | 1 | chapter end |
+| **Total** | **54** | 6 inline, 48 at chapter end |
+
+Chapter 6 is the one chapter whose body is public, so its six clips are placed at
+the exact paragraphs they appear in. For the other chapters the URLs and their
+order are known but the paragraph each belongs to is not, because those bodies
+are still paywalled. Rather than guess, those clips are grouped under a
+**이 장의 영상** heading at the end of their chapter. They move inline
+automatically once the full manuscript arrives carrying
+`[[VIDEO-PUBLIC: …]]` markers — the build prefers a marker position and only
+falls back to the chapter-end group.
+
+Captions for the 48 grouped clips read 영상 1, 영상 2, and so on. Real captions
+come from the manuscript markers, or can be written into the `description` field
+in `media/videos.yaml`.
+
+### Editing videos
+
+`media/video-urls.yaml` is the input: chapter id → ordered list of upload ids.
+`media/videos.yaml` is generated from it and must not be hand-edited except for
+`description`. After a change:
+
+```bash
+python3 scripts/build_media.py && python3 scripts/make_qr.py && python3 scripts/build.py
 ```
-
-3. `make videos && make book`
-
-The QR appears in the box, the label becomes the URL in plain text for anyone who
-cannot scan, and `verify.py` confirms the QR exists.
-
-`substack_media_id` is an internal asset-matching key so the original clip can be
-found for upload. It is never rendered, never linked, and never encoded.
 
 ---
 
@@ -108,14 +103,15 @@ found for upload. It is never rendered, never linked, and never encoded.
 - **23 photos embedded** — downloaded from the source CDN into `images/photos/`,
   flattened onto white, capped at 1600 px on the long edge, stored as JPEG q92.
   Images are embedded locally; nothing hotlinks a gated host.
-- **1 photo slot pending a file.** The both-feet swing photo for the release
-  section. Drop the file at exactly `images/photos/01-swing-both-feet.png` and
-  rerun `make book` — the build picks it up and replaces the placeholder frame
-  automatically. Until then it renders as a dashed 사진 자리 box.
-- The compiled manuscript inventory counts **64 photos**. The 41 not yet here are
-  inside the paywalled post bodies, along with the 6 stills the author flagged as
-  missing (5 `[사진]` markers in the release draft, 1 `(사진첨부)` in CHAPTER 9).
-  Those become `[[PHOTO-PENDING: …]]` slots when the full manuscript is converted.
+- **7 photo placeholders**, all deliberate:
+  - the both-feet swing photo for the release section — drop the file at exactly
+    `images/photos/01-swing-both-feet.png` and rerun `make book`; the build picks
+    it up and replaces the frame automatically
+  - the 5 unpublished release-chapter `[사진]` stills
+  - the CHAPTER 9 `(사진첨부)` still
+- The compiled manuscript inventory counts **64 photos**. The remaining ones are
+  inside post bodies that are still paywalled, so they are not fetchable yet; they
+  download automatically once those bodies are available.
 
 No photo of a real person is ever generated or substituted. A missing still stays
 a labelled empty frame.
@@ -183,7 +179,7 @@ Individual steps:
 | `python3 scripts/fetch_sources.py` | cache the source posts into `sources/` |
 | `python3 scripts/convert_sources.py` | cached HTML → `manuscript/*.md` (`--force` to overwrite) |
 | `python3 scripts/build_media.py` | download and optimise photos, write both manifests |
-| `python3 scripts/make_qr.py` | QR PNGs for slots that have a YouTube URL |
+| `python3 scripts/make_qr.py` | QR PNGs for slots that have a playable URL |
 | `python3 scripts/make_cover.py` | render `images/cover.png` |
 | `python3 scripts/build.py` | assemble the EPUB and the A5 PDF |
 | `python3 scripts/verify.py` | package, image, and no-Substack-link checks |
@@ -215,15 +211,16 @@ ebook/
   images/
     cover.png
     photos/              embedded photos, JPEG q92, ≤1600 px
-    qr/                  QR PNGs — empty until YouTube URLs exist
+    qr/                  54 QR PNGs, one per video slot
   media/
     photos.json          photo manifest with download status
-    videos.yaml          video manifest, youtube_url: null until uploaded
+    video-urls.yaml      input: chapter id -> ordered upload ids
+    videos.yaml          generated manifest: URL, QR pairing, inline flag
   templates/             common.css, print.css, epub.css, pandoc body template
   scripts/
 dist/
-  golf-neukkimui-silche.epub
-  golf-neukkimui-silche.pdf
+  golf-neukkimui-siljae-wonri.epub
+  golf-neukkimui-siljae-wonri.pdf
 ```
 
 ### Placeholder markers
@@ -232,7 +229,7 @@ Three markers keep unfinished material explicit instead of invented:
 
 | Marker | Renders as |
 |---|---|
-| `[[VIDEO-PUBLIC: chapter / index / description]]` | caption + empty QR box + 공개 영상 주소 예정 |
+| `[[VIDEO-PUBLIC: chapter / index / description]]` | QR + URL when the slot has one, otherwise an empty QR box + 공개 영상 주소 예정 |
 | `[[PHOTO-PENDING: chapter / index / note]]` | dashed 사진 자리 frame |
 | `[[MANUSCRIPT-PENDING: slug]]` | 본문 준비 중 notice |
 
@@ -242,10 +239,10 @@ Three markers keep unfinished material explicit instead of invented:
 
 | Item | State |
 |---|---|
-| EPUB | builds, 24 images packaged, Korean metadata, hierarchical navigation |
-| PDF | builds, A5, Korean fonts render, running heads, folios, contents with page numbers |
-| Photos | 23 embedded, 1 awaiting a file, 41 more expected with the full manuscript |
-| Videos | **54 pending YouTube unlisted upload; 0 QR codes generated** |
+| EPUB | builds, 78 images packaged (23 photos + 54 QR + cover), Korean metadata, hierarchical navigation |
+| PDF | builds, 94 pages, A5, Korean fonts render, running heads, folios, contents with page numbers |
+| Photos | 23 embedded, 7 labelled placeholders, more expected with the full manuscript |
+| Videos | **54 of 54 with a QR code and a printed URL, all verified reachable** |
 | Chapter text | 4 chapters complete, 15 awaiting full manuscript, 1 release draft pending |
 | Front matter | draft copy, needs author sign-off |
 

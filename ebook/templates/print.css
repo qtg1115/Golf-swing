@@ -236,6 +236,14 @@ section.chapter {
 
 figure.photo img { max-height: 105mm; }
 
-.video-qr { width: 24mm; height: 24mm; }
+/* Chapters can carry eight of these, so keep them compact. */
+figure.video-slot {
+  margin: 1.1em 0;
+  padding: 0.7em 0.8em;
+}
+
+.video-qr { width: 22mm; height: 22mm; }
+
+.video-appendix { margin-top: 1.8em; }
 
 a { color: inherit; text-decoration: none; }

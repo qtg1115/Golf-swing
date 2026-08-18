@@ -21,6 +21,7 @@ BUILD_DIR = EBOOK_DIR / ".build"
 DIST_DIR = REPO_ROOT / "dist"
 
 VIDEOS_YAML = MEDIA_DIR / "videos.yaml"
+VIDEO_URLS_YAML = MEDIA_DIR / "video-urls.yaml"
 PHOTOS_JSON = MEDIA_DIR / "photos.json"
 
 

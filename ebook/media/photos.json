@@ -169,6 +169,32 @@
       "status": "present"
     }
   ],
-  "pending_stills": [],
+  "pending_stills": [
+    {
+      "chapter": "p3-c7-release",
+      "index": 1,
+      "note": "[사진"
+    },
+    {
+      "chapter": "p3-c7-release",
+      "index": 2,
+      "note": "[사진"
+    },
+    {
+      "chapter": "p3-c7-release",
+      "index": 3,
+      "note": "[사진"
+    },
+    {
+      "chapter": "p3-c7-release",
+      "index": 4,
+      "note": "[사진"
+    },
+    {
+      "chapter": "p3-c7-release",
+      "index": 5,
+      "note": "[사진"
+    }
+  ],
   "expected_total_from_manuscript_inventory": 64
 }

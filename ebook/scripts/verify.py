@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 """Check the built EPUB and PDF before they go out.
 
-The important check is the third one: no Substack URL may appear anywhere a
-reader could act on it, because those posts are paid/private. Video links and
-QR codes are only ever YouTube unlisted URLs.
+The link check is the important one. A reader-facing URL must be something a
+reader can actually open:
+
+  * allowed — the author-verified Substack video endpoint
+    /api/v1/video/upload/{id}/src, which redirects to a signed Mux mp4 with no
+    login, and any YouTube watch URL
+  * refused — every other Substack URL, above all a /p/ post page, because those
+    are paid or private
+
+The check fails the build on a refused URL in the EPUB, in the PDF, or in the
+video manifest.
 """
 from __future__ import annotations
 
@@ -14,8 +22,13 @@ import zipfile
 from paths import DIST_DIR, MANUSCRIPT_DIR, QR_DIR, REPO_ROOT, load_book, load_videos
 
 SUBSTACK = re.compile(r"(https?://[\w.-]*substack(?:cdn)?\.com[^\s\"'<>)\]]*)", re.I)
+ALLOWED_SUBSTACK = re.compile(
+    r"^https://[\w-]+\.substack\.com/api/v1/video/upload/"
+    r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/src$",
+    re.I,
+)
 IMG_SRC = re.compile(rb'src="([^"]+\.(?:jpe?g|png))"')
-VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:")
+VIDEO_MARKER = re.compile(r"\[\[VIDEO-PUBLIC:\s*([^/\]]+?)\s*/\s*(\d+)\s*/")
 
 
 class Report:
@@ -88,56 +101,80 @@ def check_epub(epub: zipfile.ZipFile, book: dict, report: Report) -> None:
 
 def check_no_substack(epub: zipfile.ZipFile, pdf_bytes: bytes, report: Report) -> None:
     hits: list[str] = []
+    allowed = 0
     for name in epub.namelist():
         if not re.search(r"\.(xhtml|html|css|opf|ncx)$", name):
             continue
         text = epub.read(name).decode("utf-8", "replace")
         for match in SUBSTACK.findall(text):
-            hits.append(f"EPUB {name}: {match}")
-    report.check(not hits, "no Substack URL in the EPUB", "; ".join(hits[:3]))
+            if ALLOWED_SUBSTACK.match(match):
+                allowed += 1
+            else:
+                hits.append(f"EPUB {name}: {match}")
+    report.check(not hits, "no gated Substack URL in the EPUB", "; ".join(hits[:3]))
+    report.note(f"{allowed} playable video URL(s) in the EPUB text")
 
-    # PDF content streams are compressed, so decompress before scanning.
+    # PDF text is inside compressed content streams, and long URLs get split
+    # across show-text operators, so reassemble the visible glyphs per stream.
+    import zlib
+
     pdf_hits: list[str] = []
     for stream in re.findall(rb"stream\r?\n(.*?)endstream", pdf_bytes, re.S):
-        import zlib
-
         try:
-            text = zlib.decompress(stream).decode("latin-1", "replace")
+            raw = zlib.decompress(stream).decode("latin-1", "replace")
         except zlib.error:
-            text = stream.decode("latin-1", "replace")
-        if "substack" in text.lower():
-            pdf_hits.append(text[max(0, text.lower().find("substack") - 40) :][:120])
-    report.check(not pdf_hits, "no Substack URL in the PDF", "; ".join(pdf_hits[:2]))
+            continue
+        if "substack" not in raw.lower():
+            continue
+        joined = "".join(re.findall(r"\((.*?)\)\s*Tj", raw, re.S)).replace("\\", "")
+        for match in SUBSTACK.findall(joined):
+            if not ALLOWED_SUBSTACK.match(match):
+                pdf_hits.append(match)
+    report.check(not pdf_hits, "no gated Substack URL in the PDF", "; ".join(pdf_hits[:2]))
 
 
 def check_videos(report: Report) -> None:
     slots = load_videos().get("videos") or []
-    marker_count = sum(
-        len(VIDEO_MARKER.findall(path.read_text(encoding="utf-8")))
-        for path in MANUSCRIPT_DIR.glob("*.md")
-    )
+    slot_ids = {s["id"] for s in slots}
+
+    # Markers fix a slot's position in the text; a slot without one is laid out at
+    # the end of its chapter. So markers must be a subset of the slots, and every
+    # marker must resolve to a real slot.
+    unknown: list[str] = []
+    marker_count = 0
+    for path in MANUSCRIPT_DIR.glob("*.md"):
+        for chapter, index in VIDEO_MARKER.findall(path.read_text(encoding="utf-8")):
+            marker_count += 1
+            slot_id = f"{chapter}-v{int(index):02d}"
+            if slot_id not in slot_ids:
+                unknown.append(f"{path.name}: {slot_id}")
     report.check(
-        marker_count == len(slots),
-        "every manuscript video marker has a manifest slot",
-        f"{marker_count} markers vs {len(slots)} slots",
+        not unknown,
+        "every manuscript video marker resolves to a manifest slot",
+        "; ".join(unknown[:3]),
     )
+    report.note(f"{marker_count} of {len(slots)} slot(s) positioned by a manuscript marker")
 
-    bad = [s["id"] for s in slots if (s.get("youtube_url") or "") and "substack" in s["youtube_url"]]
-    report.check(not bad, "no Substack URL in the video manifest", ", ".join(bad))
+    from make_qr import validate
 
-    with_url = [s for s in slots if s.get("youtube_url")]
-    for slot in with_url:
-        report.check(
-            (QR_DIR / f'{slot["id"]}.png').exists(),
-            f'QR present for {slot["id"]}',
-        )
+    bad = []
+    for slot in slots:
+        url = (slot.get("video_url") or "").strip()
+        if url and validate(url) is not None:
+            bad.append(f'{slot["id"]}: {validate(url)}')
+    report.check(not bad, "every manifest URL is an openable target", "; ".join(bad[:3]))
+
+    with_url = [s for s in slots if s.get("video_url")]
+    missing_qr = [s["id"] for s in with_url if not (QR_DIR / f'{s["id"]}.png').exists()]
+    report.check(not missing_qr, "every slot with a URL has a QR", ", ".join(missing_qr[:5]))
+
     orphan_qrs = [
         p.name for p in QR_DIR.glob("*.png") if p.stem not in {s["id"] for s in with_url}
     ]
     report.check(not orphan_qrs, "no QR without a manifest URL", ", ".join(orphan_qrs))
     report.note(
-        f"{len(slots)} video slot(s): {len(with_url)} with a YouTube URL, "
-        f"{len(slots) - len(with_url)} awaiting upload"
+        f"{len(slots)} video slot(s): {len(with_url)} with a playable URL, "
+        f"{len(slots) - len(with_url)} without"
     )
 
 
