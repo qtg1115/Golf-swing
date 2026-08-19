@@ -174,22 +174,25 @@ def check_no_substack(epub: zipfile.ZipFile, pdf_bytes: bytes, report: Report) -
         "; ".join(pdf_hits[:2]),
     )
 
-    # WeasyPrint writes <a href> as /URI annotations. Those must exist so a
-    # digital reader can tap the poster; they must not appear as printed text
-    # (the check above). Count unescaped and paren-escaped forms.
-    uri_annots = re.findall(
-        rb"/URI\s*\((?:https:\\057\\057|https://)[^\)]*video/upload/[^\)]+/src\)",
-        pdf_bytes,
-    )
-    if not uri_annots:
-        uri_annots = re.findall(
-            rb"/URI\s*\((https://logicfitko\.substack\.com/api/v1/video/upload/[^)]+/src)\)",
-            pdf_bytes,
-        )
+    # WeasyPrint writes <a href> as PDF link annotations (often two rects per
+    # <a>). They must exist so a digital reader can tap the poster, and they
+    # must not appear as printed text (the check above).
+    from pypdf import PdfReader
+    from io import BytesIO
+
+    pdf_uris: set[str] = set()
+    for page in PdfReader(BytesIO(pdf_bytes)).pages:
+        for annot in page.get("/Annots") or []:
+            action = annot.get_object().get("/A")
+            if not action:
+                continue
+            uri = action.get("/URI")
+            if uri and ALLOWED_SUBSTACK.match(str(uri)):
+                pdf_uris.add(str(uri))
     report.check(
-        len(uri_annots) == 54,
+        len(pdf_uris) == 54,
         "print PDF has a tappable poster link for every video",
-        f"{len(uri_annots)} of 54",
+        f"{len(pdf_uris)} of 54",
     )
 
 

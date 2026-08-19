@@ -5,7 +5,7 @@ Publishing repo for the Korean golf ebook **「골프 느낌의 실제 원리」
 박세인 Jason Park.
 
 - Source, images, manifests and build scripts: [`ebook/`](ebook/README.md)
-- Built files: `dist/golf-neukkimui-siljae-wonri.epub`, `dist/golf-neukkimui-siljae-wonri.pdf` (188pp A5)
+- Built files: `dist/golf-neukkimui-siljae-wonri.epub`, `dist/golf-neukkimui-siljae-wonri.pdf` (197pp A5)
 
 To rebuild:
 

@@ -296,24 +296,29 @@ a.video-preview,
 
 a.video-poster {
   display: block;
-  flex: 1 1 52mm;
-  max-width: 68mm;
-  min-width: 32mm;
+  flex: 0 0 auto;
+  max-width: 48mm;
   margin: 0;
 }
 
 a.video-poster img {
-  width: 100%;
+  width: auto;
   height: auto;
+  max-width: 48mm;
+  max-height: 36mm;
   display: block;
   border-radius: 3px;
 }
 
 a.video-poster.portrait {
-  flex: 0 1 36mm;
-  max-width: 40mm;
+  max-width: 28mm;
   margin-left: 0;
   margin-right: 0;
+}
+
+a.video-poster.portrait img {
+  max-width: 28mm;
+  max-height: 42mm;
 }
 
 .video-qr { width: 22mm; height: 22mm; }
