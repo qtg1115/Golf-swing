@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Build EPUB video posters: a real first-frame preview with a play control.
+"""Build video posters: a real first-frame preview with a play control.
 
 Each slot's playable src URL is followed to Mux, one frame is pulled, and a
-button-style play mark is drawn on it. The reader taps that image to open the
-same src URL. Print does not use these posters.
+button-style play mark is drawn on it. The reader taps that image (EPUB or
+PDF) to open the same src URL. Print still does not print the raw URL.
 
 Nothing figurative is invented: the pixels are the author's own clip. If a
 frame cannot be pulled, a large designed play-control card is used instead of

@@ -46,12 +46,11 @@ them: every one answers `206 video/mp4` with no login and no cookie, and lands o
 `stream.mux.com`. Each generated QR was then decoded back and compared against
 the manifest — 54 of 54 match.
 
-The EPUB and the print PDF treat the same 54 URLs differently. In the EPUB each
-slot is a **button-style poster**: the clip's own first frame with a play control
-on it. Tapping the poster opens the playable `src` URL. In the A5 PDF the slot
-is a designed QR block — caption plus a scannable code — with no click, no
-poster, and **no printed https://…/src string**. Neither format uses a photoreal
-golfer as a poster, and a portrait clip stays portrait.
+Both the EPUB and the A5 PDF use a **button-style poster**: the clip's own first
+frame with a play control on it, sitting next to the designed QR. Tapping the
+poster opens the playable `src` URL (WeasyPrint turns the `<a href>` into a PDF
+link). The PDF still prints **no https://…/src string** under 영상 보기. Neither
+format uses a photoreal golfer as a poster, and a portrait clip stays portrait.
 
 Worth knowing: the QR resolves to a bare mp4 file rather than a player page, so a
 phone opens it in the browser's video view with no player chrome. Substack mints
@@ -326,7 +325,7 @@ Three markers keep unfinished material explicit instead of invented:
 | EPUB | builds, video posters + QR + plates + cover, tappable first-frame play buttons |
 | PDF | builds, **188 pages**, A5, Korean fonts render, running heads, folios |
 | Photos | 52 on disk (6 챕터 7 + 46 Substack originals); no empty [사진] slots |
-| Videos | **54 of 54** — EPUB: poster button → src; print: QR, no raw URL. All inline |
+| Videos | **54 of 54** — poster button → src in EPUB and PDF; print QR, no raw URL. All inline |
 | Chapter text | **complete** — all 19 chapters + the 챕터 7 release section, no pending markers |
 | Front matter | draft copy, needs author sign-off |
 

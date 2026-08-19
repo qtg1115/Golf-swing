@@ -355,9 +355,9 @@ figure.diagram.plate img {
 figure.diagram.plate .diagram-title { text-align: center; }
 
 /* ---------- video slot ----------
-   EPUB: a button-style poster (first frame + play control) the reader taps.
-   Print: the designed QR only — no poster, no printed https://…/src string.
-   Substack /p/ pages stay out of both. */
+   EPUB and print: a button-style poster (first frame + play control) the
+   reader taps, sitting next to the designed QR. The src string is never
+   printed. Substack /p/ pages stay out of both. */
 
 figure.video-slot {
   margin: 1.7em 0;

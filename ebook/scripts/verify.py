@@ -174,6 +174,24 @@ def check_no_substack(epub: zipfile.ZipFile, pdf_bytes: bytes, report: Report) -
         "; ".join(pdf_hits[:2]),
     )
 
+    # WeasyPrint writes <a href> as /URI annotations. Those must exist so a
+    # digital reader can tap the poster; they must not appear as printed text
+    # (the check above). Count unescaped and paren-escaped forms.
+    uri_annots = re.findall(
+        rb"/URI\s*\((?:https:\\057\\057|https://)[^\)]*video/upload/[^\)]+/src\)",
+        pdf_bytes,
+    )
+    if not uri_annots:
+        uri_annots = re.findall(
+            rb"/URI\s*\((https://logicfitko\.substack\.com/api/v1/video/upload/[^)]+/src)\)",
+            pdf_bytes,
+        )
+    report.check(
+        len(uri_annots) == 54,
+        "print PDF has a tappable poster link for every video",
+        f"{len(uri_annots)} of 54",
+    )
+
 
 def check_videos(report: Report) -> None:
     slots = load_videos().get("videos") or []

@@ -10,7 +10,8 @@ h1 {
   page-break-before: always;
 }
 
-/* Poster is the tap target. QR sits under it with the caption. */
+/* Poster is the tap target. On a narrow page it takes the full first row;
+   the QR and caption wrap under it. */
 .video-row {
   display: flex;
   flex-wrap: wrap;
@@ -21,6 +22,7 @@ h1 {
 a.video-poster {
   width: 100%;
   max-width: 100%;
+  flex: 1 0 100%;
 }
 
 a.video-poster.portrait {

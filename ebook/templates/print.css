@@ -285,16 +285,36 @@ figure.photo img.landscape {
   max-height: 52mm;
 }
 
-/* Print is a designed QR block: caption + scannable code. No click, no
-   poster, no printed URL — the preview lives only in the EPUB. */
+/* Print: tap/click poster next to the designed QR. No printed URL. */
 figure.video-slot {
   margin: 1.1em 0;
   padding: 0.7em 0.8em;
 }
 
-a.video-poster,
 a.video-preview,
 .video-url { display: none; }
+
+a.video-poster {
+  display: block;
+  flex: 1 1 52mm;
+  max-width: 68mm;
+  min-width: 32mm;
+  margin: 0;
+}
+
+a.video-poster img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 3px;
+}
+
+a.video-poster.portrait {
+  flex: 0 1 36mm;
+  max-width: 40mm;
+  margin-left: 0;
+  margin-right: 0;
+}
 
 .video-qr { width: 22mm; height: 22mm; }
 

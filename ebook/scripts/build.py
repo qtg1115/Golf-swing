@@ -173,20 +173,20 @@ def video_block(
         stats.videos_with_url += 1
         qr = f'<div class="video-qr"><img src="images/qr/{slot_id}.png" alt="영상 QR 코드" /></div>'
         label = "영상 보기"
-        # Print: designed QR only. The src string is not printed.
-        # EPUB: a button-style poster the reader taps; href is the playable src.
-        if fmt == "epub":
-            src = poster_href(slot_id)
-            if src:
-                layout = ""
-                poster_file = POSTERS_DIR / f"{slot_id}.jpg"
-                if poster_file.is_file():
-                    layout = f" {photo_layout_class(poster_file)}"
-                poster = (
-                    f'<a class="video-poster{layout}" href="{html.escape(url, quote=True)}">'
-                    f'<img src="{src}" alt="영상 재생 — {html.escape(caption)}" />'
-                    "</a>\n"
-                )
+        # EPUB and print both get a button-style first-frame poster. The href
+        # is the playable src (WeasyPrint makes it a clickable PDF annotation).
+        # The src string is never printed under 영상 보기.
+        src = poster_href(slot_id)
+        if src:
+            layout = ""
+            poster_file = POSTERS_DIR / f"{slot_id}.jpg"
+            if poster_file.is_file():
+                layout = f" {photo_layout_class(poster_file)}"
+            poster = (
+                f'<a class="video-poster{layout}" href="{html.escape(url, quote=True)}">'
+                f'<img src="{src}" alt="영상 재생 — {html.escape(caption)}" />'
+                "</a>\n"
+            )
     else:
         stats.videos_pending += 1
         qr = '<div class="video-qr empty"></div>'
@@ -196,8 +196,8 @@ def video_block(
     # block would be read back as an indented code block.
     return (
         f'<figure class="video-slot video-{fmt}">\n'
-        f"{poster}"
         '<div class="video-row">\n'
+        f"{poster}"
         f"{qr}\n"
         '<div class="video-body">\n'
         f'<p class="video-label">{label}</p>\n'
