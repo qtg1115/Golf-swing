@@ -99,6 +99,10 @@ h1 + *, h2 + *, h3 + *, h4 + * {
 
 p, li { orphans: 3; widows: 3; }
 
+/* WeasyPrint has no word-break: keep-all, so build.py wraps each Korean word in
+   .nb and this is what actually holds 백스윙 and 회전 together in print. */
+.nb { white-space: nowrap; }
+
 /* ---------- cover page ---------- */
 
 /* Full-bleed drawn stock; no frame, no seal, no year, no company mark. The art

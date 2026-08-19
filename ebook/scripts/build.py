@@ -62,6 +62,33 @@ PENDING_VIDEO_LABEL = "공개 영상 주소 예정"
 # Assessment figures are typeset, not drawn, so they load once per build.
 FIGURES = load_figures()
 
+# ---------------------------------------------------------------------------
+# print line breaking
+# ---------------------------------------------------------------------------
+
+TAG_SPLIT = re.compile(r"(<[^>]*>)")
+HANGUL_WORD = re.compile(r"[가-힣]{2,10}")
+
+
+def keep_korean_words_whole(body: str) -> str:
+    """Stop Korean words breaking mid-syllable in the PDF.
+
+    `word-break: keep-all` in the stylesheet covers the EPUB, whose reading
+    systems implement it, but WeasyPrint does not: the property appears nowhere
+    in its source, so Hangul breaks between any two syllables and 백스윙 prints
+    as 백/스윙. The `.term` spans catch the tokens the author named; this catches
+    every other Korean word by wrapping each one in a nowrap span. No invisible
+    joiner characters are inserted, so the text stays searchable and copyable,
+    and anything inside a tag — every href included — is left alone.
+    """
+    pieces = []
+    for piece in TAG_SPLIT.split(body):
+        if piece.startswith("<"):
+            pieces.append(piece)
+        else:
+            pieces.append(HANGUL_WORD.sub(lambda m: f'<span class="nb">{m.group()}</span>', piece))
+    return "".join(pieces)
+
 
 class Stats:
     def __init__(self) -> None:
@@ -669,6 +696,10 @@ def build_pdf(book: dict, source, stats: Stats) -> None:
     rendered = fragment.read_text(encoding="utf-8")
     toc_html, _, body_html = rendered.partition("<!--/TOC-->")
     toc_html = toc_html.replace("<!--TOC-->", "").strip()
+
+    # Print-only: hold every Korean word together, not just the flagged tokens.
+    body_html = keep_korean_words_whole(body_html)
+    toc_html = keep_korean_words_whole(toc_html)
 
     document = (
         "<!DOCTYPE html>\n"
