@@ -68,6 +68,34 @@ FIGURES = load_figures()
 
 TAG_SPLIT = re.compile(r"(<[^>]*>)")
 HANGUL_WORD = re.compile(r"[가-힣]{2,10}")
+STRIP_TAGS = re.compile(r"<[^>]*>")
+
+# A short line immediately before a figure — 첫번째 운동, 아래 사진을 보자 — is a
+# lead-in for it, whether or not it was written as a heading.
+LEAD_IN_FIGURE = re.compile(
+    r"(<(h[2-6]|p)(?:\s[^>]*)?>(?:(?!</\2>).)*?</\2>)\s*"
+    r"(<figure\b(?:(?!</figure>).)*?</figure>)",
+    re.S,
+)
+LEAD_IN_MAX_CHARS = 40
+
+
+def group_lead_in_with_figure(body: str) -> str:
+    """Bind a short lead-in to the figure it introduces.
+
+    Video slots and photos are unbreakable blocks, so when one did not fit in the
+    space left, it moved to the next page and left its lead-in stranded as the
+    last line of the previous one. The pair becomes one unbreakable group. Only
+    short lead-ins qualify, so a full paragraph is never dragged along.
+    """
+
+    def wrap(match: re.Match) -> str:
+        lead, _, figure = match.groups()
+        if len(STRIP_TAGS.sub("", lead).strip()) > LEAD_IN_MAX_CHARS:
+            return match.group(0)
+        return f'<div class="keep-with-figure">{lead}\n{figure}</div>'
+
+    return LEAD_IN_FIGURE.sub(wrap, body)
 
 
 def keep_korean_words_whole(body: str) -> str:
@@ -697,8 +725,9 @@ def build_pdf(book: dict, source, stats: Stats) -> None:
     toc_html, _, body_html = rendered.partition("<!--/TOC-->")
     toc_html = toc_html.replace("<!--TOC-->", "").strip()
 
-    # Print-only: hold every Korean word together, not just the flagged tokens.
-    body_html = keep_korean_words_whole(body_html)
+    # Print-only: bind short lead-ins to their figure, then hold every Korean
+    # word together — not just the flagged tokens.
+    body_html = keep_korean_words_whole(group_lead_in_with_figure(body_html))
     toc_html = keep_korean_words_whole(toc_html)
 
     document = (

@@ -103,6 +103,13 @@ p, li { orphans: 3; widows: 3; }
    .nb and this is what actually holds 백스윙 and 회전 together in print. */
 .nb { white-space: nowrap; }
 
+/* A short lead-in and the figure it introduces travel together, so the lead-in
+   is never left as the last line of a page. */
+.keep-with-figure {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
 /* ---------- cover page ---------- */
 
 /* Full-bleed drawn stock; no frame, no seal, no year, no company mark. The art
