@@ -360,11 +360,22 @@ def part1_footprints() -> None:
 
 
 def part2_grid() -> None:
-    """2부 — an empty diagnostic grid with one cell stamped.
+    """2부 plate. Prefer the author's incoming plate when present."""
+    incoming = IMAGES_DIR / "incoming" / "part-2-grid.jpg"
+    dest = IMAGES_DIR / "plates" / "part-2-grid.jpg"
+    if incoming.is_file():
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with Image.open(incoming) as src:
+            img = src.convert("RGB")
+            img.save(dest, "JPEG", quality=92, optimize=True)
+            width, height = img.size
+        print(
+            f"  {dest.relative_to(REPO_ROOT)}  {width}x{height}  "
+            f"from incoming/{incoming.name}  {dest.stat().st_size // 1024} KB"
+        )
+        return
 
-    Deliberately not a photograph and not a filled table: the part is about
-    finding which cell your own miss lands in.
-    """
+    # Drawn fallback: an empty diagnostic grid with one cell stamped.
     plate = Plate(PLATE, seed=3301)
     w, h = plate.w * SS, plate.h * SS
     cols, rows = 4, 3

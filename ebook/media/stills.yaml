@@ -397,3 +397,13 @@ stills:
     caption: 빠른 진단 맵
     alt: 빠른 진단 맵 카드
     source_url: https://substack-post-media.s3.amazonaws.com/public/images/fc4d5693-e22d-490e-8495-dbdf32af7c8b_1672x941.png
+
+# Author-supplied still that was missing from the Korean Substack chapter 9
+# post. Drop incoming/p3-c9-01.jpg, then rerun `make media && make book`.
+
+  - id: p3-c9-01
+    chapter: p3-c9
+    index: 1
+    dest: p3-c9-01.jpg
+    caption: 두 번째 팔로우스루의 출발점
+    alt: 두 번째 팔로우스루의 출발점

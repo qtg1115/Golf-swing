@@ -74,7 +74,7 @@ parts:
     title: 내 스윙의 문제를 찾는 법
     intro: front-matter/part-2-intro.md
     plate: images/plates/part-2-grid.jpg
-    plate_alt: 빈 진단 칸과 한 칸에 찍힌 동그라미
+    plate_alt: 가로 다섯 점과 가운데에서 위로 올라가는 화살표
     chapters:
       - id: p2-c1
         slug: "434"
