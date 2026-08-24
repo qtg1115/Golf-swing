@@ -43,34 +43,6 @@
       "status": "present"
     },
     {
-      "file": "p2-01.jpg",
-      "chapter": "p2-c1",
-      "caption": "어세스먼트 로드맵",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/d833a5e8-00a9-49ef-901a-d43ab57ed685_1672x941.png",
-      "status": "present"
-    },
-    {
-      "file": "p2-02.jpg",
-      "chapter": "p2-c1",
-      "caption": "공의 결과",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/017aff0e-53a0-4bcd-a604-a5dfa3864778_1672x941.png",
-      "status": "present"
-    },
-    {
-      "file": "p2-03.jpg",
-      "chapter": "p2-c1",
-      "caption": "스윙 구간 자가 평가",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/d62f534a-f651-4bd1-b62b-f44cc8c08aaa_1672x941.png",
-      "status": "present"
-    },
-    {
-      "file": "p2-04.jpg",
-      "chapter": "p2-c1",
-      "caption": "빠른 진단 맵",
-      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/fc4d5693-e22d-490e-8495-dbdf32af7c8b_1672x941.png",
-      "status": "present"
-    },
-    {
       "file": "p3-c1-01.jpg",
       "chapter": "p3-c1",
       "caption": "키와 골반",
@@ -392,26 +364,6 @@
       "chapter": "p1-c2",
       "index": 4,
       "note": "[사진]"
-    },
-    {
-      "chapter": "p2-c1",
-      "index": 1,
-      "note": "어세스먼트 로드맵"
-    },
-    {
-      "chapter": "p2-c1",
-      "index": 2,
-      "note": "공의 결과"
-    },
-    {
-      "chapter": "p2-c1",
-      "index": 3,
-      "note": "스윙 구간 자가 평가"
-    },
-    {
-      "chapter": "p2-c1",
-      "index": 4,
-      "note": "빠른 진단 맵"
     },
     {
       "chapter": "p3-c1",
