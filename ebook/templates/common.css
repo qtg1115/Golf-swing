@@ -1,0 +1,643 @@
+/* Shared typography for 「골프 느낌의 실제 원리」.
+   Korean body text is set in NanumMyeongjo; headings in NanumBarunGothic. */
+
+:root {
+  --ink: #171e1a;
+  --muted: #6c736c;
+  --accent: #3d6a4a;
+  --rule: #d6d3c8;
+  /* Warm tint: the panels have to sit on cream stock, not on cool white. */
+  --tint: #f1eee2;
+  --paper: #f6f3ea;
+}
+
+body {
+  font-family: "NanumMyeongjo", "Noto Serif CJK KR", "Noto Sans CJK KR", serif;
+  color: var(--ink);
+  line-height: 1.78;
+  text-align: justify;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+
+/* Loanword swing tokens must never split across a line. keep-all is the
+   default; nowrap is the belt for the six words the author flagged. */
+.term {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+/* Only headings and labels take the sans face. Note that pandoc's
+   --section-divs puts chapter/part classes on the <section>, so a class-based
+   font rule here would be inherited by the whole chapter body. */
+h1, h2, h3, h4,
+.book-title, .video-label, .notice-title {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: left;
+  word-break: keep-all;
+}
+
+h1 { font-size: 1.55em; margin: 0 0 1.1em; }
+h2 { font-size: 1.3em; margin: 2em 0 0.8em; }
+h3 { font-size: 1.08em; margin: 1.7em 0 0.6em; }
+h4 { font-size: 1em; margin: 1.4em 0 0.5em; color: var(--muted); }
+
+/* A heading or a bold-only lead-in is never the last line on a page. */
+h1, h2, h3, h4, h5, h6,
+p:has(> strong:only-child),
+p.lead-in,
+.keep {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+h1 + *, h2 + *, h3 + *, h4 + *, h5 + *, h6 + *,
+p:has(> strong:only-child) + *,
+p.lead-in + * {
+  break-before: avoid;
+  page-break-before: avoid;
+}
+
+.keep {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+h2:has(+ figure),
+h3:has(+ figure),
+h4:has(+ figure) {
+  margin-bottom: 0.45em;
+}
+
+p { margin: 0 0 0.85em; }
+
+ul, ol { margin: 0.6em 0 1em; padding-left: 1.3em; }
+li { margin-bottom: 0.4em; text-align: left; }
+
+blockquote {
+  margin: 1.4em 0;
+  padding: 0.2em 0 0.2em 1em;
+  border-left: 3px solid var(--accent);
+  color: #3f4742;
+  font-style: normal;
+}
+blockquote p:last-child { margin-bottom: 0; }
+
+/* The line directly under a chapter heading is that chapter's subtitle. */
+section.chapter > h2 + p {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.95em;
+  color: var(--muted);
+  text-align: left;
+  margin-top: -0.4em;
+  margin-bottom: 1.4em;
+}
+
+section.chapter > h2 + p em { font-style: normal; }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2em auto;
+  width: 40%;
+}
+
+strong { font-weight: 700; }
+
+/* ---------- photos ---------- */
+
+figure.photo {
+  margin: 1.6em 0;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+figure.photo img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Portrait stills stay upright. Stretching them to the full text width is
+   what laid the 챕터 7 gym shots on their side. */
+figure.photo img.portrait {
+  width: auto;
+  max-width: 72%;
+  height: auto;
+}
+
+figure.photo figcaption {
+  margin-top: 0.5em;
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.82em;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.photo-gallery {
+  margin: 1.6em 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55em;
+}
+
+.photo-gallery figure.photo {
+  margin: 0;
+  flex: 1 1 42%;
+}
+
+.photo-gallery figure.photo img.portrait {
+  max-width: 100%;
+}
+
+.photo-gallery.gallery-3 figure.photo,
+.photo-gallery.gallery-4 figure.photo {
+  flex: 1 1 30%;
+}
+
+/* ---------- typeset assessment figures ----------
+   The 2부 diagrams are markup, not pictures, so the Korean is set in Nanum with
+   the rest of the book and stays sharp at A5. Cream panel, pine rules, charcoal
+   type: the same palette as the drawn plates. */
+
+figure.diagram {
+  margin: 1.8em 0;
+  padding: 1em 1.1em 0.9em;
+  background: var(--paper);
+  border-top: 0.9pt solid var(--accent);
+  border-bottom: 0.4pt solid var(--rule);
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  text-align: left;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* The quick map is eight problems tall. Forcing the whole panel onto one
+   page is what left 「문제별 빠른 진단 로드맵」 sitting above a blank. The
+   title and each problem stay together; the list may continue. */
+figure.diagram.map {
+  page-break-inside: auto;
+  break-inside: auto;
+}
+
+figure.diagram .diagram-title,
+ul.map li {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.diagram-title {
+  font-weight: 700;
+  font-size: 0.95em;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  margin: 0 0 0.15em;
+  text-align: left;
+}
+
+.diagram-flow {
+  font-size: 0.78em;
+  color: var(--accent);
+  margin: 0 0 0.9em;
+  text-align: left;
+}
+
+.diagram-footer {
+  font-size: 0.76em;
+  color: var(--muted);
+  margin: 0.85em 0 0;
+  padding-top: 0.5em;
+  border-top: 0.4pt solid var(--rule);
+  text-align: left;
+}
+
+figure.diagram ol,
+figure.diagram ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+figure.diagram li {
+  margin: 0 0 0.5em;
+  text-align: left;
+  line-height: 1.5;
+}
+
+figure.diagram li:last-child { margin-bottom: 0; }
+
+/* Steps carry their own number, drawn as an inked counter rather than a badge. */
+figure.diagram ol.steps { counter-reset: step; }
+
+ol.steps li {
+  counter-increment: step;
+  padding-left: 7.5mm;
+  position: relative;
+}
+
+ol.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  width: 4.6mm;
+  height: 4.6mm;
+  line-height: 4.6mm;
+  text-align: center;
+  border: 0.5pt solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 0.72em;
+  font-weight: 700;
+}
+
+.step-title {
+  display: block;
+  font-weight: 700;
+  font-size: 0.86em;
+  color: var(--ink);
+}
+
+.step-body {
+  display: block;
+  font-size: 0.78em;
+  color: #4a5250;
+}
+
+/* A ball result and the segments it points at. */
+.path-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.84em;
+  color: var(--ink);
+}
+
+.path-route {
+  display: block;
+  font-size: 0.78em;
+  color: #4a5250;
+}
+
+/* Eight stages, stacked: an eight-across row cannot hold Korean at A5. */
+figure.diagram ol.stages { counter-reset: stage; }
+
+ol.stages li {
+  counter-increment: stage;
+  padding-left: 6.5mm;
+  position: relative;
+  margin-bottom: 0.35em;
+}
+
+ol.stages li::before {
+  content: counter(stage);
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  font-size: 0.74em;
+  font-weight: 700;
+}
+
+.stage-name {
+  font-weight: 700;
+  font-size: 0.82em;
+  color: var(--ink);
+}
+
+.stage-question {
+  font-size: 0.79em;
+  color: #4a5250;
+  margin-left: 1.6mm;
+}
+
+/* The quick map: one problem per block, two labelled lines under it. */
+ul.map li {
+  margin-bottom: 0.6em;
+  padding-bottom: 0.55em;
+  border-bottom: 0.3pt dotted var(--rule);
+}
+
+ul.map li:last-child { border-bottom: 0; padding-bottom: 0; }
+
+.map-problem {
+  display: block;
+  font-weight: 700;
+  font-size: 0.84em;
+  color: var(--ink);
+  margin-bottom: 0.1em;
+}
+
+.map-line { display: block; font-size: 0.76em; line-height: 1.45; }
+
+.map-key {
+  display: inline-block;
+  min-width: 22mm;
+  color: var(--accent);
+}
+
+.map-value { color: #4a5250; }
+
+/* The one figure that really is a picture. */
+figure.diagram.plate { text-align: center; padding-bottom: 1em; }
+
+figure.diagram.plate img {
+  width: 100%;
+  max-width: 96mm;
+  height: auto;
+}
+
+figure.diagram.plate .diagram-title { text-align: center; }
+
+/* ---------- video slot ----------
+   EPUB and print: a button-style poster (first frame + play control) the
+   reader taps, sitting next to the designed QR. The src string is never
+   printed. Substack /p/ pages stay out of both. */
+
+figure.video-slot {
+  margin: 1.7em 0;
+  padding: 0.9em 1em;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--tint);
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+a.video-poster {
+  display: block;
+  position: relative;
+  margin: 0 0 0.75em;
+  text-decoration: none;
+  color: inherit;
+}
+
+a.video-poster img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+
+a.video-poster.portrait {
+  max-width: 58%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a.video-preview {
+  display: none;
+}
+
+.video-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9em;
+}
+
+.video-qr {
+  flex: 0 0 auto;
+  width: 26mm;
+  height: 26mm;
+  box-sizing: border-box;
+}
+
+.video-qr img { width: 100%; height: 100%; display: block; }
+
+.video-qr.empty {
+  border: 1px dashed #b9b6ab;
+  background: #fff;
+  position: relative;
+}
+
+.video-qr.empty::after {
+  content: "QR";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 42%;
+  text-align: center;
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 8pt;
+  letter-spacing: 0.08em;
+  color: #b0ada2;
+}
+
+.video-body { flex: 1 1 auto; }
+
+.video-label {
+  font-size: 0.86em;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  margin: 0 0 0.25em;
+}
+
+.video-caption {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.9em;
+  line-height: 1.55;
+  margin: 0 0 0.4em;
+  text-align: left;
+}
+
+.video-url {
+  display: none;
+}
+
+.video-slot-id {
+  font-family: "NanumGothicCoding", monospace;
+  font-size: 0.68em;
+  color: #9a978d;
+  margin: 0.35em 0 0;
+}
+
+/* Videos whose in-text position is not known yet are grouped at chapter end. */
+
+.video-appendix {
+  margin: 2.2em 0 0.4em;
+  padding-top: 0.9em;
+  border-top: 1px solid var(--rule);
+}
+
+.video-appendix-title {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.95em;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0;
+}
+
+/* ---------- pending photo / pending text ---------- */
+
+.photo-pending {
+  margin: 1.6em 0;
+  padding: 2.2em 1em;
+  border: 1px dashed #b9b6ab;
+  border-radius: 4px;
+  text-align: center;
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.85em;
+  color: var(--muted);
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.notice {
+  margin: 1.8em 0;
+  padding: 1em 1.1em;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  background: var(--tint);
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.86em;
+  line-height: 1.65;
+  color: #3f4742;
+  text-align: left;
+}
+
+.notice-title {
+  display: block;
+  font-size: 1em;
+  color: var(--accent);
+  margin-bottom: 0.3em;
+}
+
+.notice p { margin: 0 0 0.4em; text-align: left; }
+.notice p:last-child { margin-bottom: 0; }
+
+/* ---------- part opener ----------
+   pandoc --section-divs writes the heading class onto the <section>.
+
+   The opener reads title, rule, plate, intro. The plate is a drawn mark with no
+   lettering in it, so the part title above it is the only text. */
+
+section.part-title > h1 {
+  font-size: 1.7em;
+  margin-bottom: 0.7em;
+  text-align: center;
+}
+
+section.part-title > h1::after {
+  content: "";
+  display: block;
+  width: 14mm;
+  margin: 0.85em auto 0;
+  border-top: 1px solid var(--accent);
+}
+
+.part-plate {
+  margin: 1.6em 0 1.9em;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* pandoc wraps the plate image in a paragraph; it should not carry body spacing. */
+.part-plate p { margin: 0; text-align: center; }
+
+.part-plate img {
+  width: 100%;
+  max-width: 92mm;
+  height: auto;
+}
+
+/* The appendix takes a small index mark rather than a full plate. */
+.part-plate.mark img { max-width: 18mm; }
+
+.part-plate.mark { margin: 0.2em 0 1.8em; }
+
+/* Small drawn mark under a chapter title. Same cream/ink as the part plates. */
+.chapter-plate {
+  margin: 0.15em 0 1.35em;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.chapter-plate p { margin: 0; text-align: center; }
+
+.chapter-plate img {
+  width: 100%;
+  max-width: 52mm;
+  height: auto;
+}
+
+/* The part intro is plain markdown right under the plate. */
+section.part-title > p {
+  color: #3f4742;
+}
+
+section.part-title > p:first-of-type {
+  font-size: 1.05em;
+  margin-bottom: 1.2em;
+}
+
+/* ---------- title page / colophon ---------- */
+
+.title-page { text-align: center; }
+
+.title-page .book-title {
+  font-family: "NanumMyeongjo", serif;
+  font-size: 2.1em;
+  line-height: 1.35;
+  margin: 0 0 0.5em;
+}
+
+.title-page .book-subtitle {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.95em;
+  color: var(--muted);
+  margin: 0 0 2em;
+}
+
+.title-page .byline-label {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.8em;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 0.9em;
+}
+
+.title-page .author {
+  margin: 0 0 1em;
+}
+
+.title-page .author-name {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 1.05em;
+  font-weight: 700;
+  display: block;
+}
+
+.title-page .author-credential {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.8em;
+  color: var(--muted);
+  display: block;
+}
+
+.title-rule {
+  border: 0;
+  border-top: 1px solid var(--accent);
+  width: 22%;
+  margin: 1.6em auto;
+}
+
+.colophon {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 0.85em;
+  color: #3f4742;
+  text-align: left;
+}
+
+.colophon dt {
+  font-weight: 700;
+  margin-top: 0.9em;
+}
+
+.colophon dd { margin: 0.1em 0 0; }

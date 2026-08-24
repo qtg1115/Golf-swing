@@ -1,0 +1,569 @@
+{
+  "photos": [
+    {
+      "file": "01-swing-both-feet.jpg",
+      "chapter": "p3-c7",
+      "caption": "두 발이 지면과 닿아 있는 방식이 릴리즈의 시점을 결정한다.",
+      "source_url": null,
+      "status": "present"
+    },
+    {
+      "file": "p1-c2-01.jpg",
+      "chapter": "p1-c2",
+      "caption": "컵이나 펜을 잡을 때 새끼손가락이 떨어진다.",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/8790232d-e579-48e1-bffc-7f1c7338af83_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p1-c2-02.jpg",
+      "chapter": "p1-c2",
+      "caption": "그립 손",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/501fa047-62d3-4170-a8b9-d776fc936abb_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p1-c2-02b.jpg",
+      "chapter": "p1-c2",
+      "caption": "그립 손",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/de9a7ad8-2ceb-4fde-a273-c2212c8da34e_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p1-c2-03.jpg",
+      "chapter": "p1-c2",
+      "caption": "오른발 셋업",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/987b372d-1025-4599-8121-399392cf250c_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p1-c2-04.jpg",
+      "chapter": "p1-c2",
+      "caption": "왼발 셋업",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/d647a696-a0ae-4b67-b9ff-ffa3dff4747b_3024x4032.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-01.jpg",
+      "chapter": "p3-c1",
+      "caption": "키와 골반",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/bffe10b1-f3bb-4577-8ca3-960d5b1b86a5_2000x1545.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-02.jpg",
+      "chapter": "p3-c1",
+      "caption": "스케이트 밑창",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/29bb41bc-2356-4bc6-adf2-8bc27c012eb4_1024x1024.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-03.jpg",
+      "chapter": "p3-c1",
+      "caption": "왼발 접지",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/67d840aa-5ce1-4afe-806f-7d1f0292e670_1024x1536.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-04.jpg",
+      "chapter": "p3-c1",
+      "caption": "오른발 접지",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/af659399-87e7-4cb0-8822-5a3316b86fae_1024x1024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-05.jpg",
+      "chapter": "p3-c1",
+      "caption": "스틱 힙힌지",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/bb59529e-8bab-4b90-92f9-cf81dc2cb56c_1024x1024.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-06.jpg",
+      "chapter": "p3-c1",
+      "caption": "90/90 힙 로테이션",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/5b7c2e2a-ea7c-4095-a65e-da03779a2787_1024x766.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-07.jpg",
+      "chapter": "p3-c1",
+      "caption": "손목과 그립",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/e7e67a3c-8898-4b37-91c5-8fc4d4157336_1536x1024.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-08.jpg",
+      "chapter": "p3-c1",
+      "caption": "Farmer’s Carry",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/81ae4760-41c8-427f-b920-9ed97378ec37_1024x1536.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-09.jpg",
+      "chapter": "p3-c1",
+      "caption": "Split stance",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/504403a4-5520-4fb4-adec-110c02c40f13_1024x1536.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c1-10.jpg",
+      "chapter": "p3-c1",
+      "caption": "T-pose 밸런스",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/0e22f879-b7da-4370-9ea2-6c20e1d5d2d5_1024x1536.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c2-01.jpg",
+      "chapter": "p3-c2",
+      "caption": "암 스윙과 바디 스윙",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/910fa1a0-a33b-4023-a912-83fb1a74fc99_2000x1789.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c2-02.jpg",
+      "chapter": "p3-c2",
+      "caption": "활",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/75ad89e8-937e-4878-a532-74204bf5145b_1024x1024.png",
+      "status": "present"
+    },
+    {
+      "file": "p3-c2-03a.jpg",
+      "chapter": "p3-c2",
+      "caption": "발바닥",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/56756d4d-e369-45e9-9beb-fc9e0dd95614_1024x1024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c2-03b.jpg",
+      "chapter": "p3-c2",
+      "caption": "발바닥",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/2087d29b-1aa8-465f-a057-77358279857c_1024x1536.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-01.jpg",
+      "chapter": "p3-c5",
+      "caption": "앞으로 점프",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/05505f32-9133-413d-85ec-59bd50805dea_2000x842.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-02.jpg",
+      "chapter": "p3-c5",
+      "caption": "뒤로 점프",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/60742332-300a-4e37-b79d-720f4f6ad6a1_2000x842.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-03a.jpg",
+      "chapter": "p3-c5",
+      "caption": "클럽 페이스",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/2cee1de1-9ed7-4c7f-bd82-f9cd774b597b_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-03b.jpg",
+      "chapter": "p3-c5",
+      "caption": "클럽 페이스",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/43c50ead-608d-404e-9e37-a5fde92abd82_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-03c.jpg",
+      "chapter": "p3-c5",
+      "caption": "클럽 페이스",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/12a04123-e7c9-4e7d-b505-56dae3ea0cfd_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-04.jpg",
+      "chapter": "p3-c5",
+      "caption": "왼발 접지",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/f5d90c12-a3ab-4d72-acab-bf2489822e0f_1024x1536.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-05.jpg",
+      "chapter": "p3-c5",
+      "caption": "오른발 접지",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/7b1cb052-e48e-4015-bd36-2c09f3bcdf8a_1024x1024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c5-06.jpg",
+      "chapter": "p3-c5",
+      "caption": "하체와 몸통의 반대회전",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/ffc3aaf9-e2f1-478d-84df-fd8d1ca6c159_572x746.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c7-01-short-arch.jpg",
+      "chapter": "p3-c7",
+      "caption": "짧은 아치",
+      "source_url": null,
+      "status": "present"
+    },
+    {
+      "file": "p3-c7-02-long-arch.jpg",
+      "chapter": "p3-c7",
+      "caption": "긴 아치",
+      "source_url": null,
+      "status": "present"
+    },
+    {
+      "file": "p3-c7-03-test-1.jpg",
+      "chapter": "p3-c7",
+      "caption": "테스트 1",
+      "source_url": null,
+      "status": "present"
+    },
+    {
+      "file": "p3-c7-04-test-2.jpg",
+      "chapter": "p3-c7",
+      "caption": "테스트 2",
+      "source_url": null,
+      "status": "present"
+    },
+    {
+      "file": "p3-c7-05-test-3.jpg",
+      "chapter": "p3-c7",
+      "caption": "테스트 3",
+      "source_url": null,
+      "status": "present"
+    },
+    {
+      "file": "p3-c7-06.jpg",
+      "chapter": "p3-c7",
+      "caption": "발 압력",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/401da916-b075-46c5-bdb9-cca15f4f2327_1024x1536.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c7-07.jpg",
+      "chapter": "p3-c7",
+      "caption": "레깅",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/873a5479-42cd-49c3-b9b4-84f94aa198ee_1024x1536.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c9-01.jpg",
+      "chapter": "p3-c9",
+      "caption": "두 번째 팔로우스루의 출발점",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/fde912a4-02cc-467d-b5d3-f9ab6aeb173e_1999x1545.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c2-01.jpg",
+      "chapter": "p4-c2",
+      "caption": "페이드 발과 클럽",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/c371ce54-dcf2-4196-b4ed-ef616a6ddb24_4032x3024.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c3-01.jpg",
+      "chapter": "p4-c3",
+      "caption": "하이 런치 탄도",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/395d8339-9aa0-4389-b88c-7be1bd8be3bc_1448x1086.png",
+      "status": "present"
+    },
+    {
+      "file": "p4-c3-02.jpg",
+      "chapter": "p4-c3",
+      "caption": "가파른 어택과 얕은 어택",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/290e0f51-0b02-457c-8a28-8bff33078d03_1448x1086.png",
+      "status": "present"
+    },
+    {
+      "file": "p4-c3-03.jpg",
+      "chapter": "p4-c3",
+      "caption": "최저점과 런치 앵글",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/43bee4bc-47bd-4124-969e-c5d789e82f85_1448x1086.png",
+      "status": "present"
+    },
+    {
+      "file": "p4-c3-04.jpg",
+      "chapter": "p4-c3",
+      "caption": "높은 탄도와 낮은 탄도",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/b888c1aa-f214-457d-ae0c-0f1ad1cdbe9e_1448x1086.png",
+      "status": "present"
+    },
+    {
+      "file": "p4-c3-05.jpg",
+      "chapter": "p4-c3",
+      "caption": "임팩트 런치 라인",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/9ed3fd30-2fc3-4e81-a529-1b6854f66b5d_1448x1086.png",
+      "status": "present"
+    },
+    {
+      "file": "p4-c3-06.jpg",
+      "chapter": "p4-c3",
+      "caption": "스윙과 체중 이동",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/b79d3de4-3c00-4854-ac7a-345dd9e3383d_1448x1086.png",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-01a.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/de7803b6-7ba9-45d2-b42a-995a753a9385_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-01b.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/c07a09cd-07c3-4630-a914-fa86c45b34a8_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-01c.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/2f906468-ece5-4e29-a3f6-737639c53d7c_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-02a.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/e822d6cc-4817-4c80-b2d8-eccafb4aa16b_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-02b.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/b663e79e-675f-4cd4-9080-b3bf099d9b4b_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-02c.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/024c13d6-2b6b-4520-b8f7-f53b762059f2_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-02d.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/514fada9-5fca-4ebb-8c30-79ce85240d7a_1729x2305.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p4-c4-extra-swing-grid.jpg",
+      "chapter": "p4-c4",
+      "caption": "스팅어 스윙",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/9ed4bc3d-7f7a-44ff-aded-aa204d7db88c_1456x1456.png",
+      "status": "present"
+    }
+  ],
+  "pending_stills": [
+    {
+      "chapter": "p1-c2",
+      "index": 1,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p1-c2",
+      "index": 2,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p1-c2",
+      "index": 3,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p1-c2",
+      "index": 4,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 1,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 2,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 3,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 4,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 5,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 6,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 7,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 8,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 9,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c1",
+      "index": 10,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c2",
+      "index": 1,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c2",
+      "index": 2,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c2",
+      "index": 3,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 1,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 2,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 3,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 4,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 5,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c5",
+      "index": 6,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p3-c7",
+      "index": 1,
+      "note": "짧은 아치"
+    },
+    {
+      "chapter": "p3-c7",
+      "index": 2,
+      "note": "긴 아치"
+    },
+    {
+      "chapter": "p3-c7",
+      "index": 6,
+      "note": "발 압력"
+    },
+    {
+      "chapter": "p3-c7",
+      "index": 7,
+      "note": "레깅"
+    },
+    {
+      "chapter": "p3-c7",
+      "index": 3,
+      "note": "테스트 1"
+    },
+    {
+      "chapter": "p3-c7",
+      "index": 4,
+      "note": "테스트 2"
+    },
+    {
+      "chapter": "p3-c7",
+      "index": 5,
+      "note": "테스트 3"
+    },
+    {
+      "chapter": "p3-c9",
+      "index": 1,
+      "note": "두 번째 팔로우스루의 출발점"
+    },
+    {
+      "chapter": "p4-c2",
+      "index": 1,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p4-c3",
+      "index": 1,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p4-c3",
+      "index": 2,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p4-c3",
+      "index": 3,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p4-c3",
+      "index": 4,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p4-c3",
+      "index": 5,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p4-c3",
+      "index": 6,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p4-c4",
+      "index": 1,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p4-c4",
+      "index": 2,
+      "note": "[사진]"
+    },
+    {
+      "chapter": "p4-c4",
+      "index": 3,
+      "note": "[사진]"
+    }
+  ],
+  "expected_total_from_manuscript_inventory": 64
+}

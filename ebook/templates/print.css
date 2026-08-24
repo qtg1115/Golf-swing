@@ -1,0 +1,330 @@
+/* Print layout for the A5 PDF. Rendered by WeasyPrint. */
+
+/* Page geometry. Margin boxes live on the named `text` page rather than here,
+   because `page` is an inherited property: a part opener set to the header-less
+   `plain` page would otherwise pass that page on to every chapter inside it,
+   and WeasyPrint has no `page: auto` reset to undo it. Every element therefore
+   names its page explicitly. */
+@page {
+  size: 148mm 210mm;          /* A5 */
+  margin: 17mm 15mm 20mm 15mm;
+}
+
+/* Mirrored inner margin for binding. */
+@page :left { margin-left: 15mm; margin-right: 19mm; }
+@page :right { margin-left: 19mm; margin-right: 15mm; }
+
+/* Running text pages: running head on the outer edge, folio at the foot. */
+@page text:left {
+  @top-left {
+    content: string(running-title);
+    font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+    font-size: 8pt;
+    color: #9a978d;
+    margin-bottom: 5mm;
+  }
+  @bottom-center {
+    content: counter(page);
+    font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+    font-size: 8.5pt;
+    color: #6c736c;
+    margin-top: 6mm;
+  }
+}
+
+@page text:right {
+  @top-right {
+    content: string(running-title);
+    font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+    font-size: 8pt;
+    color: #9a978d;
+    margin-bottom: 5mm;
+  }
+  @bottom-center {
+    content: counter(page);
+    font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+    font-size: 8.5pt;
+    color: #6c736c;
+    margin-top: 6mm;
+  }
+}
+
+/* Cover, title page and contents stay clean. */
+@page plain { }
+
+/* Part openers print on the cream stock the plates are drawn on. Declared on the
+   page, not on a block, so the colour reaches the margins and the plate sits on
+   it without showing a panel edge. Text pages stay white, because the author's
+   own diagrams are white-backed and would show a panel of their own on cream. */
+@page opener { background: #f6f3ea; }
+
+@page cover { margin: 0; }
+
+html { font-size: 10.5pt; }
+
+/* Default every page to running text; openers opt out below. */
+body {
+  margin: 0;
+  page: text;
+}
+
+/* Parts, front matter sections and chapters each open a fresh page. */
+section.level1,
+section.chapter {
+  page-break-before: always;
+  break-before: page;
+}
+
+section.level1:first-of-type {
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+/* The running head follows whichever section the reader is inside. Chapters are
+   level-2 headings because they nest under a part. */
+h1,
+section.chapter > h2 {
+  string-set: running-title content();
+}
+
+h1, h2, h3, h4 {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+h1 + *, h2 + *, h3 + *, h4 + * {
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+p, li { orphans: 3; widows: 3; }
+
+/* WeasyPrint has no word-break: keep-all, so build.py wraps each Korean word in
+   .nb and this is what actually holds 백스윙 and 회전 together in print. */
+.nb { white-space: nowrap; }
+
+/* A short lead-in and the figure it introduces travel together, so the lead-in
+   is never left as the last line of a page. */
+.keep-with-figure {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* ---------- cover page ---------- */
+
+/* Full-bleed drawn stock; no frame, no seal, no year, no company mark. The art
+   is lettering-free and all type below is set from book.yaml. */
+.pdf-cover {
+  page: cover;
+  height: 210mm;
+  width: 148mm;
+  box-sizing: border-box;
+  padding: 26mm 16mm 20mm;
+  background-color: #f6f3ea;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 148mm 210mm;
+  text-align: center;
+  page-break-after: always;
+  break-after: page;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pdf-cover .cover-head { margin: 0; }
+
+.pdf-cover .cover-title {
+  font-family: "NanumMyeongjo", serif;
+  font-weight: 700;
+  font-size: 33pt;
+  line-height: 1.32;
+  letter-spacing: 0.01em;
+  margin: 0;
+  color: #262c28;
+}
+
+.pdf-cover .cover-rule {
+  border: 0;
+  border-top: 0.4mm solid #2f5c3e;
+  width: 14mm;
+  margin: 7mm auto;
+}
+
+.pdf-cover .cover-subtitle {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 10pt;
+  color: #55605a;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.pdf-cover .cover-authors { margin: 0; }
+
+/* Three names, one line, one size: equal billing. */
+.pdf-cover .cover-author-ko {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-weight: 700;
+  font-size: 11.5pt;
+  letter-spacing: 0.04em;
+  color: #262c28;
+  margin: 0 0 2mm;
+}
+
+.pdf-cover .cover-author-en {
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  font-size: 8.5pt;
+  letter-spacing: 0.06em;
+  color: #6c736c;
+  margin: 0;
+}
+
+/* ---------- front matter ---------- */
+
+.toc-section h1 { margin-bottom: 1.4em; }
+
+.title-page {
+  page: plain;
+  page-break-before: always;
+  break-before: page;
+  padding-top: 22mm;
+}
+
+section.part-title {
+  page: opener;
+  padding-top: 20mm;
+}
+
+/* Keep the whole opener — title, plate, intro — on the one page. */
+section.part-title > h1 { font-size: 1.55em; }
+
+.part-plate img { max-width: 88mm; max-height: 62mm; }
+
+.part-plate.mark img { max-width: 16mm; max-height: 16mm; }
+
+.chapter-plate img { max-width: 48mm; max-height: 32mm; }
+
+section.part-title > p { text-align: left; }
+
+/* Re-assert the running-text page: chapters sit inside a part opener that is
+   set to `plain`, and `page` inherits. */
+section.chapter {
+  page: text;
+  padding-top: 0;
+}
+
+/* ---------- table of contents ---------- */
+
+.toc-section {
+  page: plain;
+  page-break-before: always;
+  break-before: page;
+}
+
+.toc-section ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.toc-section ul ul {
+  padding-left: 1.1em;
+  font-size: 0.94em;
+}
+
+.toc-section a {
+  text-decoration: none;
+  color: #171e1a;
+}
+
+.toc-section li {
+  margin-bottom: 0.5em;
+  font-family: "NanumBarunGothic", "Noto Sans CJK KR", sans-serif;
+  text-align: left;
+}
+
+/* Part entries lead each block, so give them a little air. */
+.toc-section > ul > li {
+  margin-top: 0.9em;
+  font-weight: 700;
+}
+
+.toc-section > ul > li ul li { font-weight: 400; }
+
+/* Leader dots and page numbers for printed contents. */
+.toc-section a::after {
+  content: "  " leader('.') "  " target-counter(attr(href), page);
+  color: #9a978d;
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+/* ---------- media blocks in print ---------- */
+
+figure.photo img { max-height: 105mm; }
+
+figure.photo img.portrait {
+  max-width: 68mm;
+  max-height: 118mm;
+  width: auto;
+  height: auto;
+}
+
+figure.photo img.landscape {
+  max-width: 100%;
+  max-height: 88mm;
+}
+
+.photo-gallery figure.photo img.portrait {
+  max-width: 52mm;
+  max-height: 88mm;
+}
+
+.photo-gallery figure.photo img.landscape {
+  max-width: 100%;
+  max-height: 52mm;
+}
+
+/* Print: tap/click poster next to the designed QR. No printed URL. */
+figure.video-slot {
+  margin: 1.1em 0;
+  padding: 0.7em 0.8em;
+}
+
+a.video-preview,
+.video-url { display: none; }
+
+a.video-poster {
+  display: block;
+  flex: 0 0 auto;
+  max-width: 48mm;
+  margin: 0;
+}
+
+a.video-poster img {
+  width: auto;
+  height: auto;
+  max-width: 48mm;
+  max-height: 36mm;
+  display: block;
+  border-radius: 3px;
+}
+
+a.video-poster.portrait {
+  max-width: 28mm;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+a.video-poster.portrait img {
+  max-width: 28mm;
+  max-height: 42mm;
+}
+
+.video-qr { width: 22mm; height: 22mm; }
+
+.video-appendix { margin-top: 1.8em; }
+
+a { color: inherit; text-decoration: none; }

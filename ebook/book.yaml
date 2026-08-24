@@ -1,0 +1,194 @@
+# 「골프 느낌의 실제 원리」 — book structure
+# Single source of truth for the ebook build.
+# Reader-facing video links are intentionally absent: see media/videos.yaml.
+
+# Working title. Stays until the authors decide otherwise.
+title: 골프 느낌의 실제 원리
+subtitle: 프로가 말하는 감각을 실제 현상으로 풀다
+language: ko
+identifier: golf-neukkimui-siljae-wonri-ko
+basename: golf-neukkimui-siljae-wonri
+
+# Three authors, equal billing. Order is fixed for every reader-facing page.
+authors:
+  - name_ko: 이충원
+    name_en: Logan Lee
+    credential: 캐나다 골프 마스터 티칭 프로
+  - name_ko: 방승호
+    name_en: Bryan Bang
+    credential: 마스터 퍼스널트레이너 · 17년
+  - name_ko: 박세인
+    name_en: Jason Park
+    credential: 마스터 퍼스널트레이너 · 17년
+
+# Explicit cover line break, so the title does not wrap mid-phrase.
+cover_title_lines:
+  - 골프 느낌의
+  - 실제 원리
+
+# Cover art and part-opener plates are drawn by scripts/make_plates.py. They
+# carry no lettering at all: every word on the cover and on a part page is set
+# from this file at build time.
+cover_art: images/plates/cover-art.jpg
+
+rights: © 2026 이충원 · 방승호 · 박세인. All rights reserved.
+
+# The cover and title page carry no company branding by author instruction:
+# no Logic Performance, no Logic Fitness. The video channel is credited on the
+# 판권 (credits) page, not on the cover art.
+cover_branding: none
+
+# Locked channel name for the book's videos, hosted unlisted.
+video_channel: 골프느낌원리
+
+# Substack publication the manuscript was compiled from.
+# NOTE: build-time provenance only. These URLs are paid/private and must never
+# be rendered as a reader-facing link or encoded into a QR code.
+source_publication: https://logicfitko.substack.com
+
+front_matter:
+  - id: title-page
+    kind: title-page
+  - id: how-to-read
+    kind: markdown
+    title: 이 책을 읽는 법
+    file: front-matter/how-to-read.md
+
+parts:
+  - id: part-1
+    number: 1
+    title: 느낌은 있는데 스윙이 안 되는 이유
+    intro: front-matter/part-1-intro.md
+    plate: images/plates/part-1-footprints.jpg
+    plate_alt: 길 위에 남은 두 발자국과 끊어진 길
+    chapters:
+      - id: p1-c1
+        slug: womakers
+        title: 골프 트레이닝에 대한 생각
+        mark: images/plates/ch-p1-c1.jpg
+        mark_alt: 한 바퀴가 열리기 직전의 원
+      - id: p1-c2
+        slug: 05f
+        title: 골프를 배워도 잘 안 되는 이유
+        mark: images/plates/ch-p1-c2.jpg
+        mark_alt: 한 발자국
+
+  - id: part-2
+    number: 2
+    title: 내 스윙의 문제를 찾는 법
+    intro: front-matter/part-2-intro.md
+    plate: images/plates/part-2-grid.jpg
+    plate_alt: 가로 다섯 점과 가운데에서 위로 올라가는 화살표
+    chapters:
+      - id: p2-c1
+        slug: "434"
+        title: 나의 스윙 문제를 찾는 어세스먼트 로드맵
+        mark: images/plates/ch-p2-c1.jpg
+        mark_alt: 가운데가 찍힌 다섯 점
+
+  - id: part-3
+    number: 3
+    title: 스윙 시계 — 느낌이 지나가는 자리
+    intro: front-matter/part-3-intro.md
+    plate: images/plates/part-3-clock.jpg
+    plate_alt: 스윙 시계 문자판과 아래로 지나가는 화살표
+    chapters:
+      - id: p3-c1
+        slug: 1-6
+        title: 챕터 1 · 어드레스 — 6시
+        mark: images/plates/ch-p3-c1.jpg
+        mark_alt: 스윙 시계 6시
+      - id: p3-c2
+        slug: chapter-2-takeaway-7
+        title: 챕터 2 · 테이크어웨이 — 7시
+        mark: images/plates/ch-p3-c2.jpg
+        mark_alt: 스윙 시계 7시
+      - id: p3-c3
+        slug: chapter-3-9
+        title: 챕터 3 · 백스윙 하프웨이 — 9시
+        mark: images/plates/ch-p3-c3.jpg
+        mark_alt: 스윙 시계 9시
+      - id: p3-c4
+        slug: chapter-4-12
+        title: 챕터 4 · 탑 오브 백스윙 — 12시
+        mark: images/plates/ch-p3-c4.jpg
+        mark_alt: 스윙 시계 12시
+      - id: p3-c5
+        slug: chapter-5-10
+        title: 챕터 5 · 다운스윙 전환 — 10시
+        mark: images/plates/ch-p3-c5.jpg
+        mark_alt: 스윙 시계 10시
+      - id: p3-c6
+        slug: chapter-6-8
+        title: 챕터 6 · 임팩트 직전 — 8시
+        mark: images/plates/ch-p3-c6.jpg
+        mark_alt: 스윙 시계 8시
+      - id: p3-c7
+        slug: chapter-7-6
+        title: 챕터 7 · 임팩트 — 다시 6시
+        mark: images/plates/ch-p3-c7.jpg
+        mark_alt: 스윙 시계 6시, 임팩트
+        # The release/foot material was too short to stand as its own part. It is
+        # now merged directly into this chapter's manuscript as the section
+        # "릴리즈 타이밍은 발바닥에서 달라진다". The Substack post /p/golf is
+        # that same section — not a new chapter.
+      - id: p3-c8
+        slug: chapter-8-3
+        title: 챕터 8 · 팔로우스루 — 3시
+        mark: images/plates/ch-p3-c8.jpg
+        mark_alt: 스윙 시계 3시
+      - id: p3-c9
+        slug: chapter-9-1
+        title: 챕터 9 · 두 번째 팔로우스루 — 1시
+        mark: images/plates/ch-p3-c9.jpg
+        mark_alt: 스윙 시계 1시
+      - id: p3-c10
+        slug: chapter-10
+        title: 챕터 10 · 피니시
+        mark: images/plates/ch-p3-c10.jpg
+        mark_alt: 스윙 시계를 지나가는 호
+
+  - id: part-4
+    number: 4
+    title: 샷에 실리는 느낌
+    intro: front-matter/part-4-intro.md
+    plate: images/plates/part-4-arcs.jpg
+    plate_alt: 한 지점에서 떠나는 세 개의 탄도
+    chapters:
+      - id: p4-c1
+        slug: "1"
+        title: 테크닉 챕터 1 · 드로우 샷
+        mark: images/plates/ch-p4-c1.jpg
+        mark_alt: 왼쪽으로 휘는 탄도
+      - id: p4-c2
+        slug: "2"
+        title: 테크닉 챕터 2 · 페이드 샷
+        mark: images/plates/ch-p4-c2.jpg
+        mark_alt: 오른쪽으로 휘는 탄도
+      - id: p4-c3
+        slug: "3"
+        title: 테크닉 챕터 3 · 하이 런치 샷
+        mark: images/plates/ch-p4-c3.jpg
+        mark_alt: 높이 솟아 떨어지는 탄도
+      - id: p4-c4
+        slug: "4"
+        title: 테크닉 챕터 4 · 스팅어 샷
+        mark: images/plates/ch-p4-c4.jpg
+        mark_alt: 낮고 긴 탄도
+      - id: p4-c5
+        slug: "5"
+        title: 테크닉 챕터 5 · 스트레이트 샷
+        mark: images/plates/ch-p4-c5.jpg
+        mark_alt: 곧게 나가는 탄도
+
+back_matter:
+  - id: appendix-a
+    kind: chapter
+    slug: golf-a
+    title: 부록 · 프로와 같은 말로 말하기
+    # Typography only, apart from a small index mark: no clipart in the appendix.
+    plate: images/plates/appendix-mark.png
+    plate_alt: 색인 표시
+    plate_size: mark
+  - id: colophon
+    kind: colophon

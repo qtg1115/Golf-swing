@@ -1,0 +1,4 @@
+ebook/.build/
+ebook/images/incoming/
+__pycache__/
+*.pyc

@@ -1,0 +1,398 @@
+# Original stills for 3부 챕터 7 「릴리즈 타이밍은 발바닥에서 달라진다」.
+#
+# The six photographs the author attached, in this order. They are not a new
+# chapter and they are not the stock Golf+club/ball header. Drop the files into
+# images/incoming/ as 01…06 (any common image suffix) or write them under the
+# dest names in images/photos/, then rerun `make media && make book`.
+#
+# https://logicfitko.substack.com/p/golf is this same section. Do not import
+# its header graphic or any Logic Fitness arch mp4.
+
+stills:
+  - id: both-feet
+    chapter: p3-c7
+    dest: 01-swing-both-feet.jpg
+    caption: 두 발이 지면과 닿아 있는 방식이 릴리즈의 시점을 결정한다.
+    alt: 두 발이 지면을 딛고 있는 스윙 자세
+  # Incoming 02–06 are phone portraits stored landscape with EXIF stripped.
+  # rotate_cw: 90 stands them back up (same turn as EXIF orientation 6).
+  - id: short-arch
+    chapter: p3-c7
+    index: 1
+    dest: p3-c7-01-short-arch.jpg
+    caption: 짧은 아치
+    alt: 짧은 아치
+    rotate_cw: 90
+  - id: long-arch
+    chapter: p3-c7
+    index: 2
+    dest: p3-c7-02-long-arch.jpg
+    caption: 긴 아치
+    alt: 긴 아치
+    rotate_cw: 90
+  - id: test-1
+    chapter: p3-c7
+    index: 3
+    dest: p3-c7-03-test-1.jpg
+    caption: 테스트 1
+    alt: 테스트 1
+    rotate_cw: 90
+  - id: test-2
+    chapter: p3-c7
+    index: 4
+    dest: p3-c7-04-test-2.jpg
+    caption: 테스트 2
+    alt: 테스트 2
+    rotate_cw: 90
+  - id: test-3
+    chapter: p3-c7
+    index: 5
+    dest: p3-c7-05-test-3.jpg
+    caption: 테스트 3
+    alt: 테스트 3
+    rotate_cw: 90
+  - id: p3-c7-06
+    chapter: p3-c7
+    index: 6
+    dest: p3-c7-06.jpg
+    caption: 발 압력
+    alt: 발바닥 압력
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/401da916-b075-46c5-bdb9-cca15f4f2327_1024x1536.jpeg
+  - id: p3-c7-07
+    chapter: p3-c7
+    index: 7
+    dest: p3-c7-07.jpg
+    caption: 레깅
+    alt: 발 압력과 레깅
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/873a5479-42cd-49c3-b9b4-84f94aa198ee_1024x1536.jpeg
+
+# Author iPhone 13 Pro Max originals from the Korean Substack posts.
+# Public S3 URLs. Honour EXIF (6 = 90° CW). Do not force landscape.
+# Galleries share a chapter+index; photo-pending renders every dest present.
+
+  - id: p1-c2-01
+    chapter: p1-c2
+    index: 1
+    dest: p1-c2-01.jpg
+    caption: 컵이나 펜을 잡을 때 새끼손가락이 떨어진다.
+    alt: 컵이나 펜을 잡을 때 새끼손가락이 떨어지는 손
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/8790232d-e579-48e1-bffc-7f1c7338af83_4032x3024.jpeg
+  - id: p1-c2-02
+    chapter: p1-c2
+    index: 2
+    gallery: 1
+    dest: p1-c2-02.jpg
+    caption: 그립 손
+    alt: 그립 손 1
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/501fa047-62d3-4170-a8b9-d776fc936abb_4032x3024.jpeg
+  - id: p1-c2-02b
+    chapter: p1-c2
+    index: 2
+    gallery: 2
+    dest: p1-c2-02b.jpg
+    caption: 그립 손
+    alt: 그립 손 2
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/de9a7ad8-2ceb-4fde-a273-c2212c8da34e_4032x3024.jpeg
+  - id: p1-c2-03
+    chapter: p1-c2
+    index: 3
+    dest: p1-c2-03.jpg
+    caption: 오른발 셋업
+    alt: 오른발 셋업
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/987b372d-1025-4599-8121-399392cf250c_4032x3024.jpeg
+  - id: p1-c2-04
+    chapter: p1-c2
+    index: 4
+    dest: p1-c2-04.jpg
+    caption: 왼발 셋업
+    alt: 왼발 셋업
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/d647a696-a0ae-4b67-b9ff-ffa3dff4747b_3024x4032.jpeg
+  - id: p3-c2-01
+    chapter: p3-c2
+    index: 1
+    dest: p3-c2-01.jpg
+    caption: 암 스윙과 바디 스윙
+    alt: 암 스윙과 바디 스윙 네 컷
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/910fa1a0-a33b-4023-a912-83fb1a74fc99_2000x1789.png
+  - id: p3-c5-01
+    chapter: p3-c5
+    index: 1
+    dest: p3-c5-01.jpg
+    caption: 앞으로 점프
+    alt: 앞으로 점프 두 컷
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/05505f32-9133-413d-85ec-59bd50805dea_2000x842.jpeg
+  - id: p3-c5-02
+    chapter: p3-c5
+    index: 2
+    dest: p3-c5-02.jpg
+    caption: 뒤로 점프
+    alt: 뒤로 점프 두 컷
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/60742332-300a-4e37-b79d-720f4f6ad6a1_2000x842.jpeg
+  - id: p3-c5-03a
+    chapter: p3-c5
+    index: 3
+    gallery: 1
+    dest: p3-c5-03a.jpg
+    caption: 클럽 페이스
+    alt: 클럽 페이스 1
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/2cee1de1-9ed7-4c7f-bd82-f9cd774b597b_4032x3024.jpeg
+  - id: p3-c5-03b
+    chapter: p3-c5
+    index: 3
+    gallery: 2
+    dest: p3-c5-03b.jpg
+    caption: 클럽 페이스
+    alt: 클럽 페이스 2
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/43c50ead-608d-404e-9e37-a5fde92abd82_4032x3024.jpeg
+  - id: p3-c5-03c
+    chapter: p3-c5
+    index: 3
+    gallery: 3
+    dest: p3-c5-03c.jpg
+    caption: 클럽 페이스
+    alt: 클럽 페이스 3
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/12a04123-e7c9-4e7d-b505-56dae3ea0cfd_4032x3024.jpeg
+  - id: p4-c2-01
+    chapter: p4-c2
+    index: 1
+    dest: p4-c2-01.jpg
+    caption: 페이드 발과 클럽
+    alt: 페이드 발과 클럽 탑뷰
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/c371ce54-dcf2-4196-b4ed-ef616a6ddb24_4032x3024.jpeg
+  - id: p4-c4-01a
+    chapter: p4-c4
+    index: 1
+    gallery: 1
+    dest: p4-c4-01a.jpg
+    caption: 스팅어
+    alt: 스팅어 1
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/de7803b6-7ba9-45d2-b42a-995a753a9385_1729x2305.jpeg
+  - id: p4-c4-01b
+    chapter: p4-c4
+    index: 1
+    gallery: 2
+    dest: p4-c4-01b.jpg
+    caption: 스팅어
+    alt: 스팅어 2
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/c07a09cd-07c3-4630-a914-fa86c45b34a8_1729x2305.jpeg
+  - id: p4-c4-01c
+    chapter: p4-c4
+    index: 1
+    gallery: 3
+    dest: p4-c4-01c.jpg
+    caption: 스팅어
+    alt: 스팅어 3
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/2f906468-ece5-4e29-a3f6-737639c53d7c_1729x2305.jpeg
+  - id: p4-c4-02a
+    chapter: p4-c4
+    index: 2
+    gallery: 1
+    dest: p4-c4-02a.jpg
+    caption: 스팅어
+    alt: 스팅어 1
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/e822d6cc-4817-4c80-b2d8-eccafb4aa16b_1729x2305.jpeg
+  - id: p4-c4-02b
+    chapter: p4-c4
+    index: 2
+    gallery: 2
+    dest: p4-c4-02b.jpg
+    caption: 스팅어
+    alt: 스팅어 2
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/b663e79e-675f-4cd4-9080-b3bf099d9b4b_1729x2305.jpeg
+  - id: p4-c4-02c
+    chapter: p4-c4
+    index: 2
+    gallery: 3
+    dest: p4-c4-02c.jpg
+    caption: 스팅어
+    alt: 스팅어 3
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/024c13d6-2b6b-4520-b8f7-f53b762059f2_1729x2305.jpeg
+  - id: p4-c4-02d
+    chapter: p4-c4
+    index: 2
+    gallery: 4
+    dest: p4-c4-02d.jpg
+    caption: 스팅어
+    alt: 스팅어 4
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/514fada9-5fca-4ebb-8c30-79ce85240d7a_1729x2305.jpeg
+
+# Round 2: post-body diagrams that were wrongly skipped as “AI/illustration”.
+# These are the Substack originals. Honour EXIF. Do not restore the stock
+# 1024 Golf+club/ball header. The p3-c9 “(사진첨부)” reminder is removed.
+
+  - id: p3-c1-01
+    chapter: p3-c1
+    index: 1
+    dest: p3-c1-01.jpg
+    caption: 키와 골반
+    alt: 어드레스에서 골반을 접어 키가 달라 보이는 비교
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/bffe10b1-f3bb-4577-8ca3-960d5b1b86a5_2000x1545.png
+  - id: p3-c1-02
+    chapter: p3-c1
+    index: 2
+    dest: p3-c1-02.jpg
+    caption: 스케이트 밑창
+    alt: 스케이트 밑창의 고무 패드
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/29bb41bc-2356-4bc6-adf2-8bc27c012eb4_1024x1024.png
+  - id: p3-c1-03
+    chapter: p3-c1
+    index: 3
+    dest: p3-c1-03.jpg
+    caption: 왼발 접지
+    alt: 왼발 접지점
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/67d840aa-5ce1-4afe-806f-7d1f0292e670_1024x1536.png
+  - id: p3-c1-04
+    chapter: p3-c1
+    index: 4
+    dest: p3-c1-04.jpg
+    caption: 오른발 접지
+    alt: 오른발 접지점
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/af659399-87e7-4cb0-8822-5a3316b86fae_1024x1024.jpeg
+  - id: p3-c1-05
+    chapter: p3-c1
+    index: 5
+    dest: p3-c1-05.jpg
+    caption: 스틱 힙힌지
+    alt: 스틱 힙힌지
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/bb59529e-8bab-4b90-92f9-cf81dc2cb56c_1024x1024.png
+  - id: p3-c1-06
+    chapter: p3-c1
+    index: 6
+    dest: p3-c1-06.jpg
+    caption: 90/90 힙 로테이션
+    alt: 90/90 힙 로테이션
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/5b7c2e2a-ea7c-4095-a65e-da03779a2787_1024x766.png
+  - id: p3-c1-07
+    chapter: p3-c1
+    index: 7
+    dest: p3-c1-07.jpg
+    caption: 손목과 그립
+    alt: 손목과 그립
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/e7e67a3c-8898-4b37-91c5-8fc4d4157336_1536x1024.png
+  - id: p3-c1-08
+    chapter: p3-c1
+    index: 8
+    dest: p3-c1-08.jpg
+    caption: Farmer’s Carry
+    alt: Farmer’s Carry
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/81ae4760-41c8-427f-b920-9ed97378ec37_1024x1536.png
+  - id: p3-c1-09
+    chapter: p3-c1
+    index: 9
+    dest: p3-c1-09.jpg
+    caption: Split stance
+    alt: Split Stance Rotation
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/504403a4-5520-4fb4-adec-110c02c40f13_1024x1536.png
+  - id: p3-c1-10
+    chapter: p3-c1
+    index: 10
+    dest: p3-c1-10.jpg
+    caption: T-pose 밸런스
+    alt: T-Pose 밸런스
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/0e22f879-b7da-4370-9ea2-6c20e1d5d2d5_1024x1536.png
+  - id: p3-c2-02
+    chapter: p3-c2
+    index: 2
+    dest: p3-c2-02.jpg
+    caption: 활
+    alt: 활을 당기는 고정과 회전
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/75ad89e8-937e-4878-a532-74204bf5145b_1024x1024.png
+  - id: p3-c2-03a
+    chapter: p3-c2
+    index: 3
+    gallery: 1
+    dest: p3-c2-03a.jpg
+    caption: 발바닥
+    alt: 발바닥 볼
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/56756d4d-e369-45e9-9beb-fc9e0dd95614_1024x1024.jpeg
+  - id: p3-c2-03b
+    chapter: p3-c2
+    index: 3
+    gallery: 2
+    dest: p3-c2-03b.jpg
+    caption: 발바닥
+    alt: 발바닥 아치
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/2087d29b-1aa8-465f-a057-77358279857c_1024x1536.jpeg
+  - id: p3-c5-04
+    chapter: p3-c5
+    index: 4
+    dest: p3-c5-04.jpg
+    caption: 왼발 접지
+    alt: 왼발 엄지 안쪽 접지
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/f5d90c12-a3ab-4d72-acab-bf2489822e0f_1024x1536.jpeg
+  - id: p3-c5-05
+    chapter: p3-c5
+    index: 5
+    dest: p3-c5-05.jpg
+    caption: 오른발 접지
+    alt: 오른발 접지
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/7b1cb052-e48e-4015-bd36-2c09f3bcdf8a_1024x1024.jpeg
+  - id: p3-c5-06
+    chapter: p3-c5
+    index: 6
+    dest: p3-c5-06.jpg
+    caption: 하체와 몸통의 반대회전
+    alt: 하체와 몸통의 반대회전
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/ffc3aaf9-e2f1-478d-84df-fd8d1ca6c159_572x746.jpeg
+  - id: p4-c3-01
+    chapter: p4-c3
+    index: 1
+    dest: p4-c3-01.jpg
+    caption: 하이 런치 탄도
+    alt: 하이 런치 탄도
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/395d8339-9aa0-4389-b88c-7be1bd8be3bc_1448x1086.png
+  - id: p4-c3-02
+    chapter: p4-c3
+    index: 2
+    dest: p4-c3-02.jpg
+    caption: 가파른 어택과 얕은 어택
+    alt: 가파른 어택과 얕은 어택
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/290e0f51-0b02-457c-8a28-8bff33078d03_1448x1086.png
+  - id: p4-c3-03
+    chapter: p4-c3
+    index: 3
+    dest: p4-c3-03.jpg
+    caption: 최저점과 런치 앵글
+    alt: 최저점과 런치 앵글
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/43bee4bc-47bd-4124-969e-c5d789e82f85_1448x1086.png
+  - id: p4-c3-04
+    chapter: p4-c3
+    index: 4
+    dest: p4-c3-04.jpg
+    caption: 높은 탄도와 낮은 탄도
+    alt: 높은 탄도와 낮은 탄도
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/b888c1aa-f214-457d-ae0c-0f1ad1cdbe9e_1448x1086.png
+  - id: p4-c3-05
+    chapter: p4-c3
+    index: 5
+    dest: p4-c3-05.jpg
+    caption: 임팩트 런치 라인
+    alt: 임팩트 런치 라인
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/9ed3fd30-2fc3-4e81-a529-1b6854f66b5d_1448x1086.png
+  - id: p4-c3-06
+    chapter: p4-c3
+    index: 6
+    dest: p4-c3-06.jpg
+    caption: 스윙과 체중 이동
+    alt: 스윙과 체중 이동
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/b79d3de4-3c00-4854-ac7a-345dd9e3383d_1448x1086.png
+  - id: p4-c4-extra
+    chapter: p4-c4
+    index: 3
+    dest: p4-c4-extra-swing-grid.jpg
+    caption: 스팅어 스윙
+    alt: 스팅어 네 컷 스윙 그리드
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/9ed4bc3d-7f7a-44ff-aded-aa204d7db88c_1456x1456.png
+
+# The p2-01…p2-04 teal Substack 어세스먼트 로드맵 rasters are gone. They
+# duplicated the typeset FIGURE cards in p2-c1.md. Do not restore them.
+
+# /p/chapter-9-1 original. Prefer this over the GPT-PDF crop.
+
+  - id: p3-c9-01
+    chapter: p3-c9
+    index: 1
+    dest: p3-c9-01.jpg
+    caption: 두 번째 팔로우스루의 출발점
+    alt: 두 번째 팔로우스루의 출발점
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/fde912a4-02cc-467d-b5d3-f9ab6aeb173e_1999x1545.jpeg

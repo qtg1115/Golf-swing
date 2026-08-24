@@ -1,0 +1,105 @@
+# Playable video URLs, supplied and verified by the author.
+#
+# Each entry is https://logicfitko.substack.com/api/v1/video/upload/{id}/src,
+# which 302-redirects to a signed Mux mp4. Confirmed to answer 206 video/mp4
+# with no login, so it is safe as a reader-facing target and inside a QR code.
+#
+# This is the ONLY Substack path allowed in reader-facing output. Post pages
+# (logicfitko.substack.com/p/…) stay paywalled and are still never linked or
+# encoded; scripts/make_qr.py and scripts/verify.py enforce that split.
+#
+# Order within a chapter is the order the author listed them, which is the order
+# they appear in the post. Run scripts/build_media.py after editing.
+
+base: https://logicfitko.substack.com/api/v1/video/upload/{id}/src
+
+chapters:
+  # 1부 · 골프를 배워도 잘 안 되는 이유
+  p1-c2:
+    - 2a3340b4-1ff9-43bc-b2cb-6c1a9d58aab5
+
+  # 3부 · 챕터 1 어드레스 — 6시
+  p3-c1:
+    - 69a0973a-c720-4184-b844-97a1db0d9fe8
+    - c9d2f1d3-695d-44ee-9fac-6d910e1be839
+
+  # 3부 · 챕터 2 테이크어웨이 — 7시
+  p3-c2:
+    - 21cf52df-40df-4263-9e83-26d044ade53c
+    - 62bc49d0-7aba-4c0e-8f00-ea56ee4d80eb
+    - ebf25adb-eb8a-4d5c-a12e-252fd06d3832
+    - a7d0974e-2e6c-4066-881d-0d8942b4cf82
+    - 5a77a927-2d54-4add-b252-32b692b911d0
+    - 7f7580dd-e985-4549-83ad-473e593d359f
+    - 3180eb43-d670-42dc-9721-34a2427e8b29
+    - ea9fd106-2856-4b77-8dca-7b88793d9847
+
+  # 3부 · 챕터 3 백스윙 하프웨이 — 9시
+  p3-c3:
+    - 66fe9b3f-05d0-4deb-be52-b56ead7d535d
+    - d3b03994-820a-4290-9b58-47a7d61479b1
+    - 8bf26655-b01b-4fd2-9fba-303886802384
+    - a5ad80e3-9e20-4a0b-be42-011692bb3996
+    - e6f0afa0-d750-40ba-9696-5191240b2602
+    - 7781ae45-ba8f-4529-9b76-07021542ad77
+    - 663a7e29-6a90-4983-af84-5d58926c3a8e
+    - c79e3665-0222-48fe-9014-323a6bff2039
+
+  # 3부 · 챕터 4 탑 오브 백스윙 — 12시
+  p3-c4:
+    - dc09b05a-fcda-40b3-99a1-01249ac510ab
+    - 9b96bf0b-ec34-462f-b968-0fcf9d6296ea
+    - 615f16b6-f233-4055-a2b4-a2ee820b73d2
+    - 513d67aa-1836-4b55-9fd5-0a8c466ee1fd
+    - 527c07cc-c1bc-4776-88ee-8cc7da6ad7dd
+
+  # 3부 · 챕터 5 다운스윙 전환 — 10시
+  p3-c5:
+    - 1d5bb680-871e-4627-bd39-6651e44450c9
+    - 7553fff6-2fc6-4491-b135-23a590295ba3
+    - 751c5c11-c1bf-46c7-a1ce-7e69a9ed1ea1
+    - baea542a-f8a0-4864-9e63-e435b3b29cc5
+    - bd47f344-9004-4e59-82fb-05d9ebbc80b3
+    - 30c25ed6-f632-4397-8da6-0e5ca67d3a16
+
+  # 3부 · 챕터 6 임팩트 직전 — 8시 (positions known from the public post body)
+  p3-c6:
+    - 1ff8f123-43bc-46c3-b306-741d99578c19
+    - ed11fdd1-c3dd-40d1-a136-f88ed8bd8bb4
+    - 1e285dd9-5908-4fa1-bec2-db3ffc1ff818
+    - 814630e9-d484-4bdb-983d-32329e0de058
+    - 06094c4b-5e08-4c62-ba0c-d40e2a9acaa4
+    - 8f60a8e4-8b03-4199-853d-6d8a1d765d70
+
+  # 3부 · 챕터 7 임팩트 — 다시 6시
+  p3-c7:
+    - ed8664af-5366-441a-bede-4a6598747136
+    - a0614505-24a1-4f0d-899d-50ee9907045e
+    - ba34c614-eef0-4a4e-9399-2f05023651fc
+    - e63b0ea7-6875-4cb4-8c1f-11bfa497cca9
+    - bbd67c6a-03c3-4015-abab-ee6651a10b73
+
+  # 3부 · 챕터 8 팔로우스루 — 3시
+  p3-c8:
+    - 8504dcd6-2686-4a3d-a9d5-4025e810057b
+    - add61716-7c0c-49f3-b615-29d8a4a57b8d
+    - 5a12eaaf-dbbc-4443-988e-94909ae08c4c
+    - 48644c03-e18a-4cae-aa8f-0764417faced
+
+  # 3부 · 챕터 9 두 번째 팔로우스루 — 1시
+  p3-c9:
+    - 4a6cf0e2-7526-40d4-8f98-c43acf90e83a
+    - ed301dbf-afe7-4c80-a2b5-896dd0f6a433
+    - c0860269-f81f-49c2-9c3c-905b6450633b
+    - 7fa24818-4685-4eed-842a-3896c56a5664
+    - 918a149a-a367-4904-8ffc-cf91949304ba
+    - 96d90ba0-be1e-479e-851d-4eb3e23ac701
+
+  # 4부 · 테크닉 챕터 1 드로우 샷
+  p4-c1:
+    - 7847e063-4345-4173-9a4c-da3246f06199
+    - e53459e7-99e7-4780-a1ea-f95c020313f7
+
+  # 4부 · 테크닉 챕터 2 페이드 샷
+  p4-c2:
+    - 5991ba6f-890e-4f3f-a63a-297a6027864c
