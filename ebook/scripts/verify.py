@@ -321,10 +321,8 @@ def check_art(book: dict, epub: zipfile.ZipFile, report: Report) -> None:
         if not name.endswith(".xhtml"):
             continue
         page = epub.read(name)
-        if b'class="part-plate' in page:
-            plates_in_epub += 1
-        if b'class="chapter-plate' in page:
-            chapter_plates_in_epub += 1
+        plates_in_epub += page.count(b'class="part-plate')
+        chapter_plates_in_epub += page.count(b'class="chapter-plate')
     report.check(
         plates_in_epub == len(expected),
         "every part plate reaches the EPUB",
