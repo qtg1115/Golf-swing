@@ -260,6 +260,13 @@
       "status": "present"
     },
     {
+      "file": "p3-c9-01.jpg",
+      "chapter": "p3-c9",
+      "caption": "두 번째 팔로우스루의 출발점",
+      "source_url": null,
+      "status": "present"
+    },
+    {
       "file": "p4-c2-01.jpg",
       "chapter": "p4-c2",
       "caption": "페이드 발과 클럽",
@@ -525,6 +532,11 @@
       "chapter": "p3-c7",
       "index": 5,
       "note": "테스트 3"
+    },
+    {
+      "chapter": "p3-c9",
+      "index": 1,
+      "note": "두 번째 팔로우스루의 출발점"
     },
     {
       "chapter": "p4-c2",
