@@ -204,6 +204,8 @@ section.part-title > h1 { font-size: 1.55em; }
 
 .part-plate.mark img { max-width: 16mm; max-height: 16mm; }
 
+.chapter-plate img { max-width: 48mm; max-height: 32mm; }
+
 section.part-title > p { text-align: left; }
 
 /* Re-assert the running-text page: chapters sit inside a part opener that is

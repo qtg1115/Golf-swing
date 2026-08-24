@@ -132,6 +132,7 @@ from `book.yaml` at build time.
 | `plates/part-3-clock.jpg` | 3부 | swing-clock dial, the down-and-through sweep |
 | `plates/part-4-arcs.jpg` | 4부 | three ball flights off one launch point |
 | `plates/fig-hi-launch.jpg` | 4부 챕터 3 | one high launch, steeply up and steeply down |
+| `plates/ch-p*.jpg` | chapter openers | clock hour, footprint, open circle, or one flight |
 | `plates/appendix-mark.png` | 부록 | small index mark, typography otherwise |
 | `cover.jpg` | EPUB cover image | the cover plate with the type drawn onto it |
 

@@ -446,6 +446,19 @@ def plate_block(item: dict) -> str:
     )
 
 
+def chapter_mark_block(chapter: dict) -> str:
+    """A small drawn mark under a chapter title. No caption, no lettering."""
+    mark = chapter.get("mark")
+    if not mark or not (EBOOK_DIR / mark).exists():
+        return ""
+    alt = html.escape(chapter.get("mark_alt") or "")
+    return (
+        f'<div class="chapter-plate">\n'
+        f'<img src="{mark}" alt="{alt}" />\n'
+        "</div>\n\n"
+    )
+
+
 def title_page(book: dict) -> str:
     authors = "\n".join(
         '<p class="author">'
@@ -594,7 +607,8 @@ def assemble(book: dict, stats: Stats, fmt: str = "print") -> str:
             )
             if appendix:
                 body += f"\n\n{appendix}\n"
-            out.append(f'## {title} {{#{chapter["id"]} .chapter}}\n\n{body}\n')
+            mark = chapter_mark_block(chapter)
+            out.append(f'## {title} {{#{chapter["id"]} .chapter}}\n\n{mark}{body}\n')
 
     for item in book.get("back_matter", []):
         if item["kind"] == "chapter":

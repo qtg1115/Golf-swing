@@ -54,6 +54,8 @@ section.part-title {
 
 .part-plate.mark img { max-width: 64px; }
 
+.chapter-plate img { max-width: 55%; }
+
 .title-page {
   text-align: center;
 }

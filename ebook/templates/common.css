@@ -551,6 +551,22 @@ section.part-title > h1::after {
 
 .part-plate.mark { margin: 0.2em 0 1.8em; }
 
+/* Small drawn mark under a chapter title. Same cream/ink as the part plates. */
+.chapter-plate {
+  margin: 0.15em 0 1.35em;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.chapter-plate p { margin: 0; text-align: center; }
+
+.chapter-plate img {
+  width: 100%;
+  max-width: 52mm;
+  height: auto;
+}
+
 /* The part intro is plain markdown right under the plate. */
 section.part-title > p {
   color: #3f4742;

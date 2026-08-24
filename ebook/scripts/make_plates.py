@@ -31,6 +31,8 @@ CHARCOAL = (38, 44, 40)
 
 # Part plates share the 3:2 proportion of the author's studies.
 PLATE = (1500, 1000)
+# Chapter openers are the same language, printed smaller.
+CHAPTER = (900, 600)
 COVER = (1748, 2480)  # A5 at 300dpi
 MARK = (460, 460)
 
@@ -507,6 +509,154 @@ def play_mark() -> None:
     plate.save("play-mark.png")
 
 
+def hour_angle(hour: int) -> float:
+    """Image degrees: 3 o'clock is 0, 6 is 90 (y grows down)."""
+    return (hour % 12) * 30 - 90
+
+
+def chapter_clock(chapter_id: str, hour: int, seed: int, impact: bool = False) -> None:
+    """A swing-clock dial with one hour stamped in pine. No numerals."""
+    plate = Plate(CHAPTER, seed=seed)
+    w, h = plate.w * SS, plate.h * SS
+    cx, cy, r = w * 0.5, h * 0.52, min(w, h) * 0.34
+
+    img, draw = plate.canvas()
+    arc(draw, cx, cy, r, 0, 360, w * 0.0078)
+    for hr in range(12):
+        ang = math.radians(hour_angle(hr if hr else 12))
+        inner = 0.78 if hr % 3 == 0 else 0.86
+        bar(
+            draw,
+            cx + r * inner * math.cos(ang),
+            cy + r * inner * math.sin(ang),
+            cx + r * 0.96 * math.cos(ang),
+            cy + r * 0.96 * math.sin(ang),
+            w * (0.0062 if hr % 3 == 0 else 0.0040),
+        )
+    plate.press(img, CHARCOAL, bite=0.26, soften=5)
+
+    img, draw = plate.canvas()
+    ang = math.radians(hour_angle(hour))
+    ca, sa = math.cos(ang), math.sin(ang)
+    bar(draw, cx + r * 0.10 * ca, cy + r * 0.10 * sa, cx + r * 0.70 * ca, cy + r * 0.70 * sa, w * 0.0070)
+    dot(draw, cx + r * 0.86 * ca, cy + r * 0.86 * sa, w * 0.016)
+    if impact:
+        # A short strike through six o'clock: address vs impact share the hour.
+        bar(draw, cx - w * 0.012, cy + r * 0.55, cx + w * 0.012, cy + r * 1.02, w * 0.0055)
+    plate.press(img, PINE, bite=0.22, soften=4)
+    plate.save(f"ch-{chapter_id}.jpg")
+
+
+def chapter_finish(chapter_id: str, seed: int) -> None:
+    """피니시 — the clock plus the down-and-through sweep."""
+    plate = Plate(CHAPTER, seed=seed)
+    w, h = plate.w * SS, plate.h * SS
+    cx, cy, r = w * 0.5, h * 0.52, min(w, h) * 0.30
+
+    img, draw = plate.canvas()
+    arc(draw, cx, cy, r, 0, 360, w * 0.0070)
+    plate.press(img, CHARCOAL, bite=0.26, soften=5)
+
+    img, draw = plate.canvas()
+    left_end = (cx - r * 0.52, cy - r * 0.40)
+    low = (cx + r * 0.02, cy + r * 0.58)
+    right_end = (cx + r * 0.66, cy - r * 0.32)
+    bezier(draw, left_end, (cx - r * 0.60, cy + r * 0.34), low, w * 0.0065, w * 0.0090)
+    bezier(draw, low, (cx + r * 0.62, cy + r * 0.44), right_end, w * 0.0090, w * 0.0062)
+    arrowhead(draw, right_end[0], right_end[1], -62, w * 0.034, w * 0.022)
+    plate.press(img, PINE, bite=0.20, soften=4)
+    plate.save(f"ch-{chapter_id}.jpg")
+
+
+def chapter_open_circle(chapter_id: str, seed: int) -> None:
+    """1부 opener — the cover's open circle, small."""
+    plate = Plate(CHAPTER, seed=seed)
+    w, h = plate.w * SS, plate.h * SS
+    cx, cy, r = w * 0.5, h * 0.52, w * 0.22
+    img, draw = plate.canvas()
+    arc(draw, cx, cy, r, 96, 268, w * 0.0085, w * 0.016)
+    arc(draw, cx, cy, r, 268, 398, w * 0.016, w * 0.0055)
+    plate.press(img, PINE, bite=0.20, soften=5, starve=0.988)
+    plate.save(f"ch-{chapter_id}.jpg")
+
+
+def chapter_footprint(chapter_id: str, seed: int) -> None:
+    """1부 — one pressed sole, no path."""
+    plate = Plate(CHAPTER, seed=seed)
+    w, h = plate.w * SS, plate.h * SS
+    img, draw = plate.canvas()
+    footprint(draw, w * 0.5, h * 0.52, h * 0.52, rot=-8.0)
+    plate.press(img, CHARCOAL, bite=0.20, soften=4, starve=0.992)
+    plate.save(f"ch-{chapter_id}.jpg")
+
+
+def chapter_dots(chapter_id: str, seed: int) -> None:
+    """2부 — five points, the middle ringed, one stem up. Drawn, not the teal PNG."""
+    plate = Plate(CHAPTER, seed=seed)
+    w, h = plate.w * SS, plate.h * SS
+    y = h * 0.58
+    xs = [w * x for x in (0.18, 0.34, 0.50, 0.66, 0.82)]
+
+    img, draw = plate.canvas()
+    bar(draw, xs[0], y, xs[-1], y, w * 0.0048)
+    for x in xs:
+        dot(draw, x, y, w * 0.012)
+    plate.press(img, CHARCOAL, bite=0.22, soften=4)
+
+    img, draw = plate.canvas()
+    arc(draw, xs[2], y, w * 0.038, 0, 360, w * 0.0060)
+    bar(draw, xs[2], y - h * 0.06, xs[2], y - h * 0.32, w * 0.0055)
+    arrowhead(draw, xs[2], y - h * 0.32, -90, w * 0.032, w * 0.020)
+    plate.press(img, PINE, bite=0.24, soften=4)
+    plate.save(f"ch-{chapter_id}.jpg")
+
+
+def chapter_flight(
+    chapter_id: str,
+    seed: int,
+    control: tuple[float, float],
+    end: tuple[float, float],
+) -> None:
+    """4부 — one ball flight off a shared launch. Fractions of the frame."""
+    plate = Plate(CHAPTER, seed=seed)
+    w, h = plate.w * SS, plate.h * SS
+    ground = h * 0.82
+    launch = (w * 0.16, ground)
+
+    img, draw = plate.canvas()
+    bar(draw, w * 0.06, ground, w * 0.94, ground, w * 0.0042)
+    plate.press(img, CHARCOAL, bite=0.30, soften=6, starve=0.90, wear=0.30)
+
+    img, draw = plate.canvas()
+    landing = (w * end[0], h * end[1])
+    bezier(draw, launch, (w * control[0], h * control[1]), landing, w * 0.0036)
+    dot(draw, landing[0], landing[1], w * 0.008)
+    plate.press(img, CHARCOAL, bite=0.12, soften=2, starve=0.995, wear=0.10)
+    plate.save(f"ch-{chapter_id}.jpg")
+
+
+def chapter_marks() -> None:
+    """Small inter-chapter plates. Same ink, no people, no stock header."""
+    chapter_open_circle("p1-c1", 9101)
+    chapter_footprint("p1-c2", 9102)
+    chapter_dots("p2-c1", 9201)
+    chapter_clock("p3-c1", 6, 9301)
+    chapter_clock("p3-c2", 7, 9302)
+    chapter_clock("p3-c3", 9, 9303)
+    chapter_clock("p3-c4", 12, 9304)
+    chapter_clock("p3-c5", 10, 9305)
+    chapter_clock("p3-c6", 8, 9306)
+    chapter_clock("p3-c7", 6, 9307, impact=True)
+    chapter_clock("p3-c8", 3, 9308)
+    chapter_clock("p3-c9", 1, 9309)
+    chapter_finish("p3-c10", 9310)
+    chapter_flight("p4-c1", 9401, (0.46, 0.22), (0.86, 0.58))
+    chapter_flight("p4-c2", 9402, (0.62, 0.28), (0.88, 0.70))
+    chapter_flight("p4-c3", 9403, (0.50, -0.12), (0.84, 0.80))
+    chapter_flight("p4-c4", 9404, (0.52, 0.62), (0.90, 0.76))
+    chapter_flight("p4-c5", 9405, (0.52, 0.78), (0.90, 0.80))
+
+
 def appendix_mark() -> None:
     """부록 — a small index mark, nothing figurative.
 
@@ -535,6 +685,7 @@ def main() -> int:
     figure_hi_launch()
     appendix_mark()
     play_mark()
+    chapter_marks()
     return 0
 
 

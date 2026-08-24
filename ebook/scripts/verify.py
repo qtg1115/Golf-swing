@@ -316,13 +316,49 @@ def check_art(book: dict, epub: zipfile.ZipFile, report: Report) -> None:
     # A plate with lettering in it would have to be cropped or masked; the plates
     # are drawn without any, so the part title in the markup is the only text.
     plates_in_epub = 0
+    chapter_plates_in_epub = 0
     for name in epub.namelist():
-        if name.endswith(".xhtml") and b'class="part-plate' in epub.read(name):
+        if not name.endswith(".xhtml"):
+            continue
+        page = epub.read(name)
+        if b'class="part-plate' in page:
             plates_in_epub += 1
+        if b'class="chapter-plate' in page:
+            chapter_plates_in_epub += 1
     report.check(
         plates_in_epub == len(expected),
         "every part plate reaches the EPUB",
         f"{plates_in_epub} of {len(expected)}",
+    )
+
+    chapter_marks = [
+        (chapter["id"], chapter)
+        for part in book["parts"]
+        for chapter in part.get("chapters") or []
+        if chapter.get("mark")
+    ]
+    for label, item in chapter_marks:
+        mark = item.get("mark")
+        report.check(
+            bool(mark) and (EBOOK_DIR / mark).exists(),
+            f"{label} chapter mark drawn",
+            str(mark),
+        )
+        report.check(bool(item.get("mark_alt")), f"{label} chapter mark has alt text")
+    report.check(
+        chapter_plates_in_epub == len(chapter_marks),
+        "every chapter mark reaches the EPUB",
+        f"{chapter_plates_in_epub} of {len(chapter_marks)}",
+    )
+    leftover_roadmap = [
+        path.name
+        for path in PHOTOS_DIR.glob("p2-0[1-4].jpg")
+        if path.is_file()
+    ]
+    report.check(
+        not leftover_roadmap,
+        "no duplicate 어세스먼트 로드맵 rasters on disk",
+        ", ".join(leftover_roadmap),
     )
 
     cover_text = " ".join(
