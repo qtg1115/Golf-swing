@@ -51,6 +51,20 @@ stills:
     caption: 테스트 3
     alt: 테스트 3
     rotate_cw: 90
+  - id: p3-c7-06
+    chapter: p3-c7
+    index: 6
+    dest: p3-c7-06.jpg
+    caption: 발 압력
+    alt: 발바닥 압력
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/401da916-b075-46c5-bdb9-cca15f4f2327_1024x1536.jpeg
+  - id: p3-c7-07
+    chapter: p3-c7
+    index: 7
+    dest: p3-c7-07.jpg
+    caption: 레깅
+    alt: 발 압력과 레깅
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/873a5479-42cd-49c3-b9b4-84f94aa198ee_1024x1536.jpeg
 
 # Author iPhone 13 Pro Max originals from the Korean Substack posts.
 # Public S3 URLs. Honour EXIF (6 = 90° CW). Do not force landscape.
@@ -373,8 +387,7 @@ stills:
 # The p2-01…p2-04 teal Substack 어세스먼트 로드맵 rasters are gone. They
 # duplicated the typeset FIGURE cards in p2-c1.md. Do not restore them.
 
-# Author-supplied still that was missing from the Korean Substack chapter 9
-# post. Drop incoming/p3-c9-01.jpg, then rerun `make media && make book`.
+# /p/chapter-9-1 original. Prefer this over the GPT-PDF crop.
 
   - id: p3-c9-01
     chapter: p3-c9
@@ -382,3 +395,4 @@ stills:
     dest: p3-c9-01.jpg
     caption: 두 번째 팔로우스루의 출발점
     alt: 두 번째 팔로우스루의 출발점
+    source_url: https://substack-post-media.s3.amazonaws.com/public/images/fde912a4-02cc-467d-b5d3-f9ab6aeb173e_1999x1545.jpeg

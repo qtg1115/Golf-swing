@@ -232,10 +232,24 @@
       "status": "present"
     },
     {
+      "file": "p3-c7-06.jpg",
+      "chapter": "p3-c7",
+      "caption": "발 압력",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/401da916-b075-46c5-bdb9-cca15f4f2327_1024x1536.jpeg",
+      "status": "present"
+    },
+    {
+      "file": "p3-c7-07.jpg",
+      "chapter": "p3-c7",
+      "caption": "레깅",
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/873a5479-42cd-49c3-b9b4-84f94aa198ee_1024x1536.jpeg",
+      "status": "present"
+    },
+    {
       "file": "p3-c9-01.jpg",
       "chapter": "p3-c9",
       "caption": "두 번째 팔로우스루의 출발점",
-      "source_url": null,
+      "source_url": "https://substack-post-media.s3.amazonaws.com/public/images/fde912a4-02cc-467d-b5d3-f9ab6aeb173e_1999x1545.jpeg",
       "status": "present"
     },
     {
@@ -469,6 +483,16 @@
       "chapter": "p3-c7",
       "index": 2,
       "note": "긴 아치"
+    },
+    {
+      "chapter": "p3-c7",
+      "index": 6,
+      "note": "발 압력"
+    },
+    {
+      "chapter": "p3-c7",
+      "index": 7,
+      "note": "레깅"
     },
     {
       "chapter": "p3-c7",
