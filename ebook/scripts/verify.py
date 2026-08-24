@@ -254,9 +254,10 @@ COVER_FORBIDDEN = (
 )
 
 
-# The stock 1024 Golf+club/ball header only. The author's roadmap cards,
-# archer, foot diagrams and hi-launch body graphics were wrongly classed as
-# AI and now live under dest names in stills.yaml — do not match those.
+# The stock 1024 Golf+club/ball header only. Archer, foot diagrams and
+# hi-launch body graphics live under dest names in stills.yaml — do not
+# match those. The teal 어세스먼트 로드맵 rasters (p2-01…p2-04) were
+# dropped because they duplicated the typeset FIGURE cards.
 STOCK_HEADER_BYTES = 1_023_209
 STOCK_HEADER_MD5 = "7068b6734a"
 FIGURE_MARKER = re.compile(r"\[\[FIGURE:\s*([a-z0-9-]+)\s*\]\]")

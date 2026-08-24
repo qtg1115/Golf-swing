@@ -187,8 +187,10 @@ author put one.
   with their public S3 URLs. `make media` fetches them into `images/incoming/`
   and flattens them (EXIF first) into `images/photos/`. Galleries share one
   `[사진]` slot. Stock 1024² Golf+club headers stay out. The author's archer,
-  foot, roadmap and hi-launch body graphics are the Substack originals and
-  are embedded. The old p3-c9 “(사진첨부)” marker is gone — that gap was videos.
+  foot and hi-launch body graphics are the Substack originals and are
+  embedded. The teal 어세스먼트 로드맵 rasters (p2-01…p2-04) are not: they
+  duplicated the typeset FIGURE cards in 2부. The old p3-c9 “(사진첨부)”
+  marker is gone — that gap was videos; p3-c9-01 is the author-supplied still.
 - The compiled manuscript inventory counts **64 photos**. The rest sit inside post
   bodies that are still paywalled, so they are not fetchable yet.
 
